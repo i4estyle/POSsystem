@@ -1,0 +1,400 @@
+erDiagram
+
+    POS_BRANCHES ||--o{ POS_EMPLOYEES : "has"
+    POS_ROLES ||--o{ POS_EMPLOYEES : "assigned to"
+    POS_EMPLOYEES ||--o{ POS_ATTENDANCE : "checks in/out"
+    POS_EMPLOYEES ||--o{ POS_SALARIES : "receives"
+
+    POS_CUSTOMERS ||--o{ POS_ORDERS : "places"
+    POS_CUSTOMERS ||--o{ POS_FEEDBACK : "writes"
+
+    POS_CATEGORIES ||--o{ POS_CATEGORIES : "has sub-category"
+    POS_CATEGORIES ||--o{ POS_PRODUCTS : "classifies"
+
+    POS_PRODUCTS ||--o{ POS_STOCKS : "stocked as"
+    POS_BRANCHES ||--o{ POS_STOCKS : "keeps"
+
+    POS_PRODUCTS ||--o{ POS_STOCK_MOVEMENTS : "moves"
+    POS_BRANCHES ||--o{ POS_STOCK_MOVEMENTS : "occurs at"
+    POS_EMPLOYEES ||--o{ POS_STOCK_MOVEMENTS : "performs"
+
+    POS_SUPPLIERS ||--o{ POS_PURCHASE_ORDERS : "supplies"
+    POS_BRANCHES ||--o{ POS_PURCHASE_ORDERS : "ordered for"
+    POS_EMPLOYEES ||--o{ POS_PURCHASE_ORDERS : "creates"
+    POS_PURCHASE_ORDERS ||--|{ POS_PURCHASE_ORDER_ITEMS : "contains"
+    POS_PRODUCTS ||--o{ POS_PURCHASE_ORDER_ITEMS : "ordered as"
+
+    POS_PROMOTIONS ||--o{ POS_PROMOTION_PRODUCTS : "applies to"
+    POS_PRODUCTS ||--o{ POS_PROMOTION_PRODUCTS : "eligible for"
+    POS_PROMOTIONS ||--o{ POS_ORDERS : "discounts"
+
+    POS_BRANCHES ||--o{ POS_DINING_TABLES : "has"
+    POS_DINING_TABLES ||--o{ POS_ORDERS : "used in"
+
+    POS_BRANCHES ||--o{ POS_ORDERS : "processes"
+    POS_EMPLOYEES ||--o{ POS_ORDERS : "serves / creates"
+    POS_ORDERS ||--|{ POS_ORDER_ITEMS : "contains"
+    POS_PRODUCTS ||--o{ POS_ORDER_ITEMS : "ordered as"
+
+    POS_ORDERS ||--o{ POS_PAYMENTS : "paid by"
+    POS_PAYMENT_METHODS ||--o{ POS_PAYMENTS : "used in"
+
+    POS_ORDERS |o--o| POS_FEEDBACK : "receives"
+
+    %% ---------- QR ORDER SYSTEM ----------
+    POS_BRANCHES ||--o{ POS_QR_CODES : "issues"
+    POS_DINING_TABLES ||--o{ POS_QR_CODES : "printed on (nullable, dine-in only)"
+
+    POS_QR_CODES ||--o{ POS_TABLE_SESSIONS : "opens"
+    POS_DINING_TABLES ||--o{ POS_TABLE_SESSIONS : "hosts (nullable, takeaway has none)"
+    POS_CUSTOMERS ||--o{ POS_TABLE_SESSIONS : "identifies (optional)"
+
+    POS_TABLE_SESSIONS ||--o{ POS_ORDERS : "groups (multiple rounds)"
+    POS_QR_CODES ||--o{ POS_ORDERS : "originates from (nullable)"
+
+    POS_TABLE_SESSIONS ||--o{ POS_TABLE_REQUESTS : "raises"
+    POS_DINING_TABLES ||--o{ POS_TABLE_REQUESTS : "raised at"
+    POS_EMPLOYEES ||--o{ POS_TABLE_REQUESTS : "handles"
+
+    POS_ORDERS ||--o{ POS_ORDER_STATUS_HISTORY : "tracks"
+    POS_EMPLOYEES ||--o{ POS_ORDER_STATUS_HISTORY : "updates (nullable, system if null)"
+
+    POS_ORDERS ||--o{ POS_ORDER_NOTIFICATIONS : "triggers"
+    POS_BRANCHES ||--o{ POS_ORDER_NOTIFICATIONS : "receives at"
+
+    POS_BRANCHES {
+        int BRN_ID PK "AUTO_INCREMENT, รหัสสาขา"
+        varchar BRN_NAME "varchar(100), ชื่อสาขา"
+        varchar BRN_ADDRESS "varchar(255), ที่อยู่สาขา"
+        varchar BRN_PHONE "varchar(20), เบอร์โทรศัพท์สาขา"
+        enum BRN_STATUS "enum('active','inactive'), สถานะสาขา"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_ROLES {
+        int ROL_ID PK "AUTO_INCREMENT, รหัสตำแหน่ง"
+        varchar ROL_NAME "varchar(50), ชื่อตำแหน่ง (admin, manager, cashier, kitchen)"
+        varchar ROL_DESCRIPTION "varchar(255), คำอธิบายตำแหน่ง, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_EMPLOYEES {
+        int EMP_ID PK "AUTO_INCREMENT, รหัสพนักงาน"
+        int EMP_BRANCH_ID FK "รหัสสาขาที่สังกัด"
+        int EMP_ROLE_ID FK "รหัสตำแหน่ง"
+        varchar EMP_FIRST_NAME "varchar(50), ชื่อพนักงาน"
+        varchar EMP_LAST_NAME "varchar(50), นามสกุลพนักงาน"
+        varchar EMP_TITLE_PREFIX "varchar(20), คำนำหน้าชื่อ, nullable"
+        text EMP_PROFILE_IMAGE "text, URL หรือ Base64 รูปโปรไฟล์, nullable"
+        varchar EMP_PHONE "varchar(20), เบอร์โทรศัพท์พนักงาน"
+        varchar EMP_EMAIL UK "varchar(100), อีเมลพนักงาน"
+        varchar EMP_USERNAME UK "varchar(50), ชื่อผู้ใช้สำหรับเข้าสู่ระบบ"
+        varchar EMP_PASSWORD_HASH "varchar(255), รหัสผ่านที่เข้ารหัสแล้ว"
+        char EMP_NATIONAL_ID UK "char(13), เลขบัตรประชาชน (13 หลัก), nullable"
+        text EMP_ADDRESS "text, ที่อยู่ปัจจุบันพนักงาน, nullable"
+        date EMP_HIRE_DATE "date, วันที่เริ่มงาน"
+        enum EMP_STATUS "enum('active','resigned','suspended'), สถานะพนักงาน"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_ATTENDANCE {
+        int ATT_ID PK "AUTO_INCREMENT, รหัสบันทึกการเข้างาน"
+        int ATT_EMPLOYEE_ID FK "รหัสพนักงาน"
+        date ATT_WORK_DATE "date, วันที่ทำงาน"
+        datetime ATT_CHECK_IN "datetime, เวลาเข้างาน, nullable"
+        datetime ATT_CHECK_OUT "datetime, เวลาออกงาน, nullable"
+        enum ATT_STATUS "enum('on_time','late','absent','leave'), สถานะการเข้างาน"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_SALARIES {
+        int SAL_ID PK "AUTO_INCREMENT, รหัสรายการเงินเดือน"
+        int SAL_EMPLOYEE_ID FK "รหัสพนักงาน"
+        int SAL_PAY_MONTH "int, เดือนที่จ่าย (1-12)"
+        int SAL_PAY_YEAR "int, ปีที่จ่าย (ค.ศ.)"
+        decimal SAL_BASE_SALARY "decimal(10,2), เงินเดือนพื้นฐาน"
+        decimal SAL_BONUS "decimal(10,2), โบนัส"
+        decimal SAL_DEDUCTION "decimal(10,2), หักเงิน"
+        decimal SAL_NET_SALARY "decimal(10,2), เงินสุทธิหลังหัก/บวกโบนัส"
+        date SAL_PAYMENT_DATE "date, วันที่ชำระเงิน, nullable"
+        enum SAL_STATUS "enum('pending','paid'), สถานะการจ่ายเงินเดือน"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_CUSTOMERS {
+        int CUS_ID PK "AUTO_INCREMENT, รหัสลูกค้า"
+        varchar CUS_FIRST_NAME "varchar(50), ชื่อลูกค้า"
+        varchar CUS_LAST_NAME "varchar(50), นามสกุลลูกค้า"
+        varchar CUS_PHONE UK "varchar(20), เบอร์โทรศัพท์ลูกค้า"
+        varchar CUS_EMAIL "varchar(100), อีเมลลูกค้า, nullable"
+        int CUS_LOYALTY_POINT "int, แต้มสะสม"
+        varchar CUS_MEMBER_LEVEL "varchar(20), ระดับสมาชิก (regular, silver, gold)"
+        datetime CUS_REGISTER_DATE "datetime, วันที่สมัครสมาชิก"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_CATEGORIES {
+        int CAT_ID PK "AUTO_INCREMENT, รหัสหมวดหมู่สินค้า"
+        int CAT_PARENT_ID FK "รหัสหมวดหมู่แม่ (self-reference), nullable"
+        varchar CAT_NAME "varchar(100), ชื่อหมวดหมู่สินค้า"
+        varchar CAT_DESCRIPTION "varchar(255), คำอธิบายหมวดหมู่สินค้า, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PRODUCTS {
+        int PRD_ID PK "AUTO_INCREMENT, รหัสสินค้า"
+        int PRD_CATEGORY_ID FK "รหัสหมวดหมู่สินค้า"
+        varchar PRD_NAME "varchar(100), ชื่อสินค้า"
+        varchar PRD_SKU UK "varchar(50), รหัส SKU สินค้า"
+        varchar PRD_BARCODE UK "varchar(50), รหัสบาร์โค้ด, nullable"
+        text PRD_DESCRIPTION "text, คำอธิบายสินค้า, nullable"
+        decimal PRD_COST_PRICE "decimal(10,2), ราคาทุน"
+        decimal PRD_SELLING_PRICE "decimal(10,2), ราคาขาย"
+        varchar PRD_UNIT "varchar(20), หน่วยนับ (แก้ว, ชิ้น, กก.)"
+        varchar PRD_IMAGE_URL "varchar(255), URL รูปภาพสินค้า, nullable"
+        enum PRD_STATUS "enum('active','inactive'), สถานะสินค้า"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_STOCKS {
+        int STK_ID PK "AUTO_INCREMENT, รหัสรายการสต็อก"
+        int STK_PRODUCT_ID FK "รหัสสินค้า"
+        int STK_BRANCH_ID FK "รหัสสาขา"
+        int STK_QUANTITY "int, จำนวนสินค้าคงเหลือ"
+        int STK_REORDER_LEVEL "int, ระดับการสั่งซื้อใหม่ (Reorder Point)"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_STOCK_MOVEMENTS {
+        int STM_ID PK "AUTO_INCREMENT, รหัสการเคลื่อนไหวสต็อก"
+        int STM_PRODUCT_ID FK "รหัสสินค้า"
+        int STM_BRANCH_ID FK "รหัสสาขา"
+        int STM_EMPLOYEE_ID FK "รหัสพนักงานผู้ดำเนินการ"
+        enum STM_TYPE "enum('in','out','adjust'), ประเภทการเคลื่อนไหว"
+        int STM_QUANTITY "int, จำนวนที่เคลื่อนไหว"
+        enum STM_REFERENCE_TYPE "enum('order','purchase_order','manual'), ประเภทเอกสารอ้างอิง"
+        int STM_REFERENCE_ID "int, รหัสเอกสารอ้างอิง, nullable"
+        varchar STM_NOTE "varchar(255), หมายเหตุการปรับสต็อก, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_SUPPLIERS {
+        int SUP_ID PK "AUTO_INCREMENT, รหัสซัพพลายเออร์"
+        varchar SUP_NAME "varchar(100), ชื่อซัพพลายเออร์/บริษัท"
+        varchar SUP_CONTACT_NAME "varchar(100), ชื่อผู้ติดต่อ, nullable"
+        varchar SUP_PHONE "varchar(20), เบอร์โทรศัพท์ซัพพลายเออร์"
+        varchar SUP_EMAIL "varchar(100), อีเมลซัพพลายเออร์, nullable"
+        varchar SUP_ADDRESS "varchar(255), ที่อยู่ซัพพลายเออร์, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PURCHASE_ORDERS {
+        int POR_ID PK "AUTO_INCREMENT, รหัสใบสั่งซื้อ"
+        int POR_SUPPLIER_ID FK "รหัสซัพพลายเออร์"
+        int POR_BRANCH_ID FK "รหัสสาขาที่สั่งซื้อ"
+        int POR_EMPLOYEE_ID FK "รหัสพนักงานผู้ทำรายการ"
+        date POR_ORDER_DATE "date, วันที่สั่งซื้อ"
+        enum POR_STATUS "enum('pending','received','cancelled'), สถานะใบสั่งซื้อ"
+        decimal POR_TOTAL_AMOUNT "decimal(10,2), ราคารวมใบสั่งซื้อ"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PURCHASE_ORDER_ITEMS {
+        int POI_ID PK "AUTO_INCREMENT, รหัสรายการสินค้าในใบสั่งซื้อ"
+        int POI_PO_ID FK "รหัสใบสั่งซื้อ"
+        int POI_PRODUCT_ID FK "รหัสสินค้า"
+        int POI_QUANTITY "int, จำนวนที่สั่งซื้อ"
+        decimal POI_UNIT_COST "decimal(10,2), ราคาทุนต่อหน่วย"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PROMOTIONS {
+        int PRM_ID PK "AUTO_INCREMENT, รหัสโปรโมชั่น"
+        varchar PRM_NAME "varchar(100), ชื่อโปรโมชั่น"
+        enum PRM_TYPE "enum('percent','fixed_amount','buy_x_get_y'), ประเภทโปรโมชั่น"
+        decimal PRM_DISCOUNT_VALUE "decimal(10,2), มูลค่าส่วนลด"
+        decimal PRM_MIN_PURCHASE_AMOUNT "decimal(10,2), ยอดซื้อขั้นต่ำที่ได้รับโปรโมชั่น"
+        date PRM_START_DATE "date, วันที่เริ่มโปรโมชั่น"
+        date PRM_END_DATE "date, วันที่สิ้นสุดโปรโมชั่น"
+        enum PRM_STATUS "enum('active','expired','disabled'), สถานะโปรโมชั่น"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PROMOTION_PRODUCTS {
+        int PRP_PROMOTION_ID PK,FK "รหัสโปรโมชั่น"
+        int PRP_PRODUCT_ID PK,FK "รหัสสินค้า"
+    }
+
+    POS_DINING_TABLES {
+        int DTB_ID PK "AUTO_INCREMENT, รหัสโต๊ะอาหาร"
+        int DTB_BRANCH_ID FK "รหัสสาขา"
+        varchar DTB_NUMBER "varchar(10), หมายเลขโต๊ะ (เช่น T-01, A-02)"
+        int DTB_SEAT_CAPACITY "int, จำนวนที่นั่งสูงสุด"
+        enum DTB_STATUS "enum('available','occupied','reserved'), สถานะโต๊ะ"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_ORDERS {
+        int ORD_ID PK "AUTO_INCREMENT, รหัสคำสั่งซื้อ"
+        varchar ORD_NUMBER UK "varchar(30), เลขที่ใบสั่งซื้อ (เช่น ORD-20250101-001)"
+        int ORD_BRANCH_ID FK "รหัสสาขา"
+        int ORD_CUSTOMER_ID FK "รหัสลูกค้า, nullable"
+        int ORD_EMPLOYEE_ID FK "รหัสพนักงานผู้รับออร์เดอร์, nullable"
+        int ORD_TABLE_ID FK "รหัสโต๊ะอาหาร, nullable"
+        int ORD_PROMOTION_ID FK "รหัสโปรโมชั่นที่ใช้, nullable"
+        int ORD_SESSION_ID FK "รหัสเซสชันโต๊ะอาหาร (สำหรับ QR Order), nullable"
+        int ORD_QR_CODE_ID FK "รหัส QR Code ที่สแกนสั่งซื้อ, nullable"
+        enum ORD_CHANNEL "enum('pos','qr_order'), ช่องทางการสั่งซื้อ"
+        enum ORD_TYPE "enum('dine_in','takeaway','delivery'), ประเภทการทาน"
+        enum ORD_STATUS "enum('pending','confirmed','preparing','ready','served','paid','cancelled'), สถานะออร์เดอร์"
+        varchar ORD_GUEST_NAME "varchar(100), ชื่อผู้สั่งซื้อกรณีไม่มีบัญชีลูกค้า, nullable"
+        varchar ORD_GUEST_PHONE "varchar(20), เบอร์โทรผู้สั่งซื้อกรณีไม่มีบัญชีลูกค้า, nullable"
+        decimal ORD_TOTAL_AMOUNT "decimal(10,2), ยอดรวมก่อนหักส่วนลด"
+        decimal ORD_DISCOUNT_AMOUNT "decimal(10,2), ยอดส่วนลดรวม"
+        decimal ORD_TAX_AMOUNT "decimal(10,2), ภาษีมูลค่าเพิ่ม (VAT)"
+        decimal ORD_NET_AMOUNT "decimal(10,2), ยอดสุทธิที่ต้องชำระ"
+        datetime ORD_DATE "datetime, วันที่และเวลาที่สั่งซื้อ"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_ORDER_ITEMS {
+        int ORI_ID PK "AUTO_INCREMENT, รหัสรายการสินค้าในคำสั่งซื้อ"
+        int ORI_ORDER_ID FK "รหัสคำสั่งซื้อ"
+        int ORI_PRODUCT_ID FK "รหัสสินค้า"
+        int ORI_QUANTITY "int, จำนวนสินค้า"
+        decimal ORI_UNIT_PRICE "decimal(10,2), ราคาขายต่อหน่วย ณ เวลาสั่งซื้อ"
+        decimal ORI_DISCOUNT "decimal(10,2), ส่วนลดต่อรายการ"
+        decimal ORI_SUBTOTAL "decimal(10,2), ยอดรวมของรายการนี้"
+        enum ORI_STATUS "enum('pending','preparing','ready','served'), สถานะรายการ"
+        varchar ORI_NOTE "varchar(255), หมายเหตุพิเศษของเมนู, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PAYMENT_METHODS {
+        int PMT_ID PK "AUTO_INCREMENT, รหัสช่องทางการชำระเงิน"
+        varchar PMT_NAME "varchar(50), ชื่อช่องทางการชำระเงิน (cash, credit_card, promptpay, wallet)"
+        enum PMT_STATUS "enum('active','inactive'), สถานะช่องทาง"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_PAYMENTS {
+        int PAY_ID PK "AUTO_INCREMENT, รหัสรายการชำระเงิน"
+        int PAY_ORDER_ID FK "รหัสคำสั่งซื้อ"
+        int PAY_METHOD_ID FK "รหัสช่องทางการชำระเงิน"
+        decimal PAY_AMOUNT "decimal(10,2), จำนวนเงินที่ชำระ"
+        varchar PAY_REFERENCE_NO "varchar(100), เลขอ้างอิงธุรกรรม/สลิปโอนเงิน, nullable"
+        enum PAY_STATUS "enum('success','failed','refunded'), สถานะการชำระเงิน"
+        datetime PAY_DATE "datetime, วันที่และเวลาที่ชำระเงิน"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_FEEDBACK {
+        int FDB_ID PK "AUTO_INCREMENT, รหัสความคิดเห็น"
+        int FDB_CUSTOMER_ID FK "รหัสลูกค้า"
+        int FDB_ORDER_ID FK,UK "รหัสคำสั่งซื้อ (1 ออร์เดอร์ มีได้ 1 ความคิดเห็น), nullable"
+        tinyint FDB_RATING "tinyint, คะแนนความพึงพอใจ (1-5)"
+        text FDB_COMMENT "text, ข้อความติชม/รีวิว, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_QR_CODES {
+        int QRC_ID PK "AUTO_INCREMENT, รหัส QR Code"
+        int QRC_BRANCH_ID FK "รหัสสาขา"
+        int QRC_TABLE_ID FK "รหัสโต๊ะอาหาร, nullable"
+        enum QRC_TYPE "enum('dine_in','takeaway'), ประเภท QR"
+        varchar QRC_CODE_TOKEN UK "varchar(100), โทเค็นสุ่มสำหรับสแกนเข้า URL สั่งอาหาร"
+        enum QRC_STATUS "enum('active','inactive'), สถานะ QR"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_TABLE_SESSIONS {
+        int TSS_ID PK "AUTO_INCREMENT, รหัสเซสชันโต๊ะ"
+        int TSS_QR_CODE_ID FK "รหัส QR Code ที่สแกนเปิดเซสชัน"
+        int TSS_TABLE_ID FK "รหัสโต๊ะอาหาร, nullable"
+        int TSS_CUSTOMER_ID FK "รหัสลูกค้า, nullable"
+        int TSS_GUEST_COUNT "int, จำนวนลูกค้าในโต๊ะ"
+        enum TSS_STATUS "enum('active','closed'), สถานะเซสชัน"
+        datetime TSS_STARTED_AT "datetime, เวลาเปิดเซสชัน"
+        datetime TSS_ENDED_AT "datetime, เวลาปิดเซสชัน/เช็คบิล, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_TABLE_REQUESTS {
+        int TRQ_ID PK "AUTO_INCREMENT, รหัสรายการคำขอ"
+        int TRQ_SESSION_ID FK "รหัสเซสชันโต๊ะ"
+        int TRQ_TABLE_ID FK "รหัสโต๊ะอาหาร"
+        int TRQ_HANDLED_BY_EMP_ID FK "รหัสพนักงานที่เข้าดูแลคำขอ, nullable"
+        enum TRQ_TYPE "enum('call_staff','request_bill','request_water','other'), ประเภทคำขอ"
+        enum TRQ_STATUS "enum('pending','acknowledged','done'), สถานะคำขอ"
+        datetime TRQ_RESOLVED_AT "datetime, เวลาที่พนักงานดูแลสำเร็จ, nullable"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_ORDER_STATUS_HISTORY {
+        int OSH_ID PK "AUTO_INCREMENT, รหัสประวัติการเปลี่ยนสถานะ"
+        int OSH_ORDER_ID FK "รหัสคำสั่งซื้อ"
+        enum OSH_STATUS "enum('pending','confirmed','preparing','ready','served','paid','cancelled'), สถานะที่เปลี่ยนไป"
+        int OSH_CHANGED_BY_EMP_ID FK "รหัสพนักงานที่เปลี่ยนสถานะ, nullable"
+        varchar OSH_NOTE "varchar(255), หมายเหตุการเปลี่ยนสถานะ, nullable"
+        datetime OSH_CHANGED_AT "datetime, วันที่และเวลาที่เปลี่ยนสถานะ"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
+
+    POS_ORDER_NOTIFICATIONS {
+        int ONT_ID PK "AUTO_INCREMENT, รหัสรายการแจ้งเตือน"
+        int ONT_ORDER_ID FK "รหัสคำสั่งซื้อ"
+        int ONT_BRANCH_ID FK "รหัสสาขา"
+        varchar ONT_MESSAGE "varchar(255), ข้อความแจ้งเตือน"
+        tinyint ONT_IS_READ "tinyint, สถานะการอ่าน (0/1)"
+        datetime CREATED_AT "datetime(6), วันที่สร้างข้อมูล"
+        datetime UPDATED_AT "datetime(6), วันที่แก้ไขข้อมูลล่าสุด"
+        datetime DELETED_AT "datetime(6), วันที่ลบข้อมูล (Soft Delete), nullable"
+    }
