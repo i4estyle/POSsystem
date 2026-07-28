@@ -55,11 +55,27 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/orders',
-    redirect: '/pos',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'orders-kanban',
+        component: () => import('@/pages/orders-kanban-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/menu',
-    redirect: '/pos',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'menu-management',
+        component: () => import('@/pages/menu-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/tables',

@@ -106,7 +106,7 @@ export class OrdersService {
     limit: number;
   }> {
     const page = pagination.page ?? 1;
-    const limit = pagination.limit ?? 10;
+    const limit = pagination.limit ?? 20;
     const [data, total] = await this.orderRepository.findAndCount({
       relations: [
         'branch',

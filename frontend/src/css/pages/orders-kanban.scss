@@ -1,0 +1,163 @@
+@use '../variables' as *;
+
+.orders-layout {
+  .orders-main {
+    background: #fff;
+
+    .pos-header {
+      background: #fdf8fc;
+    }
+  }
+
+  .orders-content {
+    padding: 34px 32px;
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+
+    p {
+      margin: 0 0 6px;
+      color: $color-text-muted;
+      font:
+        700 11px/16px 'Plus Jakarta Sans',
+        sans-serif;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 0;
+      color: $color-text-main;
+      font:
+        700 32px/40px 'Plus Jakarta Sans',
+        sans-serif;
+    }
+
+    small {
+      color: $color-text-muted;
+      font:
+        14px/20px 'Plus Jakarta Sans',
+        sans-serif;
+    }
+
+    button {
+      height: 48px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: $radius-md;
+      background: $color-primary;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(99, 88, 128, 0.22);
+      font:
+        700 14px 'Plus Jakarta Sans',
+        sans-serif;
+    }
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 28px 0 18px;
+    color: $color-text-muted;
+    font:
+      13px 'Plus Jakarta Sans',
+      sans-serif;
+
+    > span {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+  }
+
+  .orders-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .orders-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .orders-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    padding-bottom: 32px;
+  }
+
+  .orders-pagination {
+    border: 1px solid rgba($color-primary, 0.2);
+    border-radius: $radius-md;
+    background: #f9f6ff;
+    padding: 4px;
+
+    :deep(.q-btn) {
+      min-width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      color: $color-primary;
+      font:
+        700 13px 'Plus Jakarta Sans',
+        sans-serif;
+    }
+
+    :deep(.q-btn.q-btn--active) {
+      background: $color-primary;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(99, 88, 128, 0.24);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .orders-content {
+      padding: 24px 18px;
+    }
+    .orders-card-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .orders-content {
+      padding: 22px 14px;
+    }
+    .titlebar {
+      align-items: flex-start;
+    }
+    .titlebar h1 {
+      font-size: 28px;
+    }
+    .titlebar button {
+      height: 42px;
+      padding: 0 12px;
+    }
+    .toolbar > span:last-child {
+      display: none;
+    }
+    .orders-filters {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .orders-date-sort-filter {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .orders-toolbar-actions {
+      width: 100%;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+}

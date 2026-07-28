@@ -17,7 +17,7 @@
         :label="item.label"
         :icon="item.icon"
         :to="item.to"
-        :is-active="item.to === '/pos'"
+        :is-active="item.to === route.path"
       />
     </nav>
 
@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import AppLogo from '@/components/base/app-logo.vue';
@@ -37,6 +38,7 @@ import PosSidebarNavLink from './pos-sidebar-nav-link.vue';
 
 const { t } = useI18n();
 const authStore = useAuthStore();
+const route = useRoute();
 
 defineEmits<{
   (e: 'new-order'): void;

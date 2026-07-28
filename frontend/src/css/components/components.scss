@@ -1,5 +1,7 @@
 @use '../variables' as *;
 @use '../mixins' as *;
+@use 'orders' as *;
+@use 'menu' as *;
 
 .locale-switcher {
   display: flex;

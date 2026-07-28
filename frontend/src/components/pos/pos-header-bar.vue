@@ -2,7 +2,7 @@
   <header class="pos-header">
     <PosSearchInput
       :model-value="searchQuery"
-      :placeholder="t('pos.searchPlaceholder')"
+      :placeholder="placeholder ?? t('pos.searchPlaceholder')"
       @update:model-value="$emit('update:searchQuery', $event)"
     />
 
@@ -23,6 +23,7 @@ const { t } = useI18n();
 
 defineProps<{
   searchQuery: string;
+  placeholder?: string;
 }>();
 
 defineEmits<{
