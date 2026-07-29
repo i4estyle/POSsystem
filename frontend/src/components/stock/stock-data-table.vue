@@ -100,6 +100,12 @@ defineEmits<{
   (e: 'restock', item: StockItem): void;
 }>();
 
+const sortString = (a: unknown, b: unknown): number => {
+  const strA = typeof a === 'string' || typeof a === 'number' ? String(a) : '';
+  const strB = typeof b === 'string' || typeof b === 'number' ? String(b) : '';
+  return strA.localeCompare(strB, undefined, { numeric: true, sensitivity: 'base' });
+};
+
 const getProductIcon = (category: string): string => {
   const cat = category.toLowerCase();
   if (cat.includes('coffee')) return 'local_cafe';
@@ -127,6 +133,7 @@ const columns = computed<QTableColumn<StockItem>[]>(() => [
     field: 'name',
     align: 'left',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'category',
@@ -134,6 +141,7 @@ const columns = computed<QTableColumn<StockItem>[]>(() => [
     field: 'category',
     align: 'center',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'quantity',
@@ -141,6 +149,7 @@ const columns = computed<QTableColumn<StockItem>[]>(() => [
     field: 'quantity',
     align: 'center',
     sortable: true,
+    sort: (a, b) => Number(a) - Number(b),
   },
   {
     name: 'status',
@@ -148,6 +157,7 @@ const columns = computed<QTableColumn<StockItem>[]>(() => [
     field: 'statusKey',
     align: 'center',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'lastUpdated',
@@ -155,6 +165,7 @@ const columns = computed<QTableColumn<StockItem>[]>(() => [
     field: 'lastUpdated',
     align: 'center',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'actions',

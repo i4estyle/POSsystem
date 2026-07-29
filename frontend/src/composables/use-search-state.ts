@@ -40,6 +40,12 @@ export function useSearchState() {
     if (routeName === 'feedback' || routePath.includes('/feedback')) {
       return t('search.placeholders.feedback');
     }
+    if (routeName === 'promotions-management' || routePath.includes('/promotions')) {
+      return t('search.placeholders.promotions');
+    }
+    if (routeName === 'members-management' || routePath.includes('/members')) {
+      return t('search.placeholders.members');
+    }
 
     return t('search.placeholders.default');
   });

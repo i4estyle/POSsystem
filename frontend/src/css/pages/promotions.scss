@@ -1,0 +1,301 @@
+@use '../variables' as *;
+
+.promotions-layout {
+  font-family: $font-family-base;
+
+  .promotions-main {
+    background: #fafafb;
+  }
+
+  .promotions-content {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .promotions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: 0 0 4px;
+      color: $color-text-main;
+      font: 700 28px/36px $font-family-base;
+    }
+
+    small {
+      color: $color-text-muted;
+      font: 14px/20px $font-family-base;
+    }
+
+    .add-promo-btn {
+      height: 44px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: $radius-md;
+      background: $color-primary;
+      color: #ffffff;
+      font: 600 14px $font-family-base;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: $shadow-button;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: $color-primary-dark;
+      }
+    }
+  }
+
+  .summary-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: $color-bg-surface;
+    border-radius: $radius-xl;
+    padding: 20px 24px;
+    box-shadow: $shadow-soft;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .stat-label {
+      color: $color-text-body;
+      font: 600 14px/20px $font-family-base;
+    }
+
+    .stat-value {
+      color: $color-text-main;
+      font: 700 36px/44px $font-family-base;
+    }
+
+    .stat-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .trend-badge {
+        font: 700 12px/16px $font-family-base;
+        padding: 2px 8px;
+        border-radius: $radius-full;
+
+        &.up {
+          background: #e9f9e5;
+          color: #5a6859;
+        }
+
+        &.down {
+          background: #ffd7ee;
+          color: #8c3b68;
+        }
+      }
+
+      .trend-period {
+        color: $color-text-muted;
+        font: 12px/16px $font-family-base;
+      }
+    }
+  }
+
+  .promotions-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+
+      button {
+        height: 36px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: $radius-full;
+        background: $color-bg-card;
+        color: $color-text-body;
+        font: 600 13px $font-family-base;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.active {
+          background: $color-primary;
+          color: #ffffff;
+        }
+
+        &:hover:not(.active) {
+          background: $color-border-subtle;
+        }
+      }
+    }
+  }
+
+  .code-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .promo-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: $radius-sm;
+      background: rgba(99, 88, 128, 0.1);
+      color: $color-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .code-text {
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 14px;
+      color: $color-primary-dark;
+      background: $color-bg-subtle;
+      padding: 4px 8px;
+      border-radius: $radius-sm;
+    }
+  }
+
+  .campaign-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-text-main;
+  }
+
+  .discount-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: $radius-full;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .usage-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: $radius-sm;
+    background: $color-bg-card;
+    color: $color-text-body;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .period-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: $color-text-muted;
+    font-size: 13px;
+  }
+
+  .status-glow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: $radius-full;
+    font-size: 12.5px;
+    font-weight: 600;
+
+    .glow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    &.active {
+      background: #e6f7ed;
+      color: #166534;
+
+      .glow-dot {
+        background: #22c55e;
+      }
+    }
+
+    &.scheduled {
+      background: #eff6ff;
+      color: #1e40af;
+
+      .glow-dot {
+        background: #3b82f6;
+      }
+    }
+
+    &.expired {
+      background: #fef2f2;
+      color: #991b1b;
+
+      .glow-dot {
+        background: #ef4444;
+      }
+    }
+  }
+
+  .center-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: $radius-sm;
+      border: 1px solid $color-border-subtle;
+      background: #ffffff;
+      color: $color-text-body;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $color-bg-subtle;
+        color: $color-primary;
+      }
+
+      &.toggle-btn.active {
+        color: #22c55e;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .promotions-layout .promotion-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .promotions-layout {
+    .promotions-content {
+      padding: 16px;
+    }
+
+    .promotion-summary-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .promotions-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+}

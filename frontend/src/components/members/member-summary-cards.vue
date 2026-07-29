@@ -5,7 +5,7 @@
       <span class="stat-value">{{ card.value }}</span>
       <div class="stat-footer">
         <span class="trend-badge" :class="card.trendDir">
-          {{ card.trendKey ? t(card.trendKey) : card.trend }}
+          {{ card.trend }}
         </span>
         <span class="trend-period">{{ t(card.periodKey) }}</span>
       </div>
@@ -19,43 +19,42 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-interface FeedbackStatCard {
+interface MemberStatCard {
   labelKey: string;
   value: string;
-  trend?: string;
-  trendKey?: string;
+  trend: string;
   trendDir: 'up' | 'down';
   periodKey: string;
 }
 
-const cards = computed<FeedbackStatCard[]>(() => [
+const cards = computed<MemberStatCard[]>(() => [
   {
-    labelKey: 'feedback.overallSatisfaction',
-    value: '4.8 / 5.0',
-    trend: '+0.2',
+    labelKey: 'members.stats.total',
+    value: '1,420',
+    trend: '+14.2%',
     trendDir: 'up',
-    periodKey: 'statsPeriods.averageScore',
+    periodKey: 'statsPeriods.vsLastMonth',
   },
   {
-    labelKey: 'feedback.totalReviews',
-    value: '342',
-    trend: '+28',
+    labelKey: 'members.stats.active',
+    value: '890',
+    trend: '+6.8%',
     trendDir: 'up',
-    periodKey: 'statsPeriods.reviewsReceived',
+    periodKey: 'statsPeriods.activeThisMonth',
   },
   {
-    labelKey: 'feedback.positiveRatio',
-    value: '94%',
-    trend: '+3.1%',
+    labelKey: 'members.stats.pointsIssued',
+    value: '124,500',
+    trend: '+18.5%',
     trendDir: 'up',
-    periodKey: 'statsPeriods.positiveRatings',
+    periodKey: 'statsPeriods.pointsEarned',
   },
   {
-    labelKey: 'feedback.responseRate',
-    value: '98%',
-    trendKey: 'statsPeriods.highRatio',
+    labelKey: 'members.stats.vipMembers',
+    value: '68',
+    trend: '+3',
     trendDir: 'up',
-    periodKey: 'statsPeriods.repliedByTeam',
+    periodKey: 'statsPeriods.platinumAndVip',
   },
 ]);
 </script>

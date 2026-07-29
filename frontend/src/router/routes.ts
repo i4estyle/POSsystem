@@ -138,6 +138,30 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/promotions',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'promotions-management',
+        component: () => import('@/pages/promotions-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/members',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'members-management',
+        component: () => import('@/pages/members-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
     path: '/tables',
     redirect: '/pos',
   },

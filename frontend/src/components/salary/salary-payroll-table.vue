@@ -97,6 +97,12 @@ defineEmits<{
   (e: 'view-slip', row: PayrollRow): void;
 }>();
 
+const sortString = (a: unknown, b: unknown): number => {
+  const strA = typeof a === 'string' || typeof a === 'number' ? String(a) : '';
+  const strB = typeof b === 'string' || typeof b === 'number' ? String(b) : '';
+  return strA.localeCompare(strB, undefined, { numeric: true, sensitivity: 'base' });
+};
+
 const columns = computed<QTableColumn<PayrollRow>[]>(() => [
   {
     name: 'employee',
@@ -104,6 +110,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'name',
     align: 'left',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'role',
@@ -111,6 +118,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'role',
     align: 'left',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'baseSalary',
@@ -118,6 +126,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'baseSalary',
     align: 'center',
     sortable: true,
+    sort: (a, b) => Number(a) - Number(b),
   },
   {
     name: 'overtimeBonus',
@@ -125,6 +134,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'overtimeBonus',
     align: 'center',
     sortable: true,
+    sort: (a, b) => Number(a) - Number(b),
   },
   {
     name: 'deductions',
@@ -132,6 +142,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'deductions',
     align: 'center',
     sortable: true,
+    sort: (a, b) => Number(a) - Number(b),
   },
   {
     name: 'netPay',
@@ -139,6 +150,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'netPay',
     align: 'center',
     sortable: true,
+    sort: (a, b) => Number(a) - Number(b),
   },
   {
     name: 'status',
@@ -146,6 +158,7 @@ const columns = computed<QTableColumn<PayrollRow>[]>(() => [
     field: 'status',
     align: 'center',
     sortable: true,
+    sort: (a, b) => sortString(a, b),
   },
   {
     name: 'actions',

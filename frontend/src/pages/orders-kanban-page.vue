@@ -7,7 +7,6 @@
         <section class="orders-content">
           <header class="titlebar">
             <div>
-              <p>{{ t('orders.eyebrow') }}</p>
               <h1>{{ t('orders.title') }}</h1>
               <small>{{ t('orders.subtitle') }}</small>
             </div>

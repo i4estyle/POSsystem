@@ -60,6 +60,8 @@ const navItems = computed(() => [
   { label: t('pos.nav.staff'), icon: 'badge', to: '/staff' },
   { label: t('pos.nav.payroll'), icon: 'payments', to: '/payroll' },
   { label: t('pos.nav.feedback'), icon: 'rate_review', to: '/feedback' },
+  { label: t('pos.nav.promotions'), icon: 'local_offer', to: '/promotions' },
+  { label: t('pos.nav.members'), icon: 'card_membership', to: '/members' },
   { label: t('pos.nav.tables'), icon: 'table_restaurant', to: '/tables' },
   { label: t('pos.nav.analytics'), icon: 'bar_chart', to: '/analytics' },
   { label: t('pos.nav.settings'), icon: 'settings', to: '/settings' },

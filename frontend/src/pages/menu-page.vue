@@ -7,7 +7,6 @@
         <section class="menu-content">
           <header class="menu-titlebar">
             <div>
-              <p>{{ t('menuPage.eyebrow') }}</p>
               <h1>{{ t('menuPage.title') }}</h1>
               <small>{{ t('menuPage.subtitle') }}</small>
             </div>

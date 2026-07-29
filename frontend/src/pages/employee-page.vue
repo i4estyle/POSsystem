@@ -19,9 +19,24 @@
             </div>
           </header>
 
-          <div class="staff-grid">
-            <EmployeeCard v-for="emp in filteredEmployees" :key="emp.employeeId" :employee="emp" />
+          <EmployeeSummaryCards :employees="employees" />
+
+          <div class="filter-toolbar">
+            <div class="role-filter-chips">
+              <button
+                v-for="filter in roleFilters"
+                :key="filter.key"
+                type="button"
+                class="filter-chip"
+                :class="{ active: selectedRoleFilter === filter.key }"
+                @click="selectedRoleFilter = filter.key"
+              >
+                <span>{{ t(filter.labelKey) }}</span>
+              </button>
+            </div>
           </div>
+
+          <EmployeeDataTable :items="filteredEmployees" @edit="onEditEmployee" />
         </section>
       </main>
     </section>
@@ -29,19 +44,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import { useSearchState } from '@/composables/use-search-state';
 import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
 import PosHeaderBar from '@/components/pos/pos-header-bar.vue';
-import EmployeeCard, { type EmployeeInfo } from '@/components/employee/employee-card.vue';
+import type { EmployeeInfo } from '@/components/employee/employee-card.vue';
+import EmployeeSummaryCards from '@/components/employee/employee-summary-cards.vue';
+import EmployeeDataTable from '@/components/employee/employee-data-table.vue';
 
 const $q = useQuasar();
 const { t } = useI18n();
 const authStore = useAuthStore();
 const { searchQuery } = useSearchState();
+
+const selectedRoleFilter = ref('all');
+
+const roleFilters = [
+  { key: 'all', labelKey: 'staff.filters.all' },
+  { key: 'manager', labelKey: 'staff.filters.manager' },
+  { key: 'barista', labelKey: 'staff.filters.barista' },
+  { key: 'chef', labelKey: 'staff.filters.chef' },
+  { key: 'cashier', labelKey: 'staff.filters.cashier' },
+];
 
 const currentBranchName = computed(
   () =>
@@ -109,13 +136,26 @@ const employees: EmployeeInfo[] = [
 
 const filteredEmployees = computed(() =>
   employees.filter((emp) => {
-    if (!searchQuery.value) return true;
-    const q = searchQuery.value.toLowerCase();
-    return (
-      emp.name.toLowerCase().includes(q) ||
-      emp.role.toLowerCase().includes(q) ||
-      emp.employeeId.toLowerCase().includes(q)
-    );
+    // Search filter
+    if (searchQuery.value) {
+      const q = searchQuery.value.toLowerCase();
+      const matchQuery =
+        emp.name.toLowerCase().includes(q) ||
+        emp.role.toLowerCase().includes(q) ||
+        emp.employeeId.toLowerCase().includes(q);
+      if (!matchQuery) return false;
+    }
+
+    // Role filter
+    if (selectedRoleFilter.value === 'all') return true;
+    const r = emp.role.toLowerCase();
+    if (selectedRoleFilter.value === 'manager')
+      return r.includes('manager') || r.includes('supervisor');
+    if (selectedRoleFilter.value === 'barista') return r.includes('barista');
+    if (selectedRoleFilter.value === 'chef') return r.includes('chef');
+    if (selectedRoleFilter.value === 'cashier') return r.includes('cashier');
+
+    return true;
   }),
 );
 
@@ -126,6 +166,14 @@ const notifyNewOrder = (): void => {
 const onAddEmployee = (): void => {
   $q.notify({
     message: t('staff.addEmployeePending'),
+    color: 'primary',
+    position: 'top',
+  });
+};
+
+const onEditEmployee = (emp: EmployeeInfo): void => {
+  $q.notify({
+    message: `แก้ไขข้อมูล: ${emp.name}`,
     color: 'primary',
     position: 'top',
   });

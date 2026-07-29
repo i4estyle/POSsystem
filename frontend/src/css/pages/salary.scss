@@ -4,7 +4,7 @@
   font-family: $font-family-base;
 
   .salary-main {
-    background: #fff;
+    background: #fafafb;
   }
 
   .salary-content {
@@ -64,33 +64,55 @@
     }
   }
 
-  .payroll-summary-grid {
+  .summary-cards-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
+  }
 
-    .summary-card {
-      background: $color-bg-surface;
-      border-radius: $radius-xl;
-      padding: 20px 24px;
-      box-shadow: $shadow-soft;
+  .stat-card {
+    background: $color-bg-surface;
+    border-radius: $radius-xl;
+    padding: 20px 24px;
+    box-shadow: $shadow-soft;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .stat-label {
+      color: $color-text-body;
+      font: 600 14px/20px $font-family-base;
+    }
+
+    .stat-value {
+      color: $color-text-main;
+      font: 700 36px/44px $font-family-base;
+    }
+
+    .stat-footer {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 6px;
 
-      .card-title {
-        color: $color-text-body;
-        font: 600 13px $font-family-base;
+      .trend-badge {
+        font: 700 12px/16px $font-family-base;
+        padding: 2px 8px;
+        border-radius: $radius-full;
+
+        &.up {
+          background: #e9f9e5;
+          color: #5a6859;
+        }
+
+        &.down {
+          background: #ffd7ee;
+          color: #8c3b68;
+        }
       }
 
-      .card-amount {
-        color: $color-text-main;
-        font: 700 28px $font-family-base;
-      }
-
-      .card-subtext {
+      .trend-period {
         color: $color-text-muted;
-        font: 12px $font-family-base;
+        font: 12px/16px $font-family-base;
       }
     }
   }

@@ -19,7 +19,7 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-interface FeedbackStatCard {
+interface PromotionStatCard {
   labelKey: string;
   value: string;
   trend?: string;
@@ -28,34 +28,34 @@ interface FeedbackStatCard {
   periodKey: string;
 }
 
-const cards = computed<FeedbackStatCard[]>(() => [
+const cards = computed<PromotionStatCard[]>(() => [
   {
-    labelKey: 'feedback.overallSatisfaction',
-    value: '4.8 / 5.0',
-    trend: '+0.2',
+    labelKey: 'promotions.stats.total',
+    value: '12',
+    trend: '+2',
     trendDir: 'up',
-    periodKey: 'statsPeriods.averageScore',
+    periodKey: 'statsPeriods.campaignsCreated',
   },
   {
-    labelKey: 'feedback.totalReviews',
-    value: '342',
-    trend: '+28',
+    labelKey: 'promotions.stats.active',
+    value: '5',
+    trendKey: 'statsPeriods.activeTrend',
     trendDir: 'up',
-    periodKey: 'statsPeriods.reviewsReceived',
+    periodKey: 'statsPeriods.liveCurrently',
   },
   {
-    labelKey: 'feedback.positiveRatio',
-    value: '94%',
-    trend: '+3.1%',
+    labelKey: 'promotions.stats.totalDiscounts',
+    value: '฿48,600',
+    trend: '+12.4%',
     trendDir: 'up',
-    periodKey: 'statsPeriods.positiveRatings',
+    periodKey: 'statsPeriods.totalSavingsGranted',
   },
   {
-    labelKey: 'feedback.responseRate',
-    value: '98%',
-    trendKey: 'statsPeriods.highRatio',
-    trendDir: 'up',
-    periodKey: 'statsPeriods.repliedByTeam',
+    labelKey: 'promotions.stats.expiringSoon',
+    value: '2',
+    trendKey: 'statsPeriods.daysLeft7',
+    trendDir: 'down',
+    periodKey: 'statsPeriods.requiresReview',
   },
 ]);
 </script>

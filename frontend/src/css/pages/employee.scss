@@ -4,7 +4,7 @@
   font-family: $font-family-base;
 
   .employee-main {
-    background: #fff;
+    background: #fafafb;
   }
 
   .employee-content {
@@ -22,7 +22,7 @@
     h1 {
       margin: 0 0 4px;
       color: $color-text-main;
-      font: 700 28px/36px $font-family-base;
+      font: 800 28px/36px $font-family-base;
     }
 
     small {
@@ -35,140 +35,312 @@
       align-items: center;
       gap: 16px;
 
-      .search-box {
-        width: 260px;
-
-        .q-field__control {
-          font-family: $font-family-base;
-        }
-      }
-
       .add-staff-btn {
         height: 44px;
         padding: 0 20px;
         border: 0;
         border-radius: $radius-md;
-        background: $color-primary;
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
         color: #fff;
-        font: 600 14px $font-family-base;
+        font: 700 14px $font-family-base;
         display: flex;
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        box-shadow: $shadow-button;
+        box-shadow: 0 4px 14px rgba(99, 88, 128, 0.3);
+        transition: all 0.25s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(99, 88, 128, 0.4);
+        }
       }
     }
   }
 
-  .staff-grid {
+  .summary-cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
   }
 
-  .staff-card {
+  .stat-card {
     background: $color-bg-surface;
     border-radius: $radius-xl;
-    padding: 24px;
+    padding: 20px 24px;
     box-shadow: $shadow-soft;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    position: relative;
+    gap: 12px;
 
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-
-      .staff-avatar {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: $palette-purple;
-        color: $color-primary-dark;
-        font: 700 20px $font-family-base;
-        display: grid;
-        place-items: center;
-      }
-
-      .staff-meta {
-        h3 {
-          margin: 0 0 2px;
-          color: $color-text-main;
-          font: 700 18px $font-family-base;
-        }
-
-        .role-tag {
-          font: 600 12px $font-family-base;
-          color: $color-primary;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-      }
+    .stat-label {
+      color: $color-text-body;
+      font: 600 14px/20px $font-family-base;
     }
 
-    .card-details {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(202, 196, 206, 0.3);
-
-      .detail-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: $color-text-body;
-        font: 13px $font-family-base;
-
-        .q-icon {
-          color: $color-text-muted;
-        }
-      }
+    .stat-value {
+      color: $color-text-main;
+      font: 700 36px/44px $font-family-base;
     }
 
-    .card-footer {
+    .stat-footer {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding-top: 8px;
+      gap: 6px;
 
-      .status-pill {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font: 600 12px $font-family-base;
-        padding: 4px 10px;
+      .trend-badge {
+        font: 700 12px/16px $font-family-base;
+        padding: 2px 8px;
         border-radius: $radius-full;
 
-        &.active {
+        &.up {
           background: #e9f9e5;
-          color: #3b6e35;
+          color: #5a6859;
         }
 
-        &.off-duty {
-          background: #f1ecf0;
-          color: $color-text-muted;
-        }
-
-        .status-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: currentColor;
+        &.down {
+          background: #ffd7ee;
+          color: #8c3b68;
         }
       }
 
-      .schedule-info {
+      .trend-period {
         color: $color-text-muted;
-        font: 12px $font-family-base;
+        font: 12px/16px $font-family-base;
       }
+    }
+  }
+
+  /* Filter Toolbar */
+  .filter-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+
+    .role-filter-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .filter-chip {
+        padding: 8px 18px;
+        border-radius: $radius-full;
+        border: 1px solid rgba(220, 215, 230, 0.8);
+        background: #ffffff;
+        color: $color-text-body;
+        font: 600 13px $font-family-base;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(.active) {
+          background: $color-bg-subtle;
+          border-color: rgba(99, 88, 128, 0.3);
+          color: $color-text-main;
+        }
+
+        &.active {
+          background: $color-primary;
+          color: #ffffff;
+          border-color: $color-primary;
+          box-shadow: 0 4px 12px rgba(99, 88, 128, 0.25);
+        }
+      }
+    }
+  }
+
+  /* Table Custom Cell Styling */
+  .emp-id-cell .id-tag {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: $color-primary-dark;
+    background: rgba(99, 88, 128, 0.08);
+    padding: 4px 10px;
+    border-radius: $radius-sm;
+    border: 1px solid rgba(99, 88, 128, 0.15);
+  }
+
+  .emp-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .emp-avatar-gradient {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: #ffffff;
+      font: 800 17px $font-family-base;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
+
+      &.avatar-purple {
+        background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+      }
+      &.avatar-amber {
+        background: linear-gradient(135deg, #f59e0b, #b45309);
+      }
+      &.avatar-pink {
+        background: linear-gradient(135deg, #ec4899, #be185d);
+      }
+      &.avatar-teal {
+        background: linear-gradient(135deg, #14b8a6, #0f766e);
+      }
+      &.avatar-blue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      }
+    }
+
+    .name-email {
+      display: flex;
+      flex-direction: column;
+
+      .emp-name {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: $color-text-main;
+      }
+
+      .emp-email {
+        font-size: 12px;
+        color: $color-text-muted;
+      }
+    }
+  }
+
+  /* Vibrant Role Theme Chips */
+  .role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: $radius-full;
+    font: 700 12.5px $font-family-base;
+
+    &.role-theme-purple {
+      background: rgba(99, 88, 128, 0.12);
+      color: $color-primary-dark;
+      border: 1px solid rgba(99, 88, 128, 0.25);
+    }
+    &.role-theme-amber {
+      background: rgba(245, 158, 11, 0.12);
+      color: #92400e;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    &.role-theme-pink {
+      background: rgba(236, 72, 153, 0.12);
+      color: #9d174d;
+      border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+    &.role-theme-teal {
+      background: rgba(20, 184, 166, 0.12);
+      color: #115e59;
+      border: 1px solid rgba(20, 184, 166, 0.3);
+    }
+    &.role-theme-blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: #1e40af;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+  }
+
+  .phone-cell,
+  .shift-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: $color-text-body;
+    font-weight: 500;
+
+    .q-icon {
+      color: $color-primary;
+    }
+  }
+
+  .status-glow-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: $radius-full;
+    font: 700 12px $font-family-base;
+
+    .glow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    &.active {
+      background: rgba(46, 125, 50, 0.1);
+      color: #2e7d32;
+      border: 1px solid rgba(46, 125, 50, 0.25);
+
+      .glow-dot {
+        background: #2e7d32;
+        box-shadow: 0 0 8px #2e7d32;
+        animation: pulse-green 2s infinite;
+      }
+    }
+
+    &.off-duty {
+      background: rgba(120, 120, 120, 0.08);
+      color: $color-text-muted;
+      border: 1px solid rgba(120, 120, 120, 0.2);
+
+      .glow-dot {
+        background: $color-text-muted;
+      }
+    }
+  }
+
+  .actions-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(99, 88, 128, 0.25);
+      border-radius: 50%;
+      background: #ffffff;
+      color: $color-primary;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $color-primary;
+        color: #ffffff;
+        border-color: $color-primary;
+        box-shadow: 0 4px 12px rgba(99, 88, 128, 0.25);
+        transform: scale(1.08);
+      }
+    }
+  }
+
+  @keyframes pulse-green {
+    0% {
+      box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 6px rgba(46, 125, 50, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(46, 125, 50, 0);
     }
   }
 
   @media (max-width: 1024px) {
-    .staff-grid {
+    .employee-summary-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
@@ -185,23 +357,10 @@
       .header-actions {
         flex-direction: column;
         align-items: stretch;
-
-        .search-box {
-          width: 100%;
-        }
       }
     }
-    .staff-grid {
+    .employee-summary-grid {
       grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .employee-content {
-      padding: 12px;
-    }
-    .staff-card {
-      padding: 14px;
     }
   }
 }

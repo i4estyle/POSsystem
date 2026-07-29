@@ -1,9 +1,14 @@
 <template>
-  <div class="payroll-summary-grid">
-    <div v-for="item in stats" :key="item.titleKey" class="summary-card">
-      <span class="card-title">{{ t(item.titleKey, { month: t('payroll.monthFormat') }) }}</span>
-      <span class="card-amount">{{ item.amount }}</span>
-      <span class="card-subtext">{{ t(item.subtextKey) }}</span>
+  <div class="summary-cards-grid">
+    <div v-for="card in cards" :key="card.labelKey" class="stat-card">
+      <span class="stat-label">{{ t(card.labelKey, { month: t('payroll.monthFormat') }) }}</span>
+      <span class="stat-value">{{ card.amount }}</span>
+      <div class="stat-footer">
+        <span class="trend-badge" :class="card.trendDir">
+          {{ card.trend }}
+        </span>
+        <span class="trend-period">{{ t(card.periodKey) }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -14,32 +19,42 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-interface PayrollStat {
-  titleKey: string;
+interface PayrollStatCard {
+  labelKey: string;
   amount: string;
-  subtextKey: string;
+  trend: string;
+  trendDir: 'up' | 'down';
+  periodKey: string;
 }
 
-const stats = computed<PayrollStat[]>(() => [
+const cards = computed<PayrollStatCard[]>(() => [
   {
-    titleKey: 'payroll.summary.totalPayroll',
+    labelKey: 'payroll.summary.totalPayroll',
     amount: '฿245,000',
-    subtextKey: 'staff.title',
+    trend: '+4.2%',
+    trendDir: 'up',
+    periodKey: 'statsPeriods.vsLastMonth',
   },
   {
-    titleKey: 'payroll.summary.baseSalaryPaid',
+    labelKey: 'payroll.summary.baseSalaryPaid',
     amount: '฿210,000',
-    subtextKey: 'payroll.columns.baseSalary',
+    trend: '100%',
+    trendDir: 'up',
+    periodKey: 'statsPeriods.baseSalary',
   },
   {
-    titleKey: 'payroll.summary.overtimeBonuses',
+    labelKey: 'payroll.summary.overtimeBonuses',
     amount: '฿42,500',
-    subtextKey: 'payroll.columns.otBonus',
+    trend: '+8.5%',
+    trendDir: 'up',
+    periodKey: 'statsPeriods.otAndBonus',
   },
   {
-    titleKey: 'payroll.summary.totalDeductions',
+    labelKey: 'payroll.summary.totalDeductions',
     amount: '-฿7,500',
-    subtextKey: 'payroll.columns.deductions',
+    trend: '-1.2%',
+    trendDir: 'down',
+    periodKey: 'statsPeriods.taxAndSocial',
   },
 ]);
 </script>
