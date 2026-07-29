@@ -3,10 +3,7 @@
     <section class="pos-sales-layout orders-layout">
       <PosSidebarNav @new-order="notifyNewOrder" />
       <main class="pos-main-wrapper orders-main">
-        <PosHeaderBar
-          v-model:search-query="searchQuery"
-          placeholder="ค้นหาเลขออเดอร์หรือชื่อเมนู..."
-        />
+        <PosHeaderBar />
         <section class="orders-content">
           <header class="titlebar">
             <div>
@@ -57,10 +54,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import { useSearchState } from '@/composables/use-search-state';
 import PosHeaderBar from '@/components/pos/pos-header-bar.vue';
 import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
 import OrdersStatusFilter from '@/components/orders/orders-status-filter.vue';
@@ -73,6 +71,8 @@ import { useOrderStore } from '@/stores/order-store';
 const $q = useQuasar();
 const { locale, t } = useI18n();
 const orderStore = useOrderStore();
+const { searchQuery: globalSearchQuery } = useSearchState();
+
 const {
   searchQuery,
   selectedStatus,
@@ -83,6 +83,10 @@ const {
   statusCounts,
   totalPages,
 } = storeToRefs(orderStore);
+
+watch(globalSearchQuery, (newVal) => {
+  searchQuery.value = newVal;
+});
 
 const formattedDate = computed(() => {
   const [year = 2026, month = 1, day = 1] = selectedDate.value.split('/').map(Number);

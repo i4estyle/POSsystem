@@ -21,7 +21,7 @@
     margin: 0 0 6px;
     color: $color-text-muted;
     font:
-      700 11px/16px 'Plus Jakarta Sans',
+      700 11px/16px $font-family-base,
       sans-serif;
     letter-spacing: 0.08em;
   }
@@ -29,13 +29,13 @@
     margin: 0;
     color: $color-text-main;
     font:
-      700 28px/36px 'Plus Jakarta Sans',
+      700 28px/36px $font-family-base,
       sans-serif;
   }
   .menu-titlebar small {
     color: $color-text-muted;
     font:
-      14px/20px 'Plus Jakarta Sans',
+      14px/20px $font-family-base,
       sans-serif;
   }
   .menu-titlebar > button {
@@ -51,7 +51,7 @@
     cursor: pointer;
     box-shadow: $shadow-button;
     font:
-      700 14px 'Plus Jakarta Sans',
+      700 14px $font-family-base,
       sans-serif;
   }
 
@@ -68,7 +68,7 @@
     margin: 0;
     color: $color-text-main;
     font:
-      700 18px/24px 'Plus Jakarta Sans',
+      700 18px/24px $font-family-base,
       sans-serif;
   }
   .section-heading button {
@@ -80,7 +80,7 @@
     gap: 5px;
     cursor: pointer;
     font:
-      700 13px 'Plus Jakarta Sans',
+      700 13px $font-family-base,
       sans-serif;
   }
   .category-pills {
@@ -100,7 +100,7 @@
     white-space: nowrap;
     cursor: pointer;
     font:
-      600 13px 'Plus Jakarta Sans',
+      600 13px $font-family-base,
       sans-serif;
   }
   .category-pills button.active {
@@ -122,11 +122,11 @@
     margin-top: 32px;
   }
   .add-product-card {
-    min-height: 418px;
+    min-height: 400px;
     padding: 32px;
-    border: 2px dashed #cac4ce;
+    border: 2px dashed rgba(99, 88, 128, 0.4);
     border-radius: $radius-xl;
-    background: #fff;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(253, 248, 252, 0.6) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -134,26 +134,51 @@
     gap: 16px;
     color: $color-text-body;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      border-color: $color-primary;
+      background: rgba(208, 195, 241, 0.15);
+      transform: translateY(-4px);
+
+      .add-icon {
+        background: $color-primary;
+        color: #fff;
+        transform: scale(1.1);
+      }
+    }
   }
   .add-icon {
     width: 64px;
     height: 64px;
     border-radius: 50%;
     background: $palette-purple;
-    color: $color-primary;
-    display: grid;
-    place-items: center;
+    color: $color-primary-dark;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(99, 88, 128, 0.15);
+
+    .q-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      margin: 0;
+    }
   }
   .add-product-card strong {
     font:
-      600 20px/28px 'Sarabun',
+      700 18px/26px $font-family-base,
       sans-serif;
+    color: $color-primary-dark;
   }
   .add-product-card small {
-    color: rgba(72, 69, 78, 0.6);
+    color: $color-text-muted;
     text-align: center;
     font:
-      14px/20px 'Plus Jakarta Sans',
+      13px/18px $font-family-base,
       sans-serif;
   }
 
@@ -181,7 +206,7 @@
     margin: 0;
     color: $color-text-muted;
     font:
-      700 12px 'Plus Jakarta Sans',
+      700 12px $font-family-base,
       sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -191,14 +216,14 @@
     margin: 8px 0;
     color: $color-text-main;
     font:
-      700 24px/32px 'Plus Jakarta Sans',
+      700 24px/32px $font-family-base,
       sans-serif;
   }
   .inventory-card small,
   .featured-stat small {
     color: $color-text-body;
     font:
-      13px/20px 'Plus Jakarta Sans',
+      13px/20px $font-family-base,
       sans-serif;
   }
   .stat-list {
@@ -208,7 +233,7 @@
     white-space: nowrap;
     color: $color-text-body;
     font:
-      13px 'Plus Jakarta Sans',
+      13px $font-family-base,
       sans-serif;
   }
   .stat-list b {

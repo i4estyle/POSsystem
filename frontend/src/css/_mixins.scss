@@ -1,5 +1,12 @@
 @use 'variables' as *;
 
+// Breakpoint Variables
+$bp-xl: 1440px;
+$bp-lg: 1024px;
+$bp-md: 768px;
+$bp-sm: 600px;
+$bp-xs: 480px;
+
 @mixin glassmorphism {
   background-color: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -28,4 +35,29 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// Media Query Mixins
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'xl' {
+    @media (min-width: #{$bp-xl}) {
+      @content;
+    }
+  } @else if $breakpoint == 'lg' {
+    @media (max-width: #{$bp-xl - 1px}) {
+      @content;
+    }
+  } @else if $breakpoint == 'md' {
+    @media (max-width: #{$bp-lg - 1px}) {
+      @content;
+    }
+  } @else if $breakpoint == 'sm' {
+    @media (max-width: #{$bp-md - 1px}) {
+      @content;
+    }
+  } @else if $breakpoint == 'xs' {
+    @media (max-width: #{$bp-xs}) {
+      @content;
+    }
+  }
 }

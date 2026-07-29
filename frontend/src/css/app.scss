@@ -6,6 +6,11 @@
 @use 'pages/orders-kanban' as *;
 @use 'pages/menu' as *;
 @use 'pages/auth' as *;
+@use 'pages/dashboard' as *;
+@use 'pages/stock' as *;
+@use 'pages/employee' as *;
+@use 'pages/salary' as *;
+@use 'pages/feedback' as *;
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap');
 

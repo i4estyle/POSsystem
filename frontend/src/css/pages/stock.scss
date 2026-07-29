@@ -1,0 +1,235 @@
+@use '../variables' as *;
+
+.stock-layout {
+  font-family: $font-family-base;
+
+  .stock-main {
+    background: #fff;
+  }
+
+  .stock-content {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: 0 0 4px;
+      color: $color-text-main;
+      font: 700 28px/36px $font-family-base;
+    }
+
+    small {
+      color: $color-text-body;
+      font: 14px/20px $font-family-base;
+    }
+
+    .action-btn {
+      height: 44px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: $radius-md;
+      background: $color-primary;
+      color: #fff;
+      font: 600 14px $font-family-base;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: $shadow-button;
+    }
+  }
+
+  .stock-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+
+    .search-box {
+      width: 320px;
+
+      .q-field__control {
+        border-radius: $radius-md;
+        background: $color-bg-subtle;
+        font-family: $font-family-base;
+      }
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+
+      button {
+        height: 36px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: $radius-full;
+        background: $color-bg-card;
+        color: $color-text-body;
+        font: 600 13px $font-family-base;
+        cursor: pointer;
+
+        &.active {
+          background: $color-primary;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .stock-table-card {
+    background: $color-bg-surface;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-soft;
+    overflow: hidden;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+        text-align: left;
+        padding: 14px 20px;
+        color: $color-text-body;
+        font: 600 13px $font-family-base;
+        background: rgba(247, 242, 246, 0.6);
+        border-bottom: 1px solid $color-border-default;
+      }
+
+      td {
+        padding: 16px 20px;
+        vertical-align: middle;
+        font: 600 14px $font-family-base;
+        border-bottom: 1px solid rgba(202, 196, 206, 0.2);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .product-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: $radius-sm;
+        background: #ece7eb;
+        display: grid;
+        place-items: center;
+        color: $color-primary;
+        font-weight: 700;
+        font-family: $font-family-base;
+      }
+
+      .name-sku {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          color: $color-text-main;
+          font-family: $font-family-base;
+        }
+
+        small {
+          color: $color-text-muted;
+          font-size: 12px;
+          font-family: $font-family-base;
+        }
+      }
+    }
+
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: $radius-full;
+      font: 700 12px $font-family-base;
+
+      &.in-stock {
+        background: #e9f9e5;
+        color: #3b6e35;
+      }
+
+      &.low-stock {
+        background: #fef1ab;
+        color: #7a6600;
+      }
+
+      &.out-of-stock {
+        background: #ffd7ee;
+        color: #8c3b68;
+      }
+    }
+
+    .action-icons {
+      display: flex;
+      gap: 8px;
+
+      button {
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: $radius-sm;
+        background: transparent;
+        color: $color-text-body;
+        cursor: pointer;
+
+        &:hover {
+          background: rgba(99, 88, 128, 0.1);
+          color: $color-primary;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .stock-content {
+      padding: 20px;
+    }
+    .stock-filter-pills {
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stock-content {
+      padding: 16px;
+    }
+    .stock-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+
+      .search-box {
+        width: 100%;
+      }
+    }
+    .stock-table-card {
+      overflow-x: auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stock-content {
+      padding: 12px;
+    }
+    .stock-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+  }
+}

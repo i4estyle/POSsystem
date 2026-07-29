@@ -42,6 +42,18 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/dashboard',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'dashboard',
+        component: () => import('@/pages/dashboard-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
     path: '/pos',
     component: () => import('@/layouts/pos-layout.vue'),
     children: [
@@ -73,6 +85,54 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: 'menu-management',
         component: () => import('@/pages/menu-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/stock',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'stock-management',
+        component: () => import('@/pages/stock-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/staff',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'employee-management',
+        component: () => import('@/pages/employee-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/payroll',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'salary-management',
+        component: () => import('@/pages/salary-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/feedback',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'feedback-management',
+        component: () => import('@/pages/feedback-page.vue'),
         meta: { requiresAuth: true },
       },
     ],

@@ -1,0 +1,201 @@
+@use '../variables' as *;
+
+.feedback-layout {
+  font-family: $font-family-base;
+
+  .feedback-main {
+    background: #fff;
+  }
+
+  .feedback-content {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: 0 0 4px;
+      color: $color-text-main;
+      font: 700 28px/36px $font-family-base;
+    }
+
+    small {
+      color: $color-text-body;
+      font: 14px/20px $font-family-base;
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .rating-overview {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: $color-bg-surface;
+        padding: 8px 16px;
+        border-radius: $radius-lg;
+        box-shadow: $shadow-soft;
+
+        .score {
+          font: 700 28px/36px $font-family-base;
+          color: $color-text-main;
+        }
+
+        .stars {
+          color: #f59e0b;
+        }
+      }
+    }
+  }
+
+  .feedback-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+
+    .feedback-stat-card {
+      background: $color-bg-surface;
+      border-radius: $radius-xl;
+      padding: 20px 24px;
+      box-shadow: $shadow-soft;
+
+      .stat-title {
+        color: $color-text-body;
+        font: 600 13px $font-family-base;
+        margin-bottom: 8px;
+      }
+
+      .stat-number {
+        color: $color-text-main;
+        font: 700 32px $font-family-base;
+      }
+    }
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .review-card {
+      background: $color-bg-surface;
+      border-radius: $radius-xl;
+      padding: 24px;
+      box-shadow: $shadow-soft;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .review-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .reviewer-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: $palette-purple;
+            color: $color-primary-dark;
+            font: 700 16px $font-family-base;
+            display: grid;
+            place-items: center;
+          }
+
+          strong {
+            color: $color-text-main;
+            font-size: 16px;
+            font-family: $font-family-base;
+          }
+
+          .review-date {
+            color: $color-text-muted;
+            font-size: 12px;
+            font-family: $font-family-base;
+          }
+        }
+
+        .star-rating {
+          color: #f59e0b;
+        }
+      }
+
+      .review-comment {
+        color: $color-text-body;
+        font: 15px/22px $font-family-base;
+      }
+
+      .review-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 8px;
+
+        .order-tag {
+          font: 600 12px $font-family-base;
+          color: $color-text-muted;
+          background: rgba(247, 242, 246, 0.8);
+          padding: 4px 10px;
+          border-radius: $radius-md;
+        }
+
+        .reply-btn {
+          border: 0;
+          background: transparent;
+          color: $color-primary;
+          font: 600 13px $font-family-base;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .feedback-stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .feedback-content {
+      padding: 16px;
+    }
+    .feedback-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+    .feedback-stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .feedback-content {
+      padding: 12px;
+    }
+    .feedback-stats-grid {
+      gap: 12px;
+    }
+  }
+}
