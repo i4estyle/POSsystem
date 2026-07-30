@@ -60,7 +60,7 @@ export default defineConfig((ctx) => {
           timeout: 2800,
         },
       },
-      plugins: ['Notify'],
+      plugins: ['Notify', 'Dialog'],
     },
 
     // animations: 'all', // --- includes all animations

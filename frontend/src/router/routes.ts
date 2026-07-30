@@ -187,7 +187,15 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tables',
-    redirect: '/pos',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'tables-management',
+        component: () => import('@/pages/tables-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/analytics',

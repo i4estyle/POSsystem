@@ -32,6 +32,27 @@ $color-kanban-preparing-indicator: #d5a400;
 $color-kanban-ready-indicator: #559b61;
 $color-kanban-served-indicator: #3f9cba;
 
+// Global Table Status Colors
+$table-status-available-bg: #e8f5e9;
+$table-status-available-text: #1b5e20;
+$table-status-available-border: #81c784;
+$table-status-available-dot: #2e7d32;
+
+$table-status-occupied-bg: #ffebee;
+$table-status-occupied-text: #c62828;
+$table-status-occupied-border: #e57373;
+$table-status-occupied-dot: #e53935;
+
+$table-status-cleaning-bg: #fff3e0;
+$table-status-cleaning-text: #e65100;
+$table-status-cleaning-border: #ffb74d;
+$table-status-cleaning-dot: #f57c00;
+
+$table-status-reserved-bg: #f3e8ff;
+$table-status-reserved-text: #6b21a8;
+$table-status-reserved-border: #ba68c8;
+$table-status-reserved-dot: #9c27b0;
+
 $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;

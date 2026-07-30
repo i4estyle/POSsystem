@@ -46,6 +46,9 @@ export function useSearchState() {
     if (routeName === 'members-management' || routePath.includes('/members')) {
       return t('search.placeholders.members');
     }
+    if (routeName === 'tables-management' || routePath.includes('/tables')) {
+      return t('search.placeholders.tables');
+    }
 
     return t('search.placeholders.default');
   });

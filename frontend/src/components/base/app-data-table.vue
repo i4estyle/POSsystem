@@ -9,6 +9,36 @@
       flat
       class="app-data-table"
     >
+      <!-- Custom header cells keep labels centered independently from sort icons. -->
+      <template
+        v-for="col in columns"
+        :key="`header-${col.name}`"
+        #[`header-cell-${col.name}`]="headerProps"
+      >
+        <q-th :props="headerProps" :class="[`text-${col.align || 'left'}`, 'app-header-cell']">
+          <span class="app-header-content" :class="`justify-${col.align || 'left'}`">
+            <span class="app-header-label">{{ col.label }}</span>
+            <span
+              v-if="col.sortable"
+              class="app-sort-icon-anchor"
+              :class="{ 'app-sort-icon-anchor--active': pagination.sortBy === col.name }"
+            >
+              <q-icon
+                :name="
+                  pagination.sortBy === col.name
+                    ? pagination.descending
+                      ? 'arrow_downward'
+                      : 'arrow_upward'
+                    : 'unfold_more'
+                "
+                size="18px"
+                class="app-sort-hint-icon"
+              />
+            </span>
+          </span>
+        </q-th>
+      </template>
+
       <!-- Forward body cell slots -->
       <template v-for="col in columns" :key="`body-${col.name}`" #[`body-cell-${col.name}`]="props">
         <q-td :props="props" :class="`text-${col.align || 'left'}`">
@@ -248,6 +278,7 @@ watch(
       height: 52px;
 
       th {
+        position: relative;
         font-weight: 700;
         font-size: 13px;
         color: $color-primary-dark;
@@ -259,12 +290,50 @@ watch(
         user-select: none;
 
         .q-table__sort-icon {
-          font-size: 18px;
+          display: none;
+        }
+
+        .app-header-content {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          max-width: 100%;
+          vertical-align: middle;
+        }
+
+        .app-header-label {
+          display: block;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .app-sort-icon-anchor {
+          position: absolute;
+          top: 50%;
+          left: calc(100% + 4px);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+          transform: translateY(-50%);
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+
+        .app-header-cell:hover .app-sort-icon-anchor,
+        .app-sort-icon-anchor--active {
+          opacity: 1;
+        }
+
+        .app-sort-hint-icon {
           color: $color-primary;
-          margin-left: 4px;
           transition:
             transform 0.25s ease,
             opacity 0.2s ease;
+          opacity: 0.9;
         }
 
         &.text-left {
@@ -285,6 +354,10 @@ watch(
           &:hover {
             color: $color-primary;
             background: rgba(208, 195, 241, 0.25);
+
+            .app-sort-hint-icon {
+              opacity: 1;
+            }
           }
         }
 
@@ -292,7 +365,7 @@ watch(
           color: $color-primary-dark;
           font-weight: 800;
 
-          .q-table__sort-icon {
+          .app-sort-hint-icon {
             opacity: 1;
           }
         }
