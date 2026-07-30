@@ -161,6 +161,18 @@
         white-space: nowrap;
         overflow: hidden;
 
+        &.nav-item--expandable {
+          width: 100%;
+          border: 0;
+          background: transparent;
+          text-align: left;
+        }
+
+        .nav-expand-icon {
+          margin-left: auto;
+          font-size: 18px;
+        }
+
         .nav-icon {
           font-size: 20px;
           flex-shrink: 0;
@@ -185,6 +197,23 @@
           &.collapsed {
             transform: scale(1.08);
           }
+        }
+      }
+
+      .nav-submenu {
+        display: grid;
+        gap: 4px;
+        margin: -2px 0 2px;
+        padding-left: 14px;
+
+        .nav-item {
+          padding-top: 9px;
+          padding-bottom: 9px;
+          font-size: 13px;
+        }
+
+        .nav-icon {
+          font-size: 17px;
         }
       }
     }

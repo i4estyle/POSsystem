@@ -1,7 +1,7 @@
 <template>
   <q-page class="orders-page">
     <section class="pos-sales-layout orders-layout">
-      <PosSidebarNav @new-order="notifyNewOrder" />
+      <PosSidebarNav />
       <main class="pos-main-wrapper orders-main">
         <PosHeaderBar />
         <section class="orders-content">
@@ -12,10 +12,6 @@
             </div>
           </header>
           <div class="toolbar">
-            <div class="orders-filters">
-              <OrdersStatusFilter v-model="selectedStatus" />
-              <OrdersStatusTabs v-model="selectedStatus" :counts="statusCounts" />
-            </div>
             <div class="orders-toolbar-actions">
               <OrdersDateSortFilter
                 v-model:selected-date="selectedDate"
@@ -42,7 +38,6 @@
               :key="order.orderNumber"
               :order="order"
               :format-currency="formatCurrency"
-              @advance="advanceOrder"
               @print="printOrder"
             />
           </section>
@@ -60,8 +55,6 @@ import { useQuasar } from 'quasar';
 import { useSearchState } from '@/composables/use-search-state';
 import PosHeaderBar from '@/components/pos/pos-header-bar.vue';
 import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
-import OrdersStatusFilter from '@/components/orders/orders-status-filter.vue';
-import OrdersStatusTabs from '@/components/orders/orders-status-tabs.vue';
 import OrderTicket from '@/components/orders/order-ticket.vue';
 import OrdersDateSortFilter from '@/components/orders/orders-date-sort-filter.vue';
 import type { OrderKanbanMockTicket } from '@/types/orders-kanban';
@@ -72,16 +65,8 @@ const { locale, t } = useI18n();
 const orderStore = useOrderStore();
 const { searchQuery: globalSearchQuery } = useSearchState();
 
-const {
-  searchQuery,
-  selectedStatus,
-  selectedDate,
-  sortOrder,
-  currentPage,
-  paginatedOrders,
-  statusCounts,
-  totalPages,
-} = storeToRefs(orderStore);
+const { searchQuery, selectedDate, sortOrder, currentPage, paginatedOrders, totalPages } =
+  storeToRefs(orderStore);
 
 watch(globalSearchQuery, (newVal) => {
   searchQuery.value = newVal;
@@ -127,26 +112,9 @@ const displayedOrders = computed(() =>
   })),
 );
 
-const notifyNewOrder = (): void => {
-  $q.notify({ message: t('orders.newOrderPending'), position: 'top', color: 'primary' });
-};
-
 const printOrder = (orderNumber: string): void => {
   $q.notify({
     message: t('orders.printPending', { orderNumber }),
-    position: 'top',
-    color: 'primary',
-  });
-};
-
-const advanceOrder = (orderNumber: string): void => {
-  const status = orderStore.advanceOrder(orderNumber);
-  if (!status) return;
-  $q.notify({
-    message: t('orders.statusUpdated', {
-      orderNumber,
-      status: t(`orders.statuses.${status}`),
-    }),
     position: 'top',
     color: 'primary',
   });

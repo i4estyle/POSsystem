@@ -20,14 +20,17 @@
     <footer class="ticket-footer">
       <strong class="total">{{ formatCurrency(order.total) }}</strong>
     </footer>
-    <button type="button" :class="`order-action--${order.status}`" @click="handleAction">
-      {{ action.label }}
+    <button
+      type="button"
+      class="order-action--completed"
+      @click="$emit('print', order.orderNumber)"
+    >
+      {{ t('orders.printReceipt') }}
     </button>
   </article>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { OrderKanbanTicket } from '@/types/orders-kanban';
 
@@ -36,28 +39,9 @@ const { order, formatCurrency } = defineProps<{
   formatCurrency: (value: number) => string;
 }>();
 
-const emit = defineEmits<{
-  advance: [orderNumber: string];
+defineEmits<{
   print: [orderNumber: string];
 }>();
 
 const { t } = useI18n();
-
-const action = computed(() => {
-  const actions = {
-    new: { label: t('orders.startOrder') },
-    preparing: { label: t('orders.markAsReady') },
-    ready: { label: t('orders.markAsServed') },
-    served: { label: t('orders.printReceipt') },
-  };
-  return actions[order.status];
-});
-
-const handleAction = (): void => {
-  if (order.status === 'served') {
-    emit('print', order.orderNumber);
-    return;
-  }
-  emit('advance', order.orderNumber);
-};
 </script>

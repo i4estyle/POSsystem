@@ -78,6 +78,18 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/orders/manage',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'orders-management',
+        component: () => import('@/pages/orders-management-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
     path: '/menu',
     component: () => import('@/layouts/pos-layout.vue'),
     children: [
@@ -109,6 +121,18 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: 'employee-management',
         component: () => import('@/pages/employee-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/attendance',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'attendance',
+        component: () => import('@/pages/attendance-page.vue'),
         meta: { requiresAuth: true },
       },
     ],

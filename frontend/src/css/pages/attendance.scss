@@ -1,0 +1,378 @@
+@use '../variables' as *;
+
+.attendance-layout {
+  .attendance-main {
+    background: #fafafb;
+  }
+  .pos-header {
+    background: #fdf8fc;
+  }
+  .attendance-content {
+    padding: 34px 32px;
+  }
+}
+
+.attendance-page__header h1 {
+  margin: 0;
+  color: $color-text-main;
+  font: 700 32px/40px $font-family-base;
+}
+.attendance-page__header small {
+  color: $color-text-muted;
+  font: 14px/20px $font-family-base;
+}
+
+.attendance-grid {
+  display: grid;
+  grid-template-columns: minmax(520px, 1.08fr) minmax(500px, 0.92fr);
+  gap: 24px;
+  width: 100%;
+  max-width: none;
+  margin-top: 28px;
+}
+
+.attendance-history-dialog {
+  width: min(760px, calc(100vw - 32px));
+  max-width: 760px;
+  border-radius: $radius-xl;
+  padding: 26px;
+}
+.attendance-history-dialog header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+.attendance-history-dialog h2 {
+  margin: 0;
+  font: 700 22px/30px $font-family-base;
+}
+.attendance-history-dialog p {
+  margin: 4px 0 0;
+  color: $color-text-muted;
+  font: 13px/19px $font-family-base;
+}
+.attendance-history-dialog__list {
+  display: grid;
+  gap: 10px;
+  max-height: min(60vh, 560px);
+  margin-top: 20px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.attendance-history-dialog__row {
+  min-height: 70px;
+  border-radius: $radius-lg;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+}
+.attendance-history-dialog__row > div:nth-child(2) {
+  display: grid;
+  gap: 3px;
+}
+.attendance-history-dialog__row strong {
+  font: 700 14px/20px $font-family-base;
+}
+.attendance-history-dialog__row span {
+  color: $color-text-body;
+  font: 12px/16px $font-family-base;
+}
+
+.attendance-current-card,
+.attendance-history,
+.attendance-location-card {
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xl;
+  background: $color-bg-page;
+  box-shadow: $shadow-soft;
+}
+
+.attendance-current-card {
+  grid-row: span 2;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  &__clock {
+    min-height: 276px;
+    border: 1px solid $color-border-subtle;
+    border-radius: $radius-xl;
+    background: $color-bg-page;
+    box-shadow: $shadow-soft;
+    color: $color-primary;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+  &__clock strong {
+    margin-top: 4px;
+    color: $color-primary;
+    font:
+      400 48px/58px 'Plus Jakarta Sans',
+      $font-family-base;
+    letter-spacing: -0.05em;
+  }
+  &__clock > span {
+    color: $color-text-muted;
+    font: 600 15px/22px $font-family-base;
+  }
+  &__clock small {
+    margin-top: 8px;
+    color: $color-cart-badge-bg;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font: 700 9px/14px $font-family-base;
+    letter-spacing: 0.06em;
+  }
+  &__clock small i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: $color-cart-badge-bg;
+  }
+  &__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  &__action {
+    min-height: 270px;
+    border: 0;
+    border-radius: $radius-lg;
+    background: $color-cart-header-bg;
+    color: $color-cart-badge-bg;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    cursor: pointer;
+    padding: 17px 10px;
+  }
+  &__action.check-out {
+    background: #b5dce6;
+    color: #45636b;
+  }
+  &__action > span {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #fff;
+    display: grid;
+    place-items: center;
+  }
+  &__action strong {
+    font: 700 22px/28px $font-family-base;
+  }
+  &__action small {
+    font: 13px/20px $font-family-base;
+    text-align: center;
+    opacity: 0.8;
+  }
+  &__action:hover {
+    filter: brightness(0.97);
+    transform: translateY(-1px);
+  }
+}
+
+.attendance-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: $palette-purple;
+  color: $color-primary-dark;
+  display: grid;
+  place-items: center;
+  font: 700 15px $font-family-base;
+}
+.attendance-status {
+  margin-left: auto;
+  border-radius: $radius-full;
+  padding: 5px 9px;
+  background: #f1ecf0;
+  color: $color-text-muted;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 700 11px $font-family-base !important;
+}
+.attendance-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $color-text-muted;
+}
+.attendance-status.active {
+  background: $color-cart-header-bg;
+  color: $color-cart-badge-bg;
+}
+.attendance-status.active i {
+  background: #4f9b5d;
+}
+
+.attendance-history {
+  padding: 22px;
+}
+.attendance-history header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.attendance-history h2 {
+  margin: 0;
+  font: 700 18px/26px $font-family-base;
+}
+.attendance-history small {
+  color: $color-text-muted;
+  font: 12px/18px $font-family-base;
+}
+.attendance-history header button {
+  border: 0;
+  background: transparent;
+  color: $color-primary;
+  cursor: pointer;
+  font: 700 12px $font-family-base;
+}
+.attendance-history__items {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.attendance-history__item {
+  min-height: 70px;
+  border-radius: $radius-lg;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+}
+.attendance-history__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #fff5d7;
+  color: #b38400;
+  display: grid;
+  place-items: center;
+}
+.attendance-history__icon.day-off {
+  background: #e6e1e5;
+  color: $color-text-muted;
+}
+.attendance-history__details {
+  display: grid;
+  gap: 3px;
+}
+.attendance-history__details strong {
+  font: 700 14px/20px $font-family-base;
+}
+.attendance-history__details span {
+  color: $color-text-body;
+  font: 12px/16px $font-family-base;
+}
+.attendance-history__badge {
+  margin-left: auto;
+  border-radius: $radius-full;
+  padding: 6px 9px;
+  background: $color-cart-header-bg;
+  color: $color-cart-badge-bg;
+  font: 700 11px $font-family-base;
+}
+.attendance-history__badge.late {
+  background: #fff1cd;
+  color: #9d7200;
+}
+.attendance-history__badge.day-off {
+  background: #e6e1e5;
+  color: $color-text-body;
+}
+
+.attendance-location-card {
+  position: relative;
+  min-height: 200px;
+  overflow: hidden;
+}
+.attendance-location-card__map {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #dbeee3 0 27%, #e8ded1 27% 48%, #d7e9ee 48% 70%, #eee4d5 70%);
+}
+.map-road {
+  position: absolute;
+  width: 135%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.78);
+  transform: rotate(-25deg);
+}
+.road-one {
+  top: 38%;
+  left: -16%;
+}
+.road-two {
+  top: 67%;
+  left: -16%;
+  transform: rotate(22deg);
+}
+.map-pin {
+  position: absolute;
+  top: 37%;
+  left: 48%;
+  color: #d85b69;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.22));
+}
+.attendance-location-card__details {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  border-radius: $radius-lg;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+.attendance-location-card__details .q-icon {
+  color: $color-primary;
+}
+.attendance-location-card__details div {
+  display: grid;
+  gap: 2px;
+}
+.attendance-location-card__details span {
+  color: $color-text-body;
+  font: 700 11px $font-family-base;
+}
+.attendance-location-card__details strong {
+  font: 700 12px/17px $font-family-base;
+}
+
+@media (max-width: 900px) {
+  .attendance-grid {
+    grid-template-columns: minmax(440px, 1fr) minmax(400px, 1fr);
+    overflow-x: auto;
+  }
+}
+@media (max-width: 768px) {
+  .attendance-layout .attendance-content {
+    padding: 22px 14px;
+  }
+  .attendance-grid {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  .attendance-current-card {
+    grid-row: auto;
+  }
+}

@@ -3,15 +3,12 @@ import { defineStore } from 'pinia';
 import { orderKanbanMockColumns } from '@/mocks/orders-kanban';
 import type {
   KanbanStatus,
-  OrderFilterValue,
   OrderItemKey,
   OrderKanbanMockTicket,
   OrderSortOrder,
 } from '@/types/orders-kanban';
 
 type ManagedOrder = OrderKanbanMockTicket & { status: KanbanStatus };
-
-const statusOrder: KanbanStatus[] = ['new', 'preparing', 'ready', 'served'];
 
 const itemSearchTerms: Record<OrderItemKey, string[]> = {
   lavenderLatte: ['lavender latte', 'ลาเวนเดอร์ลาเต้'],
@@ -30,7 +27,6 @@ const itemSearchTerms: Record<OrderItemKey, string[]> = {
 
 export const useOrderStore = defineStore('orders', () => {
   const searchQuery = ref('');
-  const selectedStatus = ref<OrderFilterValue>('all');
   const selectedDate = ref('2026/07/20');
   const sortOrder = ref<OrderSortOrder>('newest');
   const currentPage = ref(1);
@@ -57,7 +53,7 @@ export const useOrderStore = defineStore('orders', () => {
                 term.toLocaleLowerCase().includes(query),
               ),
             )) &&
-          (selectedStatus.value === 'all' || order.status === selectedStatus.value) &&
+          order.status === 'served' &&
           order.createdAt.slice(0, 10).replaceAll('-', '/') === selectedDate.value,
       )
       .sort((first, second) =>
@@ -76,36 +72,35 @@ export const useOrderStore = defineStore('orders', () => {
     return filteredOrders.value.slice(start, start + ordersPerPage);
   });
 
-  const statusCounts = computed<Record<KanbanStatus, number>>(() =>
-    statusOrder.reduce<Record<KanbanStatus, number>>(
-      (counts, status) => ({
-        ...counts,
-        [status]: orders.value.filter(
-          (order) =>
-            order.status === status &&
-            order.createdAt.slice(0, 10).replaceAll('-', '/') === selectedDate.value,
-        ).length,
-      }),
-      { new: 0, preparing: 0, ready: 0, served: 0 },
+  const ordersByStatus = computed(() =>
+    (['new', 'preparing', 'ready'] as const).reduce(
+      (groups, status) => {
+        groups[status] = orders.value
+          .filter((order) => order.status === status)
+          .sort((first, second) => Date.parse(second.createdAt) - Date.parse(first.createdAt));
+        return groups;
+      },
+      {} as Record<Exclude<KanbanStatus, 'served'>, ManagedOrder[]>,
     ),
   );
 
-  const advanceOrder = (orderNumber: string): KanbanStatus | null => {
-    const nextStatuses: Record<Exclude<KanbanStatus, 'served'>, KanbanStatus> = {
+  const advanceOrder = (orderNumber: string): KanbanStatus | undefined => {
+    const order = orders.value.find((item) => item.orderNumber === orderNumber);
+    if (!order) return undefined;
+
+    const nextStatus: Partial<Record<KanbanStatus, KanbanStatus>> = {
       new: 'preparing',
       preparing: 'ready',
       ready: 'served',
     };
-    const order = orders.value.find((item) => item.orderNumber === orderNumber);
+    const status = nextStatus[order.status];
+    if (!status) return undefined;
 
-    if (!order || order.status === 'served') return null;
-
-    order.status = nextStatuses[order.status];
-    currentPage.value = 1;
-    return order.status;
+    order.status = status;
+    return status;
   };
 
-  watch([searchQuery, selectedStatus, selectedDate, sortOrder], () => {
+  watch([searchQuery, selectedDate, sortOrder], () => {
     currentPage.value = 1;
   });
 
@@ -115,14 +110,13 @@ export const useOrderStore = defineStore('orders', () => {
 
   return {
     searchQuery,
-    selectedStatus,
     selectedDate,
     sortOrder,
     currentPage,
     orders,
     paginatedOrders,
-    statusCounts,
     totalPages,
+    ordersByStatus,
     advanceOrder,
   };
 });

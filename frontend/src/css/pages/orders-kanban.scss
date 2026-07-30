@@ -70,12 +70,6 @@
     }
   }
 
-  .orders-filters {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
   .orders-toolbar-actions {
     display: flex;
     align-items: center;
@@ -137,10 +131,6 @@
     }
     .toolbar > span:last-child {
       display: none;
-    }
-    .orders-filters {
-      align-items: flex-start;
-      flex-direction: column;
     }
     .orders-date-sort-filter {
       width: 100%;
