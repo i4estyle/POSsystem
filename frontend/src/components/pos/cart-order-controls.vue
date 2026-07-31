@@ -21,9 +21,11 @@
 
     <section v-if="orderType === OrderType.DINE_IN" class="table-select-box">
       <q-select
+        ref="selectRef"
         dense
         outlined
         options-dense
+        clearable
         :model-value="selectedTableId"
         :options="tableOptions"
         emit-value
@@ -36,8 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import type { QSelect } from 'quasar';
 import { OrderType } from '@/types/order';
 import type { TableManagementItem } from '@/types/dining-table';
 
@@ -54,12 +57,23 @@ defineEmits<{
   (e: 'update:selectedTableId', value: number | null): void;
 }>();
 
+const selectRef = ref<QSelect | null>(null);
+
+const focusTableSelect = (): void => {
+  selectRef.value?.focus();
+  selectRef.value?.showPopup();
+};
+
+defineExpose({
+  focusTableSelect,
+});
+
 const tableOptions = computed(() => {
-  return props.tables
-    .filter((tbl) => tbl.status === 'available')
-    .map((tbl) => ({
-      label: tbl.tableNumber,
-      value: tbl.tableId,
-    }));
+  const available = props.tables.filter((tbl) => tbl.status === 'available');
+  const sourceList = available.length > 0 ? available : props.tables;
+  return sourceList.map((tbl) => ({
+    label: `${tbl.tableNumber} (รองรับ ${tbl.capacity} คน)`,
+    value: tbl.tableId,
+  }));
 });
 </script>

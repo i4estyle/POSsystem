@@ -1,7 +1,8 @@
 @use '../variables' as *;
 @use '../mixins' as *;
 
-.app-dialog-card {
+.app-dialog-card,
+.app-base-dialog-card {
   border-radius: $radius-xl !important;
   background: #ffffff !important;
   box-shadow: 0 20px 45px rgba(99, 88, 128, 0.22) !important;
@@ -10,24 +11,26 @@
   flex-direction: column;
 }
 
-.app-dialog-header {
+.app-dialog-header,
+.dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 24px;
+  padding: 16px 20px;
   background: linear-gradient(135deg, rgba(253, 248, 252, 0.95) 0%, rgba(244, 238, 255, 0.75) 100%);
   border-bottom: 1px solid rgba(208, 195, 241, 0.4);
 
-  .header-title-group {
+  .header-title-group,
+  .dialog-title-group {
     display: flex;
     align-items: center;
     gap: 12px;
 
     .header-icon-badge {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      min-height: 38px;
       flex-shrink: 0;
       border-radius: $radius-lg;
       background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
@@ -38,10 +41,15 @@
       box-shadow: 0 4px 12px rgba(99, 88, 128, 0.2);
     }
 
+    h2.dialog-title,
     .dialog-title {
-      margin: 0 0 2px;
-      font: 700 17px/22px $font-family-base;
-      color: $color-primary-dark;
+      margin: 0 0 2px !important;
+      padding: 0 !important;
+      font-size: 18px !important;
+      line-height: 24px !important;
+      font-weight: 700 !important;
+      font-family: $font-family-base !important;
+      color: $color-primary-dark !important;
     }
 
     .dialog-subtitle {
@@ -61,7 +69,7 @@
 }
 
 .dialog-body {
-  padding: 24px;
+  padding: 16px 20px;
   overflow-y: auto;
   max-height: calc(85vh - 130px);
 

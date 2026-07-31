@@ -21,6 +21,7 @@ const INITIAL_PRODUCTS: ProductInterface[] = [
     unit: 'ชิ้น',
     stockQuantity: 24,
     status: 'active',
+    isPopular: true,
     imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80',
   },
   {
@@ -33,6 +34,7 @@ const INITIAL_PRODUCTS: ProductInterface[] = [
     unit: 'แก้ว',
     stockQuantity: 50,
     status: 'active',
+    isPopular: true,
     imageUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&q=80',
   },
   {
@@ -45,6 +47,7 @@ const INITIAL_PRODUCTS: ProductInterface[] = [
     unit: 'จาน',
     stockQuantity: 8,
     status: 'active',
+    isPopular: true,
     imageUrl: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&q=80',
   },
   {
@@ -170,19 +173,20 @@ const INITIAL_PRODUCTS: ProductInterface[] = [
   {
     productId: 14,
     categoryId: 5,
-    productName: 'Combo A: Cheeseburger + Fries + Lemonade',
+    productName: 'Cheeseburger Set',
     sku: 'SET-001',
     costPrice: 150,
     sellingPrice: 299.0,
     unit: 'เซต',
     stockQuantity: 10,
     status: 'active',
+    isPopular: true,
     imageUrl: 'https://images.unsplash.com/photo-1610440042657-612c34d95e9f?w=400&q=80',
   },
   {
     productId: 15,
     categoryId: 5,
-    productName: 'Combo B: Spicy Wings + Truffle Fries + Cold Brew',
+    productName: 'Spicy Wings Set',
     sku: 'SET-002',
     costPrice: 160,
     sellingPrice: 319.0,
@@ -214,7 +218,7 @@ export const useProductStore = defineStore('product', () => {
       );
     }
 
-    return result;
+    return [...result].sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
   });
 
   const selectCategory = (categoryId: number | null): void => {
@@ -247,6 +251,13 @@ export const useProductStore = defineStore('product', () => {
     }
   };
 
+  const deductStock = (productId: number, qty: number): void => {
+    const item = products.value.find((p) => p.productId === productId);
+    if (item && item.stockQuantity !== undefined && item.stockQuantity !== null) {
+      item.stockQuantity = Math.max(0, item.stockQuantity - qty);
+    }
+  };
+
   return {
     products,
     categories,
@@ -259,5 +270,6 @@ export const useProductStore = defineStore('product', () => {
     updateProduct,
     deleteProduct,
     toggleStatus,
+    deductStock,
   };
 });

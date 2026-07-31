@@ -21,6 +21,13 @@ export enum OrderStatus {
   CANCELLED = 'cancelled',
 }
 
+export enum PaymentMethod {
+  CASH = 'cash',
+  QR = 'qr',
+  CREDIT_CARD = 'credit',
+  TRUE_WALLET = 'truemoney',
+}
+
 export interface CreateOrderItemDto {
   productId: number;
   quantity: number;

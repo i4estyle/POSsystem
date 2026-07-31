@@ -18,5 +18,6 @@ export interface ProductInterface {
   stockQuantity?: number | null;
   imageUrl?: string | null;
   status: 'active' | 'inactive';
+  isPopular?: boolean;
   category?: CategoryInterface;
 }

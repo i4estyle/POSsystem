@@ -132,3 +132,16 @@
     text-align: center;
   }
 }
+
+.nav-tooltip {
+  background: linear-gradient(135deg, #4a3e68 0%, $color-primary 100%) !important;
+  color: #ffffff !important;
+  font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  border-radius: 10px !important;
+  padding: 7px 14px !important;
+  border: 1.5px solid rgba(208, 195, 241, 0.45) !important;
+  box-shadow: 0 8px 22px rgba(99, 88, 128, 0.35) !important;
+}

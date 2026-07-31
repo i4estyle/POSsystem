@@ -3,16 +3,17 @@
     :to="to"
     class="nav-item"
     :class="{ active: isActive, collapsed: isCollapsed }"
-    :title="isCollapsed ? label : undefined"
+    @click="hideTooltip"
   >
     <q-icon :name="icon" class="nav-icon" />
     <span class="nav-label">{{ label }}</span>
 
     <q-tooltip
       v-if="isCollapsed"
+      ref="tooltipRef"
       anchor="center right"
       self="center left"
-      :offset="[10, 0]"
+      :offset="[12, 0]"
       class="nav-tooltip"
     >
       {{ label }}
@@ -21,6 +22,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import type { QTooltip } from 'quasar';
+
 defineProps<{
   label: string;
   icon: string;
@@ -28,4 +32,10 @@ defineProps<{
   isActive?: boolean;
   isCollapsed?: boolean;
 }>();
+
+const tooltipRef = ref<QTooltip | null>(null);
+
+const hideTooltip = (): void => {
+  tooltipRef.value?.hide();
+};
 </script>

@@ -4,11 +4,13 @@
       <button
         type="button"
         class="sidebar-toggle-btn"
-        :title="isCollapsed ? 'ขยายเมนู' : 'พับเมนู'"
         aria-label="Toggle sidebar collapse"
         @click="toggleCollapse"
       >
         <q-icon name="menu_open" class="toggle-icon" :class="{ rotated: isCollapsed }" />
+        <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]" class="nav-tooltip">
+          {{ isCollapsed ? t('pos.sidebar.expand') : t('pos.sidebar.collapse') }}
+        </q-tooltip>
       </button>
 
       <PosSearchInput
@@ -45,24 +47,21 @@
 
     <section class="user-controls">
       <div class="quick-tools-group">
-        <button
-          type="button"
-          class="header-tool-btn drawer-btn"
-          :title="t('pos.openCashDrawer')"
-          @click="onOpenCashDrawer"
-        >
+        <button type="button" class="header-tool-btn drawer-btn" @click="onOpenCashDrawer">
           <q-icon name="point_of_sale" size="20px" />
+          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]" class="nav-tooltip">
+            {{ t('pos.openCashDrawer') }}
+          </q-tooltip>
         </button>
 
-        <button
-          type="button"
-          class="header-tool-btn notifications-btn"
-          :title="t('pos.notifications.title')"
-        >
+        <button type="button" class="header-tool-btn notifications-btn">
           <q-icon name="notifications" size="20px" />
           <span v-if="notifications.length > 0" class="unread-badge">
             {{ notifications.length }}
           </span>
+          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]" class="nav-tooltip">
+            {{ t('pos.notifications.title') }}
+          </q-tooltip>
 
           <q-menu
             anchor="bottom right"
@@ -121,13 +120,11 @@
           </q-menu>
         </button>
 
-        <button
-          type="button"
-          class="header-tool-btn"
-          title="โหมดเต็มหน้าจอ"
-          @click="toggleFullscreen"
-        >
+        <button type="button" class="header-tool-btn fullscreen-btn" @click="toggleFullscreen">
           <q-icon :name="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" size="20px" />
+          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]" class="nav-tooltip">
+            {{ isFullscreen ? t('pos.fullscreen.exit') : t('pos.fullscreen.enter') }}
+          </q-tooltip>
         </button>
       </div>
 
@@ -172,8 +169,6 @@ const $q = useQuasar();
 const { locale, t } = useI18n();
 const { searchQuery: globalSearchQuery, searchPlaceholder } = useSearchState();
 const { isCollapsed, toggleCollapse } = useSidebarState();
-
-const isFullscreen = ref(false);
 const now = ref(new Date());
 let clockTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -284,14 +279,39 @@ const notifications = ref<PosNotification[]>([
   },
 ]);
 
+const isFullscreen = ref(false);
+
+const updateFullscreenState = (): void => {
+  isFullscreen.value = !!document.fullscreenElement || ($q.fullscreen?.isActive ?? false);
+};
+
+const toggleFullscreen = async (): Promise<void> => {
+  if ($q.fullscreen && typeof $q.fullscreen.toggle === 'function') {
+    await $q.fullscreen.toggle();
+    isFullscreen.value = $q.fullscreen.isActive;
+  } else if (!document.fullscreenElement) {
+    if (document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      await document.exitFullscreen();
+    }
+  }
+  updateFullscreenState();
+};
+
 onMounted(() => {
   clockTimer = setInterval(() => {
     now.value = new Date();
   }, 1000);
+  updateFullscreenState();
+  document.addEventListener('fullscreenchange', updateFullscreenState);
 });
 
 onUnmounted(() => {
   if (clockTimer) clearInterval(clockTimer);
+  document.removeEventListener('fullscreenchange', updateFullscreenState);
 });
 
 const isSearchHidden = computed<boolean>(
@@ -342,21 +362,7 @@ const onSelectNotification = (notif: PosNotification): void => {
     message: notif.title,
     caption: notif.caption,
     color: 'primary',
-    position: 'top',
-    icon: notif.icon,
   });
-};
-
-const toggleFullscreen = (): void => {
-  if (!document.fullscreenElement) {
-    void document.documentElement.requestFullscreen();
-    isFullscreen.value = true;
-  } else {
-    if (document.exitFullscreen) {
-      void document.exitFullscreen();
-    }
-    isFullscreen.value = false;
-  }
 };
 </script>
 
@@ -559,6 +565,12 @@ const toggleFullscreen = (): void => {
           background: #e0e7ff;
           color: #3730a3;
           border-color: #6366f1;
+        }
+
+        &.fullscreen-btn:hover {
+          background: #f3e8ff;
+          color: #7e22ce;
+          border-color: #a855f7;
         }
 
         .unread-badge {

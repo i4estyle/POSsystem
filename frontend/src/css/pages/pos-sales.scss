@@ -108,7 +108,7 @@
           height: 48px;
           padding: 0;
           justify-content: center;
-          border-radius: 50%;
+          border-radius: $radius-md;
 
           .nav-label {
             display: none !important;
@@ -180,12 +180,13 @@
         }
 
         &.active {
-          background-color: $palette-purple;
-          color: $color-primary-dark;
-          box-shadow: 0 4px 12px rgba(99, 88, 128, 0.12);
+          background: linear-gradient(135deg, #4a3e68 0%, $color-primary 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 14px rgba(99, 88, 128, 0.32);
 
           .nav-icon {
-            transform: scale(1.1);
+            color: #ffffff;
+            transform: scale(1.08);
           }
         }
 
@@ -1000,14 +1001,16 @@
   }
 }
 
-/* Tooltip global custom styling */
+/* Sleek Purple Navigation Tooltip Styling (Project Signature Purple Gradient) */
 .nav-tooltip {
-  background: $color-primary-dark !important;
+  background: linear-gradient(135deg, #4a3e68 0%, $color-primary 100%) !important;
   color: #ffffff !important;
-  font:
-    700 12px 'Plus Jakarta Sans',
-    sans-serif !important;
-  border-radius: $radius-md !important;
-  padding: 6px 12px !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+  font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px !important;
+  border-radius: 10px !important;
+  padding: 7px 14px !important;
+  border: 1.5px solid rgba(208, 195, 241, 0.45) !important;
+  box-shadow: 0 8px 22px rgba(99, 88, 128, 0.35) !important;
 }
