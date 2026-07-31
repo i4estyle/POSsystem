@@ -50,75 +50,15 @@
 
       <!-- Custom Bottom Pagination Toolbar -->
       <template #bottom>
-        <div class="table-pagination-toolbar">
-          <div class="pagination-info">
-            {{
-              t('tablePagination.showingInfo', {
-                from: showingFrom,
-                to: showingTo,
-                total: totalRows,
-              })
-            }}
-          </div>
-
-          <div class="pagination-controls">
-            <div class="rows-per-page-selector">
-              <span class="selector-label">{{ t('tablePagination.rowsPerPage') }}</span>
-              <button type="button" class="rows-pill-btn">
-                <span>{{ pagination.rowsPerPage }}</span>
-                <q-icon name="unfold_more" size="16px" class="arrow-icon" />
-                <q-menu auto-close class="rows-menu-popup" anchor="bottom left" self="top left">
-                  <q-list style="min-width: 80px" class="rows-menu-list">
-                    <q-item
-                      v-for="opt in rowsPerPageOptions"
-                      :key="opt"
-                      clickable
-                      :active="pagination.rowsPerPage === opt"
-                      active-class="active-row-option"
-                      class="rows-menu-item"
-                      @click="pagination.rowsPerPage = opt"
-                    >
-                      <q-item-section class="text-center">
-                        {{ opt }}
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </button>
-            </div>
-
-            <div class="page-nav">
-              <button
-                type="button"
-                class="nav-btn"
-                :disabled="isFirstPage"
-                title="Previous Page"
-                @click="prevPage"
-              >
-                <q-icon name="chevron_left" size="20px" />
-              </button>
-
-              <span class="page-indicator">
-                {{
-                  t('tablePagination.pageInfo', {
-                    current: pagination.page,
-                    total: maxPages,
-                  })
-                }}
-              </span>
-
-              <button
-                type="button"
-                class="nav-btn"
-                :disabled="isLastPage"
-                title="Next Page"
-                @click="nextPage"
-              >
-                <q-icon name="chevron_right" size="20px" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <AppPagination
+          v-model:page="pagination.page"
+          v-model:rows-per-page="pagination.rowsPerPage"
+          :max-pages="maxPages"
+          :showing-from="showingFrom"
+          :showing-to="showingTo"
+          :total-rows="totalRows"
+          :rows-per-page-options="rowsPerPageOptions"
+        />
       </template>
     </q-table>
   </div>
@@ -127,8 +67,8 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useI18n } from 'vue-i18n';
 import type { QTableColumn } from 'quasar';
+import AppPagination from './app-pagination.vue';
 
 interface Props {
   rows: T[];
@@ -142,7 +82,6 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 });
 
-const { t } = useI18n();
 const route = useRoute();
 
 const rowsPerPageOptions = [5, 10, 20, 50];
@@ -206,21 +145,6 @@ const showingTo = computed(() => {
   if (totalRows.value === 0) return 0;
   return Math.min(pagination.value.page * pagination.value.rowsPerPage, totalRows.value);
 });
-
-const isFirstPage = computed(() => pagination.value.page <= 1);
-const isLastPage = computed(() => pagination.value.page >= maxPages.value);
-
-const prevPage = (): void => {
-  if (!isFirstPage.value) {
-    pagination.value.page -= 1;
-  }
-};
-
-const nextPage = (): void => {
-  if (!isLastPage.value) {
-    pagination.value.page += 1;
-  }
-};
 
 // Reset page if rows per page changes or items filtered out
 watch(
@@ -323,7 +247,7 @@ watch(
           transition: opacity 0.2s ease;
         }
 
-        .app-header-cell:hover .app-sort-icon-anchor,
+        &:hover .app-sort-icon-anchor,
         .app-sort-icon-anchor--active {
           opacity: 1;
         }

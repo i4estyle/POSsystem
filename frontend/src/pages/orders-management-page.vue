@@ -41,6 +41,7 @@ import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
 import OrderManagementColumn from '@/components/orders/order-management-column.vue';
 import { useOrderStore } from '@/stores/order-store';
 import type { KanbanStatus, OrderKanbanMockTicket, OrderKanbanTicket } from '@/types/orders-kanban';
+import { getOrderItemImage } from '@/mocks/order-item-images';
 
 const { t, locale } = useI18n();
 const $q = useQuasar();
@@ -68,6 +69,7 @@ const toTicket = (order: OrderKanbanMockTicket & { status: KanbanStatus }): Orde
     quantity: item.quantity,
     name: t(`orders.items.${item.nameKey}`),
     price: item.price,
+    imageUrl: item.imageUrl || getOrderItemImage(item.nameKey),
   })),
 });
 
@@ -92,9 +94,7 @@ const columns = computed(() => [
   },
 ]);
 
-const emptyLabel = computed(() =>
-  locale.value === 'th' ? 'ไม่มีออเดอร์ในสถานะนี้' : 'No orders in this status',
-);
+const emptyLabel = computed(() => t('orders.emptyColumn'));
 
 const advanceOrder = (orderNumber: string): void => {
   const status = orderStore.advanceOrder(orderNumber);

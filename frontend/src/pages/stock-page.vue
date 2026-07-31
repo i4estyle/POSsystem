@@ -11,7 +11,7 @@
               <h1>{{ t('stock.title') }}</h1>
               <small>{{ t('stock.subtitle', { branch: currentBranchName }) }}</small>
             </div>
-            <button type="button" class="action-btn" @click="onAddProduct">
+            <button type="button" class="action-btn" @click="openAddDialog">
               <q-icon name="add" size="20px" />
               <span>{{ t('stock.addStockItem') }}</span>
             </button>
@@ -23,18 +23,21 @@
                 v-for="filter in filters"
                 :key="filter.id"
                 type="button"
-                :class="{ active: activeFilter === filter.id }"
-                @click="activeFilter = filter.id"
+                :class="{ active: stockStore.statusFilter === filter.id }"
+                @click="stockStore.statusFilter = filter.id"
               >
                 {{ t(filter.labelKey) }}
               </button>
             </div>
           </div>
 
-          <StockDataTable :items="filteredStock" @edit="onEditItem" @restock="onRestockItem" />
+          <StockDataTable :items="tableRows" @edit="openEditDialog" @restock="onAdjustQty" />
         </section>
       </main>
     </section>
+
+    <!-- Stock Form Dialog -->
+    <StockFormDialog v-model="showFormModal" :item="editingItem" @save="onSaveStock" />
   </q-page>
 </template>
 
@@ -43,132 +46,106 @@ import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth-store';
-import { useSearchState } from '@/composables/use-search-state';
+import { useStockStore, type StockItem } from '@/stores/stock-store';
 import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
 import PosHeaderBar from '@/components/pos/pos-header-bar.vue';
-import StockDataTable, { type StockItem } from '@/components/stock/stock-data-table.vue';
+import StockDataTable, {
+  type StockItem as TableStockItem,
+} from '@/components/stock/stock-data-table.vue';
+import StockFormDialog from '@/components/stock/stock-form-dialog.vue';
 
 const $q = useQuasar();
 const { t } = useI18n();
 const authStore = useAuthStore();
-const { searchQuery } = useSearchState();
+const stockStore = useStockStore();
 
-const activeFilter = ref('all');
+const showFormModal = ref(false);
+const editingItem = ref<StockItem | null>(null);
 
 const currentBranchName = computed(
   () =>
     authStore.currentUser?.branchName ||
     authStore.currentUser?.branch?.branchName ||
-    'Downtown Branch',
+    'สาขาหลัก (Main Branch)',
 );
 
 const filters = [
   { id: 'all', labelKey: 'stock.filters.all' },
-  { id: 'in-stock', labelKey: 'stock.filters.inStock' },
-  { id: 'low-stock', labelKey: 'stock.filters.lowStock' },
-  { id: 'out-of-stock', labelKey: 'stock.filters.outOfStock' },
+  { id: 'normal', labelKey: 'stock.filters.inStock' },
+  { id: 'low', labelKey: 'stock.filters.lowStock' },
+  { id: 'out_of_stock', labelKey: 'stock.filters.outOfStock' },
 ];
 
-const stockItems: StockItem[] = [
-  {
-    name: 'Espresso Coffee Beans (Arabica 100%)',
-    sku: 'BE-COF-001',
-    category: 'Coffee Beans',
-    quantity: 24.5,
-    unit: 'kg',
-    statusKey: 'stock.status.inStock',
-    statusClass: 'in-stock',
-    lastUpdated: '09:30',
-  },
-  {
-    name: 'Fresh Milk (Meiji Whole Milk)',
-    sku: 'BE-MLK-002',
-    category: 'Dairy',
-    quantity: 8,
-    unit: 'Liters',
-    statusKey: 'stock.status.lowStock',
-    statusClass: 'low-stock',
-    lastUpdated: '08:15',
-  },
-  {
-    name: 'Organic Lavender Syrup 750ml',
-    sku: 'SY-LAV-003',
-    category: 'Syrups',
-    quantity: 12,
-    unit: 'Bottles',
-    statusKey: 'stock.status.inStock',
-    statusClass: 'in-stock',
-    lastUpdated: '16:45',
-  },
-  {
-    name: 'Uji Matcha Powder Grade A',
-    sku: 'TE-MTC-004',
-    category: 'Tea',
-    quantity: 1.2,
-    unit: 'kg',
-    statusKey: 'stock.status.lowStock',
-    statusClass: 'low-stock',
-    lastUpdated: '10:00',
-  },
-  {
-    name: 'French AOP Butter Croissant Dough',
-    sku: 'BK-CRS-005',
-    category: 'Bakery Frozen',
-    quantity: 0,
-    unit: 'pcs',
-    statusKey: 'stock.status.outOfStock',
-    statusClass: 'out-of-stock',
-    lastUpdated: '18:20',
-  },
-  {
-    name: 'Oat Milk (Barista Edition)',
-    sku: 'BE-OAT-006',
-    category: 'Dairy Alternative',
-    quantity: 18,
-    unit: 'Liters',
-    statusKey: 'stock.status.inStock',
-    statusClass: 'in-stock',
-    lastUpdated: '07:45',
-  },
-];
-
-const filteredStock = computed(() =>
-  stockItems.filter((item) => {
-    const matchFilter = activeFilter.value === 'all' || item.statusClass === activeFilter.value;
-    const matchSearch =
-      !searchQuery.value ||
-      item.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      item.sku.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.value.toLowerCase());
-    return matchFilter && matchSearch;
-  }),
+const tableRows = computed<TableStockItem[]>(() =>
+  stockStore.filteredStock.map((s) => ({
+    ...s,
+    sku: s.code,
+    statusKey:
+      s.status === 'normal'
+        ? 'stock.status.inStock'
+        : s.status === 'low'
+          ? 'stock.status.lowStock'
+          : 'stock.status.outOfStock',
+    statusClass:
+      s.status === 'normal' ? 'in-stock' : s.status === 'low' ? 'low-stock' : 'out-of-stock',
+  })),
 );
+
+const openAddDialog = (): void => {
+  editingItem.value = null;
+  showFormModal.value = true;
+};
+
+const openEditDialog = (item: TableStockItem): void => {
+  editingItem.value = stockStore.stockItems.find((s) => s.id === Number(item.id)) || null;
+  showFormModal.value = true;
+};
+
+const onSaveStock = (
+  payload: Omit<StockItem, 'id' | 'lastUpdated' | 'status'> | Partial<StockItem>,
+): void => {
+  if (editingItem.value) {
+    stockStore.updateStockItem(editingItem.value.id, payload);
+    $q.notify({
+      type: 'positive',
+      message: t('settings.saveSuccess'),
+      position: 'top',
+    });
+  } else {
+    stockStore.addStockItem(payload as Omit<StockItem, 'id' | 'lastUpdated' | 'status'>);
+    $q.notify({
+      type: 'positive',
+      message: t('stock.addSuccess'),
+      position: 'top',
+    });
+  }
+};
+
+const onAdjustQty = (item: TableStockItem): void => {
+  $q.dialog({
+    title: t('stock.adjustQtyTitle'),
+    message: t('stock.adjustQtyMessage', { name: item.name }),
+    prompt: {
+      model: '10',
+      type: 'number',
+    },
+    cancel: true,
+    persistent: true,
+  }).onOk((val: string) => {
+    const delta = parseInt(val, 10);
+    const itemId = Number(item.id);
+    if (!isNaN(delta) && delta !== 0 && !isNaN(itemId)) {
+      stockStore.adjustQuantity(itemId, delta);
+      $q.notify({
+        type: 'positive',
+        message: t('stock.adjustQtySuccess', { delta: `${delta > 0 ? '+' : ''}${delta}` }),
+        position: 'top',
+      });
+    }
+  });
+};
 
 const notifyNewOrder = (): void => {
   $q.notify({ message: t('orders.newOrderPending'), color: 'primary', position: 'top' });
-};
-
-const onAddProduct = (): void => {
-  $q.notify({
-    message: t('stock.addStockPending'),
-    color: 'primary',
-    position: 'top',
-  });
-};
-
-const onEditItem = (item: StockItem): void => {
-  $q.notify({
-    message: t('stock.editItem', { name: item.name }),
-    color: 'primary',
-    position: 'top',
-  });
-};
-
-const onRestockItem = (item: StockItem): void => {
-  $q.notify({
-    message: t('stock.viewDetails', { name: item.name }),
-    color: 'positive',
-    position: 'top',
-  });
 };
 </script>

@@ -198,12 +198,16 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/analytics',
-    redirect: '/pos',
-  },
-  {
     path: '/settings',
-    redirect: '/pos',
+    component: () => import('@/layouts/pos-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'settings',
+        component: () => import('@/pages/settings-page.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/:catchAll(.*)*',

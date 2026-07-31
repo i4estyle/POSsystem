@@ -15,54 +15,26 @@
       <TableQuickCreateCard @click="emit('quick-create')" />
     </section>
 
-    <footer v-if="totalPages > 1" class="tables-pagination-bar">
-      <small class="showing-info">
-        {{
-          t('tablePagination.showingInfo', {
-            from: showingFrom,
-            to: showingTo,
-            total: tables.length,
-          })
-        }}
-      </small>
-
-      <nav class="pagination-controls">
-        <button
-          ref="previousPageButton"
-          type="button"
-          class="page-btn"
-          :disabled="currentPage <= 1"
-          @click="changePage(currentPage - 1, 'previous')"
-        >
-          <q-icon name="chevron_left" size="20px" />
-        </button>
-
-        <span class="page-indicator">
-          {{ t('tablePagination.pageInfo', { current: currentPage, total: totalPages }) }}
-        </span>
-
-        <button
-          ref="nextPageButton"
-          type="button"
-          class="page-btn"
-          :disabled="currentPage >= totalPages"
-          @click="changePage(currentPage + 1, 'next')"
-        >
-          <q-icon name="chevron_right" size="20px" />
-        </button>
-      </nav>
+    <footer v-if="tables.length > 0" class="tables-pagination-bar">
+      <AppPagination
+        :page="currentPage"
+        :max-pages="totalPages"
+        :showing-from="showingFrom"
+        :showing-to="showingTo"
+        :total-rows="tables.length"
+        :show-rows-per-page="false"
+        @update:page="(p) => emit('update:currentPage', p)"
+      />
     </footer>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed, watch } from 'vue';
 import type { TableManagementItem, TableStatus } from '@/types/dining-table';
+import AppPagination from '@/components/base/app-pagination.vue';
 import TableCard from './table-card.vue';
 import TableQuickCreateCard from './table-quick-create-card.vue';
-
-const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -87,10 +59,6 @@ const emit = defineEmits<{
   (e: 'update:currentPage', page: number): void;
 }>();
 
-const previousPageButton = ref<HTMLButtonElement | null>(null);
-const nextPageButton = ref<HTMLButtonElement | null>(null);
-const pendingPaginationFocus = ref<'previous' | 'next' | null>(null);
-
 const totalPages = computed(() => Math.ceil(props.tables.length / props.pageSize) || 1);
 
 const paginatedTables = computed(() => {
@@ -107,42 +75,9 @@ const showingTo = computed(() => {
   return Math.min(props.currentPage * props.pageSize, props.tables.length);
 });
 
-const focusPaginationButton = async (): Promise<void> => {
-  await nextTick();
-
-  const preferredButton =
-    pendingPaginationFocus.value === 'next' ? nextPageButton.value : previousPageButton.value;
-  const fallbackButton =
-    pendingPaginationFocus.value === 'next' ? previousPageButton.value : nextPageButton.value;
-  const targetButton = preferredButton?.disabled ? fallbackButton : preferredButton;
-
-  targetButton?.focus({ preventScroll: true });
-  targetButton?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'nearest',
-  });
-
-  pendingPaginationFocus.value = null;
-};
-
-const changePage = (page: number, direction: 'previous' | 'next'): void => {
-  pendingPaginationFocus.value = direction;
-  emit('update:currentPage', page);
-};
-
 watch(totalPages, (nextTotalPages) => {
   if (props.currentPage > nextTotalPages) {
     emit('update:currentPage', nextTotalPages);
   }
 });
-
-watch(
-  () => props.currentPage,
-  () => {
-    if (pendingPaginationFocus.value) {
-      void focusPaginationButton();
-    }
-  },
-);
 </script>

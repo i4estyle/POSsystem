@@ -7,7 +7,7 @@
         </div>
         <div>
           <h3>{{ t('dashboard.topSelling.title') }}</h3>
-          <small class="sub-text">ประจำวันตามจำนวนออเดอร์หน้าร้าน</small>
+          <small class="sub-text">{{ t('dashboard.topSelling.subtitle') }}</small>
         </div>
       </div>
       <button type="button" class="view-all-btn" @click="$emit('view-all')">
@@ -113,7 +113,7 @@ const getCategoryIcon = (category: string): string => {
 const columns = computed<QTableColumn<TopSellingItem>[]>(() => [
   {
     name: 'rank',
-    label: 'อันดับ',
+    label: t('dashboard.topSelling.columns.rank'),
     field: 'rank',
     align: 'center',
     sortable: true,

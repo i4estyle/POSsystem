@@ -129,8 +129,7 @@ const onFocusTableInMap = async (tableId: number): Promise<void> => {
       requestAnimationFrame(() => {
         const mapNode = document.getElementById(`map-node-t${tableId}`);
         if (mapNode) {
-          const headerHeight =
-            document.querySelector<HTMLElement>('.q-header')?.offsetHeight ?? 64;
+          const headerHeight = document.querySelector<HTMLElement>('.q-header')?.offsetHeight ?? 64;
           const rect = mapNode.getBoundingClientRect();
           const topPos = window.scrollY + rect.top - headerHeight - 24;
 
@@ -168,8 +167,7 @@ const scrollToTableCard = async (tableId: number): Promise<void> => {
       requestAnimationFrame(() => {
         const targetCard = document.getElementById(`table-card-${tableId}`);
         if (targetCard) {
-          const headerHeight =
-            document.querySelector<HTMLElement>('.q-header')?.offsetHeight ?? 64;
+          const headerHeight = document.querySelector<HTMLElement>('.q-header')?.offsetHeight ?? 64;
           const rect = targetCard.getBoundingClientRect();
           const topPos = window.scrollY + rect.top - headerHeight - 24;
 

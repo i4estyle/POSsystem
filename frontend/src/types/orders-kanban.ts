@@ -20,6 +20,7 @@ export interface OrderKanbanItem {
   name: string;
   quantity: number;
   price: number;
+  imageUrl?: string | null;
 }
 export interface OrderKanbanTicket {
   status: KanbanStatus;
@@ -39,6 +40,7 @@ export interface OrderKanbanMockItem {
   nameKey: OrderItemKey;
   quantity: number;
   price: number;
+  imageUrl?: string | null;
 }
 export interface OrderKanbanMockTicket {
   createdAt: string;

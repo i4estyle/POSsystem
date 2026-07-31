@@ -15,6 +15,7 @@ export interface ProductInterface {
   costPrice: number;
   sellingPrice: number;
   unit: string;
+  stockQuantity?: number | null;
   imageUrl?: string | null;
   status: 'active' | 'inactive';
   category?: CategoryInterface;

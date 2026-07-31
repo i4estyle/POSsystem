@@ -1,0 +1,593 @@
+@use '../variables' as *;
+
+.settings-layout {
+  font-family: $font-family-base;
+
+  .settings-main {
+    background: #fafafb;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .settings-content {
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+
+    header {
+      h1 {
+        margin: 0 0 2px;
+        color: $color-text-main;
+        font: 700 24px/30px $font-family-base;
+      }
+
+      small {
+        color: $color-text-body;
+        font: 13px/18px $font-family-base;
+      }
+    }
+  }
+
+  .settings-body-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+    align-items: start;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .settings-active-section {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(208, 195, 241, 0.5);
+      border-radius: 10px;
+    }
+  }
+
+  /* Settings Navigation Tabs */
+  .settings-nav-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: $radius-xl;
+    box-shadow: 0 4px 16px rgba(99, 88, 128, 0.05);
+    border: 1px solid rgba(208, 195, 241, 0.4);
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: $radius-lg;
+      background: transparent;
+      color: $color-text-body;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      .tab-icon-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: $radius-md;
+        background: rgba(208, 195, 241, 0.25);
+        color: $color-primary-dark;
+        display: grid;
+        place-items: center;
+        transition: all 0.2s ease;
+      }
+
+      .tab-label-group {
+        flex: 1;
+
+        .tab-title {
+          font: 700 13px/18px $font-family-base;
+          display: block;
+        }
+      }
+
+      .tab-arrow {
+        color: $color-text-muted;
+        opacity: 0.4;
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        background: rgba(208, 195, 241, 0.15);
+        color: $color-primary-dark;
+
+        .tab-arrow {
+          transform: translateX(2px);
+          opacity: 1;
+        }
+      }
+
+      &.active {
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(99, 88, 128, 0.25);
+
+        .tab-icon-badge {
+          background: rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+        }
+
+        .tab-arrow {
+          color: #ffffff;
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  /* Setting Card Section */
+  .settings-card-section {
+    background: #ffffff;
+    border-radius: $radius-xl;
+    padding: 20px;
+    box-shadow: 0 6px 20px rgba(99, 88, 128, 0.05);
+    border: 1px solid rgba(208, 195, 241, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(208, 195, 241, 0.3);
+      padding-bottom: 12px;
+
+      .header-icon-badge {
+        width: 38px;
+        height: 38px;
+        border-radius: $radius-lg;
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 4px 10px rgba(99, 88, 128, 0.2);
+      }
+
+      h3 {
+        margin: 0;
+        color: $color-text-main;
+        font: 700 18px/24px $font-family-base;
+      }
+
+      .sub-text {
+        color: $color-text-muted;
+        font: 12.5px/16px $font-family-base;
+      }
+    }
+
+    .settings-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+
+      .col-span-2 {
+        grid-column: span 2;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .form-label {
+          font: 700 12.5px $font-family-base;
+          color: $color-text-main;
+        }
+
+        .custom-input {
+          font-family: $font-family-base;
+
+          .q-field__control {
+            border-radius: $radius-lg !important;
+          }
+        }
+      }
+
+      .flex-row-center {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .toggle-label {
+          font: 600 13px $font-family-base;
+          color: $color-text-main;
+        }
+      }
+
+      .flex-column-gap {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .grid-cols-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      /* Single Row 3-Column Security Grid */
+      .security-single-row-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        width: 100%;
+
+        .sub-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+      }
+
+      /* Store Profile + Live Receipt Grid */
+      .store-profile-split-grid {
+        display: grid;
+        grid-template-columns: 1fr 240px;
+        gap: 16px;
+        width: 100%;
+
+        .profile-inputs-column {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+      }
+
+      /* Thermal Receipt Live Preview Card */
+      .thermal-receipt-preview {
+        background: #fffdfa;
+        border: 1px dashed rgba(99, 88, 128, 0.3);
+        border-radius: $radius-lg;
+        padding: 16px 14px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 11.5px;
+        color: #2b2930;
+
+        .receipt-header-text {
+          font-weight: 700;
+          font-size: 13px;
+          text-align: center;
+          margin-bottom: 2px;
+        }
+
+        .receipt-sub-text {
+          font-size: 10.5px;
+          color: #666;
+          text-align: center;
+        }
+
+        .receipt-divider {
+          border-bottom: 1px dashed #aaa;
+          width: 100%;
+          margin: 8px 0;
+        }
+
+        .receipt-item-row {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          font-size: 11px;
+        }
+
+        .receipt-footer-text {
+          font-size: 10.5px;
+          text-align: center;
+          color: #555;
+          margin-top: 6px;
+        }
+      }
+
+      /* Sub Card */
+      .sub-card {
+        background: rgba(253, 248, 252, 0.6);
+        border: 1px solid rgba(208, 195, 241, 0.4);
+        border-radius: $radius-lg;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .sub-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+
+          .header-left-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+
+          .sub-icon {
+            color: $color-primary;
+          }
+
+          h4 {
+            margin: 0;
+            font: 700 14px/20px $font-family-base;
+            color: $color-primary-dark;
+          }
+        }
+      }
+
+      /* Hardware Status Pulse Badges */
+      .status-pulse-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
+        border-radius: $radius-full;
+        font: 700 11px $font-family-base;
+
+        .pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+
+          @keyframes pulseGlow {
+            0% {
+              box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            70% {
+              box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+            100% {
+              box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+          }
+        }
+
+        &.connected {
+          background: #e6f7ed;
+          color: #1e7e48;
+
+          .pulse-dot {
+            background: #22c55e;
+            animation: pulseGlow 1.8s infinite;
+          }
+        }
+
+        &.ready {
+          background: rgba(208, 195, 241, 0.3);
+          color: $color-primary-dark;
+
+          .pulse-dot {
+            background: $color-primary;
+          }
+        }
+      }
+
+      .action-pill-btn {
+        height: 34px;
+        padding: 0 14px;
+        border-radius: $radius-full;
+        border: 1px solid rgba(208, 195, 241, 0.8);
+        background: #ffffff;
+        color: $color-primary-dark;
+        font: 700 12.5px $font-family-base;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(99, 88, 128, 0.06);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(208, 195, 241, 0.25);
+          border-color: $color-primary;
+          color: $color-primary-dark;
+        }
+      }
+
+      .promptpay-qr-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        background: #ffffff;
+        border-radius: $radius-lg;
+        border: 2px dashed rgba(208, 195, 241, 0.6);
+        color: $color-primary-dark;
+
+        .qr-placeholder-icon {
+          color: $color-primary;
+        }
+
+        small {
+          margin-top: 4px;
+          font: 600 11.5px $font-family-base;
+          color: $color-text-muted;
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-top: 8px;
+
+        &.space-between-actions {
+          justify-content: space-between;
+        }
+
+        .reset-defaults-btn {
+          height: 36px;
+          padding: 0 16px;
+          border-radius: $radius-full;
+          border: 1px solid rgba(239, 68, 68, 0.4);
+          background: #fef2f2;
+          color: #dc2626;
+          font: 700 13px $font-family-base;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: rgba(239, 68, 68, 0.6);
+          }
+        }
+
+        .save-btn {
+          height: 36px;
+          padding: 0 18px;
+          border-radius: $radius-full;
+          border: 0;
+          background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+          color: #ffffff;
+          font: 700 13px $font-family-base;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          box-shadow: 0 3px 10px rgba(99, 88, 128, 0.2);
+          transition: all 0.2s ease;
+
+          &:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 4px 14px rgba(99, 88, 128, 0.32);
+          }
+        }
+      }
+
+      /* Printers List & Payment Items */
+      .printers-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .printer-item-card {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 14px;
+          background: #ffffff;
+          border: 1px solid rgba(208, 195, 241, 0.5);
+          border-radius: $radius-lg;
+
+          &.default {
+            border-color: $color-primary;
+            box-shadow: 0 2px 8px rgba(99, 88, 128, 0.1);
+          }
+
+          .printer-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .printer-name {
+              font: 700 13.5px $font-family-base;
+              color: $color-primary-dark;
+            }
+
+            .default-badge {
+              font: 800 10px $font-family-base;
+              background: $color-primary;
+              color: #ffffff;
+              padding: 2px 6px;
+              border-radius: $radius-full;
+            }
+          }
+
+          .printer-meta {
+            font-size: 11.5px;
+            color: $color-text-muted;
+            margin-top: 2px;
+          }
+
+          .printer-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+        }
+      }
+
+      .payment-method-item-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #ffffff;
+        border-radius: $radius-md;
+        border: 1px solid rgba(208, 195, 241, 0.3);
+      }
+
+      .icon-delete-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 0;
+        background: transparent;
+        color: #ef4444;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition: background 0.15s ease;
+
+        &:hover {
+          background: #fee2e2;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .security-single-row-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .store-profile-split-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .settings-body-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .settings-content {
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    .settings-main {
+      height: auto !important;
+      overflow: visible !important;
+    }
+  }
+}

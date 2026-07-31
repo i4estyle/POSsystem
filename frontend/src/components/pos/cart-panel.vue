@@ -29,7 +29,7 @@ import CartOrderControls from './cart-order-controls.vue';
 import CartItemList from './cart-item-list.vue';
 import CartSummary from './cart-summary.vue';
 import type { CartItemInterface, OrderType } from '@/types/order';
-import type { DiningTableInterface } from '@/types/dining-table';
+import type { TableManagementItem } from '@/types/dining-table';
 
 defineProps<{
   items: CartItemInterface[];
@@ -39,7 +39,7 @@ defineProps<{
   total: number;
   orderType: OrderType;
   selectedTableId: number | null;
-  tables: DiningTableInterface[];
+  tables: TableManagementItem[];
   isSubmitting?: boolean;
 }>();
 

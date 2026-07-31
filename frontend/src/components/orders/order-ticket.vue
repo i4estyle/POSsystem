@@ -12,10 +12,15 @@
     </div>
     <div class="line" />
     <ul class="ticket-items">
-      <li v-for="item in order.items" :key="item.name">
-        <span>{{ item.quantity }}x {{ item.name }}</span>
-        <b>{{ formatCurrency(item.price) }}</b>
-      </li>
+      <OrderTicketItem
+        v-for="item in order.items"
+        :key="item.name"
+        :name="item.name"
+        :quantity="item.quantity"
+        :price="item.price"
+        :image-url="item.imageUrl"
+        :format-currency="formatCurrency"
+      />
     </ul>
     <footer class="ticket-footer">
       <strong class="total">{{ formatCurrency(order.total) }}</strong>
@@ -33,6 +38,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import type { OrderKanbanTicket } from '@/types/orders-kanban';
+import OrderTicketItem from './order-ticket-item.vue';
 
 const { order, formatCurrency } = defineProps<{
   order: OrderKanbanTicket;

@@ -22,10 +22,15 @@
         </div>
         <div class="order-management-ticket__line" />
         <ul>
-          <li v-for="item in order.items" :key="item.name">
-            <span>{{ item.quantity }}x {{ item.name }}</span>
-            <b>{{ formatCurrency(item.price) }}</b>
-          </li>
+          <OrderTicketItem
+            v-for="item in order.items"
+            :key="item.name"
+            :name="item.name"
+            :quantity="item.quantity"
+            :price="item.price"
+            :image-url="item.imageUrl"
+            :format-currency="formatCurrency"
+          />
         </ul>
         <strong class="order-management-ticket__total">{{ formatCurrency(order.total) }}</strong>
         <button
@@ -44,6 +49,7 @@
 
 <script setup lang="ts">
 import type { KanbanStatus, OrderKanbanTicket } from '@/types/orders-kanban';
+import OrderTicketItem from './order-ticket-item.vue';
 
 defineProps<{
   status: Exclude<KanbanStatus, 'served'>;

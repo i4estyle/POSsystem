@@ -6,8 +6,8 @@
     :disabled="disabled"
     @click="$emit('click')"
   >
-    <span>{{ label }}</span>
     <q-icon v-if="icon" :name="icon" size="18px" />
+    <span>{{ label }}</span>
   </button>
 </template>
 

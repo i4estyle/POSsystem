@@ -27,27 +27,13 @@
 
           <!-- Pagination Bar -->
           <div v-if="filteredReviews.length > 0" class="feedback-pagination-container">
-            <div class="showing-text">
-              {{
-                t('tablePagination.showingInfo', {
-                  from: showingFrom,
-                  to: showingTo,
-                  total: filteredReviews.length,
-                })
-              }}
-            </div>
-
-            <q-pagination
-              v-if="totalPages > 1"
-              v-model="currentPage"
-              :max="totalPages"
-              :max-pages="5"
-              boundary-numbers
-              direction-links
-              color="primary"
-              active-color="primary"
-              class="feedback-pagination"
-              aria-label="Feedback pagination"
+            <AppPagination
+              v-model:page="currentPage"
+              v-model:rows-per-page="itemsPerPage"
+              :max-pages="totalPages"
+              :showing-from="showingFrom"
+              :showing-to="showingTo"
+              :total-rows="filteredReviews.length"
             />
           </div>
         </section>
@@ -64,6 +50,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useSearchState } from '@/composables/use-search-state';
 import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
 import PosHeaderBar from '@/components/pos/pos-header-bar.vue';
+import AppPagination from '@/components/base/app-pagination.vue';
 import FeedbackSummaryCards from '@/components/feedback/feedback-summary-cards.vue';
 import FeedbackReviewList, {
   type ReviewItem,

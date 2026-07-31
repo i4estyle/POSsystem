@@ -39,14 +39,14 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { OrderType } from '@/types/order';
-import type { DiningTableInterface } from '@/types/dining-table';
+import type { TableManagementItem } from '@/types/dining-table';
 
 const { t } = useI18n();
 
 const props = defineProps<{
   orderType: OrderType;
   selectedTableId: number | null;
-  tables: DiningTableInterface[];
+  tables: TableManagementItem[];
 }>();
 
 defineEmits<{
@@ -55,9 +55,11 @@ defineEmits<{
 }>();
 
 const tableOptions = computed(() => {
-  return props.tables.map((tbl) => ({
-    label: t('pos.tableFormat', { number: tbl.tableNumber }),
-    value: tbl.tableId,
-  }));
+  return props.tables
+    .filter((tbl) => tbl.status === 'available')
+    .map((tbl) => ({
+      label: tbl.tableNumber,
+      value: tbl.tableId,
+    }));
 });
 </script>

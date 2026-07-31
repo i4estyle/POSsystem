@@ -2,6 +2,7 @@
 @use '../mixins' as *;
 @use 'orders' as *;
 @use 'menu' as *;
+@use 'dialogs' as *;
 
 .locale-switcher {
   display: flex;
@@ -49,25 +50,51 @@
 }
 
 .gradient-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: $radius-lg;
-  font-family: 'Sarabun', sans-serif;
-  font-weight: 600;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: $radius-full;
+  font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
   border: none;
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &:hover {
-    transform: translateY(-1px);
+  &.btn-primary {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(99, 88, 128, 0.2);
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.08);
+      box-shadow: 0 4px 14px rgba(99, 88, 128, 0.32);
+    }
   }
 
-  &:active {
-    transform: translateY(0);
+  &.btn-secondary {
+    background: rgba(208, 195, 241, 0.2);
+    color: $color-primary-dark;
+
+    &:hover:not(:disabled) {
+      background: rgba(208, 195, 241, 0.35);
+    }
+  }
+
+  &.btn-accent {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
   }
 }
 

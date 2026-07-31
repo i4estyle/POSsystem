@@ -1,16 +1,10 @@
 import { ref } from 'vue';
 import { diningTableService } from '@/services/dining-table-service';
-import type { DiningTableInterface } from '@/types/dining-table';
-
-const MOCK_TABLES: DiningTableInterface[] = [
-  { tableId: 1, branchId: 1, tableNumber: 'T-01', capacity: 4, status: 'available' },
-  { tableId: 2, branchId: 1, tableNumber: 'T-02', capacity: 2, status: 'available' },
-  { tableId: 3, branchId: 1, tableNumber: 'T-03', capacity: 6, status: 'occupied' },
-  { tableId: 4, branchId: 1, tableNumber: 'T-04', capacity: 4, status: 'available' },
-];
+import type { TableManagementItem } from '@/types/dining-table';
+import { DINING_TABLE_MOCKS } from '@/mocks/dining-tables';
 
 export function useDiningTables() {
-  const tables = ref<DiningTableInterface[]>([]);
+  const tables = ref<TableManagementItem[]>([...DINING_TABLE_MOCKS]);
   const isLoading = ref<boolean>(false);
   const error = ref<string | null>(null);
 
@@ -23,10 +17,10 @@ export function useDiningTables() {
       if (list.length > 0) {
         tables.value = list;
       } else {
-        tables.value = MOCK_TABLES;
+        tables.value = DINING_TABLE_MOCKS;
       }
     } catch {
-      tables.value = MOCK_TABLES;
+      tables.value = DINING_TABLE_MOCKS;
     } finally {
       isLoading.value = false;
     }

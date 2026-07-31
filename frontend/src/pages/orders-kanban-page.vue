@@ -59,6 +59,7 @@ import OrderTicket from '@/components/orders/order-ticket.vue';
 import OrdersDateSortFilter from '@/components/orders/orders-date-sort-filter.vue';
 import type { OrderKanbanMockTicket } from '@/types/orders-kanban';
 import { useOrderStore } from '@/stores/order-store';
+import { getOrderItemImage } from '@/mocks/order-item-images';
 
 const $q = useQuasar();
 const { locale, t } = useI18n();
@@ -108,6 +109,7 @@ const displayedOrders = computed(() =>
       quantity: item.quantity,
       name: t(`orders.items.${item.nameKey}`),
       price: item.price,
+      imageUrl: item.imageUrl || getOrderItemImage(item.nameKey),
     })),
   })),
 );

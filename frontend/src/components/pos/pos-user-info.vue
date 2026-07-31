@@ -84,138 +84,22 @@
       </q-menu>
     </div>
 
-    <q-dialog v-model="showEditModal" persistent transition-show="scale" transition-hide="scale">
-      <q-card class="edit-profile-dialog-card">
-        <div class="dialog-top-gradient" />
-
-        <q-card-section class="dialog-header">
-          <div class="header-title-block">
-            <div class="title-icon-badge">
-              <q-icon name="manage_accounts" size="22px" color="white" />
-            </div>
-            <div class="title-text-group">
-              <div class="text-h6 text-weight-bold text-dark">
-                {{ $t('pos.editProfileTitle') }}
-              </div>
-              <div class="text-caption text-grey-7">{{ $t('pos.editProfileSubtitle') }}</div>
-            </div>
-          </div>
-          <q-btn v-close-popup icon="close" flat round dense color="grey-7" />
-        </q-card-section>
-
-        <q-card-section class="dialog-body">
-          <div class="avatar-upload-block">
-            <div class="avatar-ring">
-              <img
-                v-if="editProfileImage"
-                :src="editProfileImage"
-                class="avatar-large"
-                alt="Avatar"
-              />
-              <span v-else class="avatar-large-initials">{{ editInitials }}</span>
-
-              <button type="button" class="camera-overlay-btn" @click="triggerFileInput">
-                <q-icon name="photo_camera" size="18px" color="white" />
-              </button>
-            </div>
-            <input
-              ref="fileInputRef"
-              type="file"
-              accept="image/*"
-              class="hidden-file-input"
-              @change="onFileSelected"
-            />
-          </div>
-
-          <div class="profile-form-grid">
-            <div class="form-row-name">
-              <q-select
-                v-model="editTitlePrefix"
-                :options="titlePrefixOptions"
-                outlined
-                dense
-                options-dense
-                behavior="menu"
-                :label="$t('auth.titlePrefixLabel')"
-                class="prefix-select-box"
-              />
-              <q-input
-                v-model="editFirstName"
-                outlined
-                dense
-                :label="$t('auth.firstNameLabel')"
-                class="name-field"
-              />
-              <q-input
-                v-model="editLastName"
-                outlined
-                dense
-                :label="$t('auth.lastNameLabel')"
-                class="name-field"
-              />
-            </div>
-
-            <div class="form-row-contact">
-              <q-input v-model="editPhone" outlined dense :label="$t('auth.phoneLabel')">
-                <template #prepend>
-                  <q-icon name="phone" size="18px" color="grey-6" />
-                </template>
-              </q-input>
-              <q-input v-model="editEmail" outlined dense :label="$t('auth.emailLabel')">
-                <template #prepend>
-                  <q-icon name="email" size="18px" color="grey-6" />
-                </template>
-              </q-input>
-            </div>
-
-            <q-input
-              v-model="editAddress"
-              outlined
-              dense
-              type="textarea"
-              rows="2"
-              :label="$t('auth.addressLabel')"
-            >
-              <template #prepend>
-                <q-icon name="place" size="18px" color="grey-6" />
-              </template>
-            </q-input>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right" class="dialog-footer">
-          <q-btn v-close-popup flat :label="$t('pos.cancel')" no-caps class="cancel-btn" />
-          <q-btn
-            color="primary"
-            :label="$t('pos.saveChanges')"
-            no-caps
-            class="save-btn"
-            :loading="authStore.isLoading"
-            @click="saveProfile"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <q-dialog v-model="showCropModal">
-      <AppImageCropper
-        v-if="rawImageSrc"
-        :image-src="rawImageSrc"
-        circular
-        @confirm="onCroppedFile"
-        @cancel="showCropModal = false"
-      />
-    </q-dialog>
+    <PosProfileDialog
+      v-model="showEditModal"
+      :user="currentUser"
+      :loading="authStore.isLoading"
+      @save="saveProfile"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth-store';
-import AppImageCropper from '@/components/base/app-image-cropper.vue';
+import PosProfileDialog from '@/components/pos/pos-profile-dialog.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -224,22 +108,7 @@ const { t } = useI18n();
 const authStore = useAuthStore();
 
 const isSystemSelectionPage = computed(() => route.path === '/system-selection');
-
-const fileInputRef = ref<HTMLInputElement | null>(null);
-
 const showEditModal = ref(false);
-const showCropModal = ref(false);
-const rawImageSrc = ref('');
-
-const editTitlePrefix = ref('นาย');
-const editFirstName = ref('');
-const editLastName = ref('');
-const editPhone = ref('');
-const editEmail = ref('');
-const editAddress = ref('');
-const editProfileImage = ref('');
-
-const titlePrefixOptions = ['นาย', 'นาง', 'นางสาว', 'Mr.', 'Mrs.', 'Ms.'];
 
 const currentUser = computed(() => authStore.currentUser);
 
@@ -273,23 +142,7 @@ const initials = computed((): string => {
   return `${first}${last}`.toUpperCase() || 'U';
 });
 
-const editInitials = computed((): string => {
-  const first = editFirstName.value?.[0] || '';
-  const last = editLastName.value?.[0] || '';
-  return `${first}${last}`.toUpperCase() || 'U';
-});
-
 const openEditModal = (): void => {
-  const user = currentUser.value;
-  if (user) {
-    editTitlePrefix.value = user.titlePrefix || 'นาย';
-    editFirstName.value = user.firstName || '';
-    editLastName.value = user.lastName || '';
-    editPhone.value = user.phone || '';
-    editEmail.value = user.email || '';
-    editAddress.value = user.address || '';
-    editProfileImage.value = user.profileImage || '';
-  }
   showEditModal.value = true;
 };
 
@@ -297,53 +150,17 @@ const goToSystemSelection = (): void => {
   void router.push('/system-selection');
 };
 
-const triggerFileInput = (): void => {
-  fileInputRef.value?.click();
-};
-
-const onFileSelected = (event: Event): void => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (!file) return;
-
-  if (file.size > 2 * 1024 * 1024) {
-    $q.notify({
-      type: 'warning',
-      message: t('auth.fileSizeLimit'),
-      position: 'top',
-    });
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    rawImageSrc.value = (e.target?.result as string) || '';
-    showCropModal.value = true;
-  };
-  reader.readAsDataURL(file);
-};
-
-const onCroppedFile = (croppedFile: File): void => {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    editProfileImage.value = (e.target?.result as string) || '';
-    rawImageSrc.value = '';
-    showCropModal.value = false;
-  };
-  reader.readAsDataURL(croppedFile);
-};
-
-const saveProfile = async (): Promise<void> => {
+const saveProfile = async (payload: {
+  titlePrefix: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  address: string;
+  profileImage: string;
+}): Promise<void> => {
   try {
-    await authStore.updateProfile({
-      titlePrefix: editTitlePrefix.value,
-      firstName: editFirstName.value,
-      lastName: editLastName.value,
-      phone: editPhone.value,
-      email: editEmail.value,
-      address: editAddress.value,
-      profileImage: editProfileImage.value,
-    });
+    await authStore.updateProfile(payload);
     showEditModal.value = false;
     $q.notify({
       type: 'positive',

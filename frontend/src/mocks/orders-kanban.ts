@@ -1,4 +1,5 @@
 import type { OrderKanbanMockColumn, OrderKanbanMockTicket } from '@/types/orders-kanban';
+import { getOrderItemImage } from './order-item-images';
 
 const createAdditionalOrders = (
   count: number,
@@ -20,10 +21,27 @@ const createAdditionalOrders = (
       total: isDineIn ? 230 : 170,
       items: isDineIn
         ? [
-            { quantity: 1, nameKey: 'lavenderLatte', price: 145 },
-            { quantity: 1, nameKey: 'butterCroissant', price: 85 },
+            {
+              quantity: 1,
+              nameKey: 'lavenderLatte',
+              price: 145,
+              imageUrl: getOrderItemImage('lavenderLatte'),
+            },
+            {
+              quantity: 1,
+              nameKey: 'butterCroissant',
+              price: 85,
+              imageUrl: getOrderItemImage('butterCroissant'),
+            },
           ]
-        : [{ quantity: 2, nameKey: 'butterCroissant', price: 170 }],
+        : [
+            {
+              quantity: 2,
+              nameKey: 'butterCroissant',
+              price: 170,
+              imageUrl: getOrderItemImage('butterCroissant'),
+            },
+          ],
     };
   });
 
@@ -39,8 +57,18 @@ export const orderKanbanMockColumns: OrderKanbanMockColumn[] = [
         tableNumber: 4,
         total: 230,
         items: [
-          { quantity: 1, nameKey: 'lavenderLatte', price: 145 },
-          { quantity: 1, nameKey: 'butterCroissant', price: 85 },
+          {
+            quantity: 1,
+            nameKey: 'lavenderLatte',
+            price: 145,
+            imageUrl: getOrderItemImage('lavenderLatte'),
+          },
+          {
+            quantity: 1,
+            nameKey: 'butterCroissant',
+            price: 85,
+            imageUrl: getOrderItemImage('butterCroissant'),
+          },
         ],
       },
       {
@@ -49,7 +77,14 @@ export const orderKanbanMockColumns: OrderKanbanMockColumn[] = [
         time: '10:48 AM',
         orderTypeKey: 'takeaway',
         total: 170,
-        items: [{ quantity: 2, nameKey: 'butterCroissant', price: 170 }],
+        items: [
+          {
+            quantity: 2,
+            nameKey: 'butterCroissant',
+            price: 170,
+            imageUrl: getOrderItemImage('butterCroissant'),
+          },
+        ],
       },
       ...createAdditionalOrders(11, 1026, 10),
     ],
@@ -65,8 +100,18 @@ export const orderKanbanMockColumns: OrderKanbanMockColumn[] = [
         tableNumber: 2,
         total: 365,
         items: [
-          { quantity: 1, nameKey: 'avocadoToast', price: 220 },
-          { quantity: 1, nameKey: 'lavenderLatte', price: 145 },
+          {
+            quantity: 1,
+            nameKey: 'avocadoToast',
+            price: 220,
+            imageUrl: getOrderItemImage('avocadoToast'),
+          },
+          {
+            quantity: 1,
+            nameKey: 'lavenderLatte',
+            price: 145,
+            imageUrl: getOrderItemImage('lavenderLatte'),
+          },
         ],
       },
       ...createAdditionalOrders(11, 1037, 34),
@@ -77,8 +122,18 @@ export const orderKanbanMockColumns: OrderKanbanMockColumn[] = [
         orderTypeKey: 'takeaway',
         total: 250,
         items: [
-          { quantity: 1, nameKey: 'kyotoMatchaLatte', price: 165 },
-          { quantity: 1, nameKey: 'butterCroissant', price: 85 },
+          {
+            quantity: 1,
+            nameKey: 'kyotoMatchaLatte',
+            price: 165,
+            imageUrl: getOrderItemImage('kyotoMatchaLatte'),
+          },
+          {
+            quantity: 1,
+            nameKey: 'butterCroissant',
+            price: 85,
+            imageUrl: getOrderItemImage('butterCroissant'),
+          },
         ],
       },
     ],
@@ -93,7 +148,14 @@ export const orderKanbanMockColumns: OrderKanbanMockColumn[] = [
         orderTypeKey: 'dineIn',
         tableNumber: 6,
         total: 85,
-        items: [{ quantity: 1, nameKey: 'butterCroissant', price: 85 }],
+        items: [
+          {
+            quantity: 1,
+            nameKey: 'butterCroissant',
+            price: 85,
+            imageUrl: getOrderItemImage('butterCroissant'),
+          },
+        ],
       },
       ...createAdditionalOrders(12, 1048, 16),
     ],
@@ -109,8 +171,18 @@ export const orderKanbanMockColumns: OrderKanbanMockColumn[] = [
         tableNumber: 1,
         total: 365,
         items: [
-          { quantity: 1, nameKey: 'avocadoToast', price: 220 },
-          { quantity: 1, nameKey: 'lavenderLatte', price: 145 },
+          {
+            quantity: 1,
+            nameKey: 'avocadoToast',
+            price: 220,
+            imageUrl: getOrderItemImage('avocadoToast'),
+          },
+          {
+            quantity: 1,
+            nameKey: 'lavenderLatte',
+            price: 145,
+            imageUrl: getOrderItemImage('lavenderLatte'),
+          },
         ],
       },
       ...createAdditionalOrders(9, 1060, 8),
