@@ -50,24 +50,6 @@
             </q-item-section>
           </q-item>
 
-          <q-item
-            v-if="!isSystemSelectionPage"
-            clickable
-            v-close-popup
-            class="menu-item"
-            @click="goToSystemSelection"
-          >
-            <q-item-section avatar class="item-icon-sec">
-              <div class="icon-circle info-icon">
-                <q-icon name="apps" size="16px" />
-              </div>
-            </q-item-section>
-            <q-item-section class="item-text-sec"> {{ $t('pos.selectSystem') }} </q-item-section>
-            <q-item-section side>
-              <q-icon name="chevron_right" size="16px" color="grey-6" />
-            </q-item-section>
-          </q-item>
-
           <q-separator class="menu-separator" />
 
           <q-item clickable v-close-popup class="menu-item logout-item" @click="handleLogout">
@@ -95,19 +77,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import PosProfileDialog from '@/components/pos/pos-profile-dialog.vue';
 
 const router = useRouter();
-const route = useRoute();
 const $q = useQuasar();
 const { t } = useI18n();
 const authStore = useAuthStore();
 
-const isSystemSelectionPage = computed(() => route.path === '/system-selection');
 const showEditModal = ref(false);
 
 const currentUser = computed(() => authStore.currentUser);
@@ -144,10 +124,6 @@ const initials = computed((): string => {
 
 const openEditModal = (): void => {
   showEditModal.value = true;
-};
-
-const goToSystemSelection = (): void => {
-  void router.push('/system-selection');
 };
 
 const saveProfile = async (payload: {

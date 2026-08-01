@@ -6,18 +6,6 @@ const routes: RouteRecordRaw[] = [
     redirect: '/login',
   },
   {
-    path: '/system-selection',
-    component: () => import('@/layouts/blank-layout.vue'),
-    children: [
-      {
-        path: '',
-        name: 'system-selection',
-        component: () => import('@/pages/system-selection-page.vue'),
-        meta: { requiresAuth: true },
-      },
-    ],
-  },
-  {
     path: '/login',
     component: () => import('@/layouts/blank-layout.vue'),
     children: [

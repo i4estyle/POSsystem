@@ -32,7 +32,7 @@ export default defineRouter(() => {
       }
     } else if (to.matched.some((record) => record.meta.guestOnly)) {
       if (isAuthenticated) {
-        next({ name: 'system-selection' });
+        next({ name: 'pos-sales' });
       } else {
         next();
       }

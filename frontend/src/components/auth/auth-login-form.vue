@@ -82,7 +82,7 @@ const handleLogin = async (): Promise<void> => {
       message: t('auth.loginSuccess'),
       position: 'top',
     });
-    void router.push('/system-selection');
+    void router.push('/pos');
   } catch {
     $q.notify({
       type: 'negative',
