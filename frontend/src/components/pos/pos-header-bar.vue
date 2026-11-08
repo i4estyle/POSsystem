@@ -13,6 +13,60 @@
         </q-tooltip>
       </button>
 
+      <!-- Global Branch Selector (For Admin / Multi-branch) -->
+      <div v-if="authStore.isAdmin" class="branch-selector-widget">
+        <q-btn
+          flat
+          dense
+          no-caps
+          class="branch-dropdown-btn"
+          icon="storefront"
+        >
+          <span class="branch-name-text">{{ branchStore.selectedBranchName }}</span>
+          <q-icon name="arrow_drop_down" class="dropdown-icon" />
+          <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]" class="nav-tooltip">
+            สลับสาขาสำหรับผู้ดูแลระบบ
+          </q-tooltip>
+          <q-menu anchor="bottom left" self="top left" class="branch-menu-dropdown">
+            <q-list dense class="branch-menu-list">
+              <q-item
+                clickable
+                v-close-popup
+                :active="branchStore.selectedBranchId === null"
+                active-class="branch-item-active"
+                @click="onSelectBranch(null)"
+              >
+                <q-item-section avatar class="item-icon-sec">
+                  <q-icon name="domain" size="18px" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">ทุกสาขา (All Branches)</q-item-label>
+                  <q-item-label caption>ภาพรวมระบบทั้งหมด</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-separator spaced />
+              <q-item
+                v-for="b in branchStore.activeBranches"
+                :key="b.branchId"
+                clickable
+                v-close-popup
+                :active="branchStore.selectedBranchId === b.branchId"
+                active-class="branch-item-active"
+                @click="onSelectBranch(b.branchId)"
+              >
+                <q-item-section avatar class="item-icon-sec">
+                  <q-icon name="store" size="18px" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">{{ b.branchName }}</q-item-label>
+                  <q-item-label caption>{{ b.phone || 'เปิดทำการปกติ' }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </div>
+
       <PosSearchInput
         v-if="!isSearchHidden"
         :model-value="searchQuery !== undefined ? searchQuery : globalSearchQuery"
@@ -144,6 +198,8 @@ import PosUserInfo from './pos-user-info.vue';
 import LocaleSwitcher from '@/components/base/locale-switcher.vue';
 import { useSearchState } from '@/composables/use-search-state';
 import { useSidebarState } from '@/composables/use-sidebar-state';
+import { useAuthStore } from '@/stores/auth-store';
+import { useBranchStore } from '@/stores/branch-store';
 
 export interface PosNotification {
   id: string;
@@ -169,6 +225,8 @@ const $q = useQuasar();
 const { locale, t } = useI18n();
 const { searchQuery: globalSearchQuery, searchPlaceholder } = useSearchState();
 const { isCollapsed, toggleCollapse } = useSidebarState();
+const authStore = useAuthStore();
+const branchStore = useBranchStore();
 const now = ref(new Date());
 let clockTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -302,6 +360,7 @@ const toggleFullscreen = async (): Promise<void> => {
 };
 
 onMounted(() => {
+  branchStore.fetchBranches();
   clockTimer = setInterval(() => {
     now.value = new Date();
   }, 1000);
@@ -337,6 +396,17 @@ const onSearchUpdate = (value: string): void => {
     emit('update:searchQuery', value);
   }
   globalSearchQuery.value = value;
+};
+
+const onSelectBranch = (branchId: number | null): void => {
+  branchStore.setSelectedBranchId(branchId);
+  $q.notify({
+    message: `สลับไปยัง: ${branchStore.selectedBranchName}`,
+    color: 'primary',
+    icon: 'store',
+    position: 'top',
+    timeout: 1200,
+  });
 };
 
 const onOpenCashDrawer = (): void => {
@@ -414,6 +484,44 @@ const onSelectNotification = (notif: PosNotification): void => {
         border-color: $color-primary;
         box-shadow: 0 4px 14px rgba(99, 88, 128, 0.25);
         transform: scale(1.05);
+      }
+    }
+
+    .branch-selector-widget {
+      flex-shrink: 0;
+
+      .branch-dropdown-btn {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(208, 195, 241, 0.6);
+        border-radius: 12px;
+        color: $color-primary-dark;
+        padding: 6px 14px;
+        font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+        font-weight: 700;
+        font-size: 13.5px;
+        box-shadow: 0 2px 8px rgba(99, 88, 128, 0.08);
+        transition: all 0.25s ease;
+
+        .branch-name-text {
+          margin: 0 6px 0 4px;
+          max-width: 170px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .dropdown-icon {
+          font-size: 18px;
+          color: $color-primary;
+        }
+
+        &:hover {
+          background: #ffffff;
+          border-color: $color-primary;
+          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.18);
+          transform: translateY(-1px);
+        }
       }
     }
 
