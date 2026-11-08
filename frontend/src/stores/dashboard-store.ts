@@ -49,6 +49,36 @@ export const useDashboardStore = defineStore('dashboard', () => {
     return 1.0; // All branches
   });
 
+  // Calculate duration between custom dates
+  const customDateDetails = computed(() => {
+    let fromDate: Date;
+    let toDate: Date;
+
+    if (typeof customDateRange.value === 'string') {
+      fromDate = new Date(customDateRange.value);
+      toDate = new Date(customDateRange.value);
+    } else if (customDateRange.value && customDateRange.value.from && customDateRange.value.to) {
+      fromDate = new Date(customDateRange.value.from);
+      toDate = new Date(customDateRange.value.to);
+    } else {
+      fromDate = new Date();
+      toDate = new Date();
+    }
+
+    const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
+    const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1);
+    const diffYears = diffDays / 365;
+
+    return {
+      fromDate,
+      toDate,
+      diffDays,
+      diffYears,
+      isMultiYear: diffYears >= 1.5,
+      isMultiMonth: diffDays >= 35 && diffYears < 1.5,
+    };
+  });
+
   const timeMultiplier = computed(() => {
     switch (timeFilter.value) {
       case 'week':
@@ -58,7 +88,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       case 'year':
         return 365;
       case 'custom':
-        return 7;
+        return customDateDetails.value.diffDays;
       case 'today':
       default:
         return 1;
@@ -99,8 +129,18 @@ export const useDashboardStore = defineStore('dashboard', () => {
         return 'สถิติยอดขายรายสัปดาห์ (เดือนนี้)';
       case 'year':
         return 'สถิติยอดขายรายไตรมาส (ปีนี้)';
-      case 'custom':
-        return 'สถิติยอดขายตามช่วงวันที่เลือก';
+      case 'custom': {
+        const details = customDateDetails.value;
+        if (details.isMultiYear) {
+          const fromYear = details.fromDate.getFullYear();
+          const toYear = details.toDate.getFullYear();
+          return `สถิติยอดขายภาพรวม (${fromYear} - ${toYear})`;
+        }
+        if (details.isMultiMonth) {
+          return `สถิติยอดขายรายเดือน (${details.diffDays} วัน)`;
+        }
+        return `สถิติยอดขายรายวัน (${details.diffDays} วัน)`;
+      }
       case 'today':
       default:
         return 'สถิติยอดขายรายชั่วโมง (วันนี้)';
@@ -131,8 +171,22 @@ export const useDashboardStore = defineStore('dashboard', () => {
         return ['สัปดาห์ 1', 'สัปดาห์ 2', 'สัปดาห์ 3', 'สัปดาห์ 4'];
       case 'year':
         return ['Q1 (ม.ค.-มี.ค.)', 'Q2 (เม.ย.-มิ.ย.)', 'Q3 (ก.ค.-ก.ย.)', 'Q4 (ต.ค.-ธ.ค.)'];
-      case 'custom':
+      case 'custom': {
+        const details = customDateDetails.value;
+        if (details.isMultiYear) {
+          const years: string[] = [];
+          const startYear = details.fromDate.getFullYear();
+          const endYear = details.toDate.getFullYear();
+          for (let y = startYear; y <= endYear; y++) {
+            years.push(String(y));
+          }
+          return years;
+        }
+        if (details.isMultiMonth) {
+          return ['เดือน 1', 'เดือน 2', 'เดือน 3', 'เดือน 4', 'เดือน 5', 'เดือน 6'];
+        }
         return ['วันที่ 1', 'วันที่ 2', 'วันที่ 3', 'วันที่ 4', 'วันที่ 5', 'วันที่ 6', 'วันที่ 7'];
+      }
       case 'today':
       default:
         return ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
@@ -149,8 +203,19 @@ export const useDashboardStore = defineStore('dashboard', () => {
         return [115000, 142000, 138000, 169000].map((v) => Math.round(v * bm));
       case 'year':
         return [1250000, 1480000, 1620000, 1890000].map((v) => Math.round(v * bm));
-      case 'custom':
+      case 'custom': {
+        const details = customDateDetails.value;
+        if (details.isMultiYear) {
+          const count = chartCategories.value.length;
+          // Generate annual sales in millions
+          const yearlyBase = [4800000, 5600000, 6400000, 7200000];
+          return Array.from({ length: count }, (_, i) => Math.round((yearlyBase[i % yearlyBase.length] ?? 5000000) * bm));
+        }
+        if (details.isMultiMonth) {
+          return [420000, 485000, 510000, 490000, 560000, 620000].map((v) => Math.round(v * bm));
+        }
         return [16500, 18200, 17900, 21400, 29800, 32100, 28700].map((v) => Math.round(v * bm));
+      }
       case 'today':
       default:
         return [1500, 3200, 6800, 4200, 3900, 2700, 1800].map((v) => Math.round(v * bm));
@@ -167,8 +232,18 @@ export const useDashboardStore = defineStore('dashboard', () => {
         return [102000, 128000, 125000, 151000].map((v) => Math.round(v * bm));
       case 'year':
         return [1080000, 1320000, 1450000, 1680000].map((v) => Math.round(v * bm));
-      case 'custom':
+      case 'custom': {
+        const details = customDateDetails.value;
+        if (details.isMultiYear) {
+          const count = chartCategories.value.length;
+          const prevYearlyBase = [4200000, 4900000, 5800000, 6500000];
+          return Array.from({ length: count }, (_, i) => Math.round((prevYearlyBase[i % prevYearlyBase.length] ?? 4500000) * bm));
+        }
+        if (details.isMultiMonth) {
+          return [380000, 430000, 460000, 440000, 510000, 570000].map((v) => Math.round(v * bm));
+        }
         return [15000, 16800, 16200, 19500, 27100, 29800, 26500].map((v) => Math.round(v * bm));
+      }
       case 'today':
       default:
         return [1200, 2800, 5900, 3600, 3200, 2300, 1400].map((v) => Math.round(v * bm));
