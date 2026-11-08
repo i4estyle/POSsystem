@@ -7,7 +7,7 @@
         <span class="trend-badge" :class="card.trendDir">
           {{ card.trend }}
         </span>
-        <span class="trend-period">{{ t('dashboard.cards.vsYesterday') }}</span>
+        <span class="trend-period">{{ periodComparisonText }}</span>
       </div>
     </div>
   </div>
@@ -16,8 +16,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useDashboardStore } from '@/stores/dashboard-store';
 
 const { t } = useI18n();
+const dashboardStore = useDashboardStore();
 
 interface StatCardItem {
   labelKey: string;
@@ -26,30 +28,44 @@ interface StatCardItem {
   trendDir: 'up' | 'down';
 }
 
+const periodComparisonText = computed(() => {
+  switch (dashboardStore.timeFilter) {
+    case 'month':
+      return 'เทียบเดือนที่แล้ว';
+    case 'year':
+      return 'เทียบปีที่แล้ว';
+    case 'custom':
+      return 'เทียบช่วงก่อนหน้า';
+    case 'today':
+    default:
+      return t('dashboard.cards.vsYesterday');
+  }
+});
+
 const cards = computed<StatCardItem[]>(() => [
   {
     labelKey: 'dashboard.cards.todaySales',
-    value: '฿12,480',
-    trend: '+12.5%',
-    trendDir: 'up',
+    value: dashboardStore.summary.todaySales,
+    trend: dashboardStore.summary.salesTrend,
+    trendDir: dashboardStore.summary.salesTrendDir,
   },
   {
     labelKey: 'dashboard.cards.totalBills',
-    value: '143',
-    trend: '+8.2%',
-    trendDir: 'up',
+    value: dashboardStore.summary.totalBills,
+    trend: dashboardStore.summary.billsTrend,
+    trendDir: dashboardStore.summary.billsTrendDir,
   },
   {
     labelKey: 'dashboard.cards.itemsSold',
-    value: '287',
-    trend: '+15.4%',
-    trendDir: 'up',
+    value: dashboardStore.summary.itemsSold,
+    trend: dashboardStore.summary.itemsTrend,
+    trendDir: dashboardStore.summary.itemsTrendDir,
   },
   {
     labelKey: 'dashboard.cards.avgPerBill',
-    value: '฿87',
-    trend: '-2.1%',
-    trendDir: 'down',
+    value: dashboardStore.summary.avgPerBill,
+    trend: dashboardStore.summary.avgTrend,
+    trendDir: dashboardStore.summary.avgTrendDir,
   },
 ]);
 </script>

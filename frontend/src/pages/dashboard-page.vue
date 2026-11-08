@@ -92,11 +92,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth-store';
 import { useBranchStore } from '@/stores/branch-store';
+import { useDashboardStore } from '@/stores/dashboard-store';
 import PosSidebarNav from '@/components/pos/pos-sidebar-nav.vue';
 import PosHeaderBar from '@/components/pos/pos-header-bar.vue';
 import DashboardSummaryCards from '@/components/dashboard/dashboard-summary-cards.vue';
@@ -108,16 +109,24 @@ const $q = useQuasar();
 const { t } = useI18n();
 const authStore = useAuthStore();
 const branchStore = useBranchStore();
-
-const timePreset = ref<'today' | 'month' | 'year' | 'custom'>('today');
-const todayStr = new Date().toISOString().split('T')[0] ?? '';
-const customDateRange = ref<{ from: string; to: string } | string>({
-  from: todayStr,
-  to: todayStr,
-});
+const dashboardStore = useDashboardStore();
 
 onMounted(() => {
   void branchStore.fetchBranches();
+});
+
+const timePreset = computed({
+  get: () => dashboardStore.timeFilter,
+  set: (val) => {
+    dashboardStore.timeFilter = val;
+  },
+});
+
+const customDateRange = computed({
+  get: () => dashboardStore.customDateRange,
+  set: (val) => {
+    dashboardStore.customDateRange = val;
+  },
 });
 
 const branchOptions = computed(() => {

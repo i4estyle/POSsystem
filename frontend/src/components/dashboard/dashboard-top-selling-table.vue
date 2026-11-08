@@ -79,8 +79,10 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { QTableColumn } from 'quasar';
 import AppDataTable from '@/components/base/app-data-table.vue';
+import { useDashboardStore } from '@/stores/dashboard-store';
 
 const { t } = useI18n();
+const dashboardStore = useDashboardStore();
 
 export interface TopSellingItem extends Record<string, unknown> {
   rank: number;
@@ -161,41 +163,19 @@ const columns = computed<QTableColumn<TopSellingItem>[]>(() => [
   },
 ]);
 
-const topItems: TopSellingItem[] = [
-  {
-    rank: 1,
-    code: 'BEV-01',
-    name: 'Iced Lavender Latte',
-    category: 'Beverage',
-    quantitySold: '45 cups',
-    totalSales: 4275,
-    icon: 'local_cafe',
-    trendDir: 'up',
-    trendVal: '+18.5%',
-  },
-  {
-    rank: 2,
-    code: 'BAK-04',
-    name: 'Butter Croissant',
-    category: 'Bakery',
-    quantitySold: '38 pcs',
-    totalSales: 3230,
-    icon: 'bakery_dining',
-    trendDir: 'up',
-    trendVal: '+12.3%',
-  },
-  {
-    rank: 3,
-    code: 'BEV-08',
-    name: 'Kyoto Matcha Latte',
-    category: 'Beverage',
-    quantitySold: '30 cups',
-    totalSales: 4950,
-    icon: 'emoji_food_beverage',
-    trendDir: 'up',
-    trendVal: '+8.7%',
-  },
-];
+const topItems = computed<TopSellingItem[]>(() =>
+  dashboardStore.topSelling.map((item) => ({
+    rank: item.rank,
+    code: item.code,
+    name: item.name,
+    category: item.category,
+    quantitySold: `${item.quantitySold.toLocaleString()} ชิ้น`,
+    totalSales: item.totalSales,
+    icon: item.icon,
+    trendDir: item.trendDir,
+    trendVal: item.trend,
+  })),
+);
 </script>
 
 <style lang="scss" scoped>

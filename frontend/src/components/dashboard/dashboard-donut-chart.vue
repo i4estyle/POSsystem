@@ -21,11 +21,13 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import VueApexCharts from 'vue3-apexcharts';
 import type { ApexOptions } from 'apexcharts';
+import { useDashboardStore } from '@/stores/dashboard-store';
 
 const apexchart = VueApexCharts;
 const { t } = useI18n();
+const dashboardStore = useDashboardStore();
 
-const chartSeries = [60, 25, 15];
+const chartSeries = computed(() => dashboardStore.categorySeries);
 
 const chartOptions = computed<ApexOptions>(() => ({
   chart: {

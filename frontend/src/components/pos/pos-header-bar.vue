@@ -81,20 +81,16 @@
         </div>
 
         <div class="clock-live-badge">
-          <div class="clock-icon-stage">
-            <q-icon name="schedule" size="17px" class="clock-icon" />
-          </div>
-          <div class="clock-info-text">
-            <span class="live-date-text">{{ liveFormattedDate }}</span>
-            <span class="time-divider">•</span>
-            <span class="live-time-text">
-              <span class="time-num">{{ liveHours }}</span>
-              <span class="time-colon">:</span>
-              <span class="time-num">{{ liveMinutes }}</span>
-              <span class="time-colon">:</span>
-              <span class="time-num">{{ liveSeconds }}</span>
-            </span>
-          </div>
+          <q-icon name="schedule" size="15px" class="clock-icon" />
+          <span class="live-date-text">{{ liveFormattedDate }}</span>
+          <span class="time-divider">•</span>
+          <span class="live-time-text">
+            <span class="time-num">{{ liveHours }}</span>
+            <span class="time-colon">:</span>
+            <span class="time-num">{{ liveMinutes }}</span>
+            <span class="time-colon">:</span>
+            <span class="time-num">{{ liveSeconds }}</span>
+          </span>
         </div>
       </div>
     </div>
@@ -533,30 +529,26 @@ const onSelectNotification = (notif: PosNotification): void => {
     .header-dashboard-widgets {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: nowrap;
       flex-shrink: 0;
 
       .status-live-badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
+        gap: 6px;
+        padding: 5px 10px;
         border-radius: $radius-full;
-        background: linear-gradient(
-          135deg,
-          rgba(240, 253, 244, 0.9) 0%,
-          rgba(220, 252, 231, 0.7) 100%
-        );
-        border: 1px solid rgba(34, 197, 94, 0.3);
+        background: rgba(240, 253, 244, 0.85);
+        border: 1px solid rgba(34, 197, 94, 0.25);
         color: #15803d;
-        font: 700 12px $font-family-base;
-        box-shadow: 0 2px 6px rgba(34, 197, 94, 0.08);
+        font: 700 11.5px $font-family-base;
+        box-shadow: 0 1px 4px rgba(34, 197, 94, 0.06);
         white-space: nowrap;
 
         .pulse-dot {
-          width: 8px;
-          height: 8px;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
           background: #22c55e;
           position: relative;
@@ -577,60 +569,45 @@ const onSelectNotification = (notif: PosNotification): void => {
       .clock-live-badge {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        padding: 6px 16px;
+        gap: 6px;
+        padding: 5px 12px;
         border-radius: $radius-full;
-        background: linear-gradient(135deg, #ffffff 0%, rgba(248, 246, 252, 0.9) 100%);
-        border: 1px solid rgba(208, 195, 241, 0.6);
-        box-shadow: 0 3px 12px rgba(99, 88, 128, 0.08);
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(208, 195, 241, 0.5);
+        box-shadow: 0 1px 4px rgba(99, 88, 128, 0.05);
         color: $color-text-body;
         white-space: nowrap;
+        font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
 
-        .clock-icon-stage {
-          width: 26px;
-          height: 26px;
-          border-radius: 50%;
-          background: $palette-purple;
-          color: $color-primary-dark;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
+        .clock-icon {
+          color: $color-primary;
         }
 
-        .clock-info-text {
+        .live-date-text {
+          color: $color-text-body;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .time-divider {
+          color: rgba(99, 88, 128, 0.3);
+          font-size: 10px;
+        }
+
+        .live-time-text {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+          color: $color-primary-dark;
+          font-weight: 700;
+          font-size: 12.5px;
 
-          .live-date-text {
-            color: $color-text-body;
-            font-size: 13px;
-            font-weight: 600;
+          .time-num {
+            font-variant-numeric: tabular-nums;
           }
 
-          .time-divider {
-            color: rgba(99, 88, 128, 0.35);
-            font-size: 12px;
-          }
-
-          .live-time-text {
-            display: inline-flex;
-            align-items: center;
-            color: $color-primary-dark;
-            font-weight: 800;
-            font-size: 14px;
-
-            .time-num {
-              font-variant-numeric: tabular-nums;
-              letter-spacing: 0.3px;
-            }
-
-            .time-colon {
-              margin: 0 1px;
-              opacity: 0.85;
-            }
+          .time-colon {
+            margin: 0 1px;
+            opacity: 0.7;
           }
         }
       }

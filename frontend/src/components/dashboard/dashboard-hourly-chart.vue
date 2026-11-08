@@ -40,21 +40,17 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import VueApexCharts from 'vue3-apexcharts';
 import type { ApexOptions } from 'apexcharts';
+import { useDashboardStore } from '@/stores/dashboard-store';
 
 const apexchart = VueApexCharts;
 const { t } = useI18n();
+const dashboardStore = useDashboardStore();
 const activePeriod = ref<'day' | 'week'>('day');
-
-const dayCategories = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00'];
-const weekCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-const dayData = [1200, 2400, 4800, 3200, 2900, 1800];
-const weekData = [14200, 16800, 19500, 21000, 28400, 34500, 29800];
 
 const chartSeries = computed(() => [
   {
     name: t('dashboard.topSelling.columns.sales'),
-    data: activePeriod.value === 'day' ? dayData : weekData,
+    data: dashboardStore.hourlyData,
   },
 ]);
 
@@ -65,6 +61,11 @@ const chartOptions = computed<ApexOptions>(() => ({
     fontFamily: "'Sarabun', 'Plus Jakarta Sans', sans-serif",
     zoom: { enabled: false },
     sparkline: { enabled: false },
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 600,
+    },
   },
   colors: ['#635880'],
   stroke: {
@@ -87,7 +88,7 @@ const chartOptions = computed<ApexOptions>(() => ({
     padding: { top: 0, right: 10, bottom: 0, left: 10 },
   },
   xaxis: {
-    categories: activePeriod.value === 'day' ? dayCategories : weekCategories,
+    categories: dashboardStore.hourlyCategories,
     axisBorder: { show: false },
     axisTicks: { show: false },
     labels: {
