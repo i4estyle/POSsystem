@@ -55,65 +55,51 @@
         }
       }
 
-      .time-presets-group {
+      .custom-date-nav {
+        display: flex;
+        align-items: center;
         background-color: rgba(255, 255, 255, 0.7);
         border: 1px solid rgba(99, 88, 128, 0.16);
         border-radius: $radius-full;
-        padding: 3px;
+        padding: 4px;
         backdrop-filter: blur(10px);
-        box-shadow: 0 2px 6px rgba(99, 88, 128, 0.04);
+        box-shadow: 0 2px 8px rgba(99, 88, 128, 0.05);
 
-        .preset-toggle {
-          :deep(.q-btn) {
-            font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 5px 14px;
-            border-radius: $radius-full;
-            border: none;
-            background: transparent;
-            color: $color-text-body;
-            transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-            &:hover:not(.bg-primary) {
-              color: $color-primary;
-              background-color: rgba(99, 88, 128, 0.06);
-            }
-
-            &.bg-primary {
-              background-color: $color-primary !important;
-              color: #ffffff !important;
-              box-shadow: 0px 3px 8px rgba(99, 88, 128, 0.25);
-              transform: scale(1.02);
-            }
-          }
-        }
-      }
-
-      .custom-date-picker {
-        .date-picker-btn {
-          background-color: rgba(255, 255, 255, 0.7);
-          border: 1px solid rgba(99, 88, 128, 0.16);
-          border-radius: $radius-full;
-          padding: 5px 16px;
+        .date-nav-btn {
           font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+          font-size: 13px;
           font-weight: 700;
-          font-size: 12px;
+          padding: 6px 16px;
+          border-radius: $radius-full;
+          border: none;
+          background: transparent;
           color: $color-text-body;
-          backdrop-filter: blur(10px);
-          box-shadow: 0 2px 6px rgba(99, 88, 128, 0.04);
+          cursor: pointer;
+          white-space: nowrap;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
 
-          &:hover {
-            background: #ffffff;
-            border-color: $color-primary;
+          &:hover:not(.active) {
             color: $color-primary;
-            box-shadow: 0 4px 12px rgba(99, 88, 128, 0.12);
+            background-color: rgba(99, 88, 128, 0.08);
             transform: translateY(-1px);
           }
 
+          &.active {
+            background: linear-gradient(135deg, #4a3e68 0%, $color-primary 100%);
+            color: #ffffff;
+            box-shadow: 0px 4px 12px rgba(99, 88, 128, 0.28);
+            transform: scale(1.02);
+          }
+
           &:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
+          }
+
+          &.custom-btn {
+            position: relative;
           }
         }
       }

@@ -33,6 +33,15 @@ const chartOptions = computed<ApexOptions>(() => ({
   chart: {
     type: 'donut',
     fontFamily: "'Sarabun', 'Plus Jakarta Sans', sans-serif",
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 400,
+      dynamicAnimation: {
+        enabled: true,
+        speed: 300,
+      },
+    },
   },
   colors: ['#635880', '#45636b', '#d7e7d3'],
   labels: [
@@ -61,6 +70,7 @@ const chartOptions = computed<ApexOptions>(() => ({
   },
   plotOptions: {
     pie: {
+      expandOnClick: false,
       donut: {
         size: '68%',
         labels: {
@@ -91,8 +101,22 @@ const chartOptions = computed<ApexOptions>(() => ({
   },
   tooltip: {
     theme: 'light',
+    followCursor: true,
+    fillSeriesColor: false,
     y: {
       formatter: (val: number) => `${val}%`,
+    },
+  },
+  states: {
+    hover: {
+      filter: {
+        type: 'none',
+      },
+    },
+    active: {
+      filter: {
+        type: 'none',
+      },
     },
   },
 }));

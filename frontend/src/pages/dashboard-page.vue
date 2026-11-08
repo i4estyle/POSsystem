@@ -14,46 +14,57 @@
 
             <!-- Filter Toolbar: Date Range -->
             <div class="dashboard-filter-toolbar">
-              <!-- Time Preset Buttons -->
-              <div class="time-presets-group">
-                <q-btn-toggle
-                  v-model="timePreset"
-                  toggle-color="primary"
-                  flat
-                  rounded
-                  dense
-                  class="preset-toggle"
-                  :options="[
-                    { label: 'วันนี้', value: 'today' },
-                    { label: 'สัปดาห์นี้', value: 'week' },
-                    { label: 'เดือนนี้', value: 'month' },
-                    { label: 'ปีนี้', value: 'year' },
-                    { label: 'กำหนดเอง', value: 'custom' },
-                  ]"
-                />
-              </div>
-
-              <!-- Custom Date Range Picker Dialog -->
-              <div v-if="timePreset === 'custom'" class="custom-date-picker">
-                <q-btn
-                  flat
-                  dense
-                  outlined
-                  rounded
-                  no-caps
-                  icon="event"
-                  :label="dateRangeLabel"
-                  class="date-picker-btn"
+              <!-- Custom Smooth Date Range Switcher -->
+              <nav class="custom-date-nav" aria-label="Date range selection">
+                <button
+                  type="button"
+                  class="date-nav-btn"
+                  :class="{ active: timePreset === 'today' }"
+                  @click="timePreset = 'today'"
                 >
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  วันนี้
+                </button>
+                <button
+                  type="button"
+                  class="date-nav-btn"
+                  :class="{ active: timePreset === 'week' }"
+                  @click="timePreset = 'week'"
+                >
+                  สัปดาห์นี้
+                </button>
+                <button
+                  type="button"
+                  class="date-nav-btn"
+                  :class="{ active: timePreset === 'month' }"
+                  @click="timePreset = 'month'"
+                >
+                  เดือนนี้
+                </button>
+                <button
+                  type="button"
+                  class="date-nav-btn"
+                  :class="{ active: timePreset === 'year' }"
+                  @click="timePreset = 'year'"
+                >
+                  ปีนี้
+                </button>
+                <button
+                  type="button"
+                  class="date-nav-btn custom-btn"
+                  :class="{ active: timePreset === 'custom' }"
+                  @click="timePreset = 'custom'"
+                >
+                  <q-icon name="event" size="14px" class="q-mr-xs" />
+                  <span>{{ timePreset === 'custom' ? dateRangeLabel : 'กำหนดเอง' }}</span>
+                  <q-popup-proxy v-if="timePreset === 'custom'" cover transition-show="jump-down" transition-hide="jump-up">
                     <q-date v-model="customDateRange" range minimal mask="YYYY-MM-DD">
                       <div class="row items-center justify-end q-gutter-sm q-pa-sm">
                         <q-btn v-close-popup label="ปิด" color="primary" flat />
                       </div>
                     </q-date>
                   </q-popup-proxy>
-                </q-btn>
-              </div>
+                </button>
+              </nav>
             </div>
           </header>
 
