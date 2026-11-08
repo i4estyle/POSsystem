@@ -15,7 +15,15 @@ export function useDiningTables() {
       const res = await diningTableService.getAll();
       const list = res && Array.isArray(res.data) ? res.data : [];
       if (list.length > 0) {
-        tables.value = list;
+        tables.value = list
+          .map((item) => {
+            const mockMatch = DINING_TABLE_MOCKS.find((m) => m.tableId === item.tableId);
+            return {
+              ...item,
+              capacity: item.capacity ?? item.seatCapacity ?? mockMatch?.capacity ?? 4,
+            };
+          })
+          .sort((a, b) => a.tableId - b.tableId);
       } else {
         tables.value = DINING_TABLE_MOCKS;
       }

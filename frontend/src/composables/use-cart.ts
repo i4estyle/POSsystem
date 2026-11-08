@@ -3,6 +3,7 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { orderService } from '@/services/order-service';
 import { useProductStore } from '@/stores/product-store';
+import { useOrderStore } from '@/stores/order-store';
 import type { PromotionItem } from '@/stores/promotion-store';
 import type { MemberItem } from '@/stores/member-store';
 import {
@@ -18,6 +19,7 @@ export function useCart() {
   const $q = useQuasar();
   const { t } = useI18n();
   const productStore = useProductStore();
+  const orderStore = useOrderStore();
 
   const cartItems = ref<CartItemInterface[]>([
     {
@@ -184,16 +186,55 @@ export function useCart() {
       }),
     };
 
+    const promoLabel = selectedPromotion.value
+      ? selectedPromotion.value.discountType === 'percentage'
+        ? `${selectedPromotion.value.code} (-${selectedPromotion.value.discountValue}%)`
+        : `${selectedPromotion.value.code} (-฿${selectedPromotion.value.discountValue})`
+      : undefined;
+
     try {
       cartItems.value.forEach((i) => {
         productStore.deductStock(i.product.productId, i.quantity);
       });
-      await orderService.create(dto);
+      const created = await orderService.create(dto);
+      orderStore.addLiveTicketLocally({
+        backendOrderId: created.orderId,
+        orderNumber: created.orderNumber,
+        tableId: selectedTableId.value ?? 1,
+        isTakeaway: orderType.value === OrderType.TAKEAWAY,
+        subtotal: subtotal.value,
+        discountAmount: discountAmount.value,
+        taxAmount: tax.value,
+        ...(promoLabel ? { promotionLabel: promoLabel } : {}),
+        total: total.value,
+        items: cartItems.value.map((i) => ({
+          name: i.note ? `${i.product.productName} (${i.note})` : i.product.productName,
+          quantity: i.quantity,
+          price: i.product.sellingPrice,
+          imageUrl: i.product.imageUrl ?? null,
+        })),
+      });
       clearCart();
       return true;
     } catch {
       cartItems.value.forEach((i) => {
         productStore.deductStock(i.product.productId, i.quantity);
+      });
+      orderStore.addLiveTicketLocally({
+        orderNumber: `POS-${Date.now().toString().slice(-4)}`,
+        tableId: selectedTableId.value ?? 1,
+        isTakeaway: orderType.value === OrderType.TAKEAWAY,
+        subtotal: subtotal.value,
+        discountAmount: discountAmount.value,
+        taxAmount: tax.value,
+        ...(promoLabel ? { promotionLabel: promoLabel } : {}),
+        total: total.value,
+        items: cartItems.value.map((i) => ({
+          name: i.note ? `${i.product.productName} (${i.note})` : i.product.productName,
+          quantity: i.quantity,
+          price: i.product.sellingPrice,
+          imageUrl: i.product.imageUrl ?? null,
+        })),
       });
       clearCart();
       return true;

@@ -1,120 +1,352 @@
 @use '../variables' as *;
 
-.order-ticket {
-  min-height: 244px;
-  background: $color-bg-page;
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-lg;
-  padding: 16px;
-  box-shadow: 0 3px 12px rgba(39, 31, 44, 0.05);
-  font-family: $font-family-base;
+/* ==================== SHARED PILL & ITEM STYLES ==================== */
+.ticket-price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 11px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background: #f9f7fc;
+  border: 1px solid rgba(99, 88, 128, 0.1);
 
-  .ticket-head,
-  li {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .ticket-head > div {
-    display: grid;
-    gap: 3px;
+  &.compact {
+    padding: 7px 10px;
+    gap: 4px;
+    margin-bottom: 9px;
   }
 
-  .ticket-time {
-    display: grid;
-    justify-items: end;
-    gap: 3px;
-  }
-
-  .ticket-time time,
-  .ticket-time small {
-    color: $color-text-muted;
-    font: 12px/18px $font-family-base;
-  }
-
-  .ticket-time small {
-    color: $color-text-body;
-    font-weight: 700;
-  }
-  .ticket-head strong {
-    color: $color-text-main;
-    font: 700 16px/24px $font-family-base;
-  }
-  .ticket-head small {
-    color: $color-text-muted;
-    font: 12px/18px $font-family-base;
-  }
-  .line {
-    height: 1px;
-    margin: 14px 0 10px;
-    background: $color-border-subtle;
-  }
-
-  ul {
-    min-height: 48px;
-    display: grid;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  li {
-    color: $color-text-body;
-    font: 14px/20px $font-family-base;
-  }
-  li b {
-    white-space: nowrap;
-  }
-
-  .ticket-footer {
-    display: flex;
-    justify-content: flex-end;
-    min-height: 24px;
-    margin-top: 10px;
-  }
-
-  .total {
-    color: $color-primary;
-    font: 700 16px/24px $font-family-base;
-  }
-
-  button {
-    width: 100%;
-    height: 42px;
-    margin-top: 16px;
-    border: 1px solid $color-primary;
-    border-radius: $radius-md;
-    background: transparent;
-    color: $color-primary;
+  .breakdown-row {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 8px;
-    font: 600 14px $font-family-base;
-    transition:
-      background-color 0.15s ease,
-      border-color 0.15s ease,
-      color 0.15s ease,
-      box-shadow 0.15s ease,
-      transform 0.15s ease;
+    font-size: 12px;
+    color: $color-text-muted;
 
-    &.order-action--completed {
-      border-color: $color-primary;
-      background: $color-primary;
-      color: $color-bg-page;
-      box-shadow: $shadow-button;
+    &.discount {
+      color: #15803d;
+      font-weight: 700;
 
-      &:hover {
-        border-color: $color-primary-dark;
-        background: $color-primary-dark;
-        box-shadow: 0 10px 18px rgba(99, 88, 128, 0.3);
-        transform: translateY(-1px);
+      strong {
+        font-weight: 800;
+        color: #15803d;
+        white-space: nowrap;
       }
+    }
+
+    .promo-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid rgba(22, 163, 74, 0.22);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.25;
     }
   }
 }
 
+.order-type-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f3eff7;
+  color: $color-primary-dark;
+  letter-spacing: 0.01em;
+
+  &.qr {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+}
+
+.order-ticket-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: #faf9fc;
+  border: 1px solid rgba(99, 88, 128, 0.08);
+  transition: background-color 0.18s ease;
+  min-width: 0;
+
+  &:hover {
+    background: #f5f2f9;
+  }
+
+  &__main {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__thumb {
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #ede9f2;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-muted;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  &__qty {
+    font-size: 13px;
+    font-weight: 800;
+    color: $color-primary-dark;
+    background: rgba(99, 88, 128, 0.12);
+    padding: 1px 6px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: $color-text-main;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  &__mods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  &__price {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: $color-text-main;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+}
+
+.order-mod-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  word-break: break-word;
+  background: #f1edf6;
+  color: #4c4263;
+
+  &.is-addon {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.18);
+  }
+
+  &.is-exclude {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid rgba(249, 115, 22, 0.18);
+  }
+
+  &.is-flavor {
+    background: #f3effa;
+    color: #5b4688;
+    border: 1px solid rgba(139, 92, 246, 0.14);
+  }
+}
+
+/* ==================== ORDER HISTORY CARD (/orders) ==================== */
+.order-ticket {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 250px;
+  background: #ffffff;
+  border: 1px solid rgba(99, 88, 128, 0.14);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 4px 18px rgba(28, 27, 30, 0.04);
+  font-family: $font-family-base;
+  min-width: 0;
+  overflow: hidden;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(45, 36, 69, 0.08);
+    border-color: rgba(99, 88, 128, 0.28);
+  }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ticket-table-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .ticket-table-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    strong {
+      color: $color-text-main;
+      font: 800 17px/22px $font-family-base;
+    }
+  }
+
+  .ticket-channel {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: $color-text-muted;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .ticket-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+
+    time {
+      color: $color-text-muted;
+      font: 600 12px/16px $font-family-base;
+    }
+
+    small {
+      color: $color-primary-dark;
+      font:
+        800 12.5px/18px 'Plus Jakarta Sans',
+        $font-family-base;
+    }
+  }
+
+  .line {
+    height: 1px;
+    margin: 14px 0 12px;
+    background: linear-gradient(90deg, rgba(99, 88, 128, 0.14), rgba(99, 88, 128, 0.04));
+  }
+
+  .ticket-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ticket-bottom {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(99, 88, 128, 0.18);
+  }
+
+  .ticket-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    .ticket-item-count {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: $color-text-muted;
+    }
+
+    .total {
+      color: $color-primary-dark;
+      font:
+        800 18px/24px 'Plus Jakarta Sans',
+        $font-family-base;
+    }
+  }
+
+  button.order-action--completed {
+    width: 100%;
+    height: 40px;
+    border: 1px solid rgba(99, 88, 128, 0.22);
+    border-radius: 11px;
+    background: #f8f6fb;
+    color: $color-primary-dark;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font: 700 13.5px $font-family-base;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+
+    &:hover {
+      background: $color-primary;
+      border-color: $color-primary;
+      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(99, 88, 128, 0.24);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+/* ==================== FILTERS & TOOLBARS ==================== */
 .orders-status-filter {
   width: 164px;
 
@@ -132,54 +364,6 @@
   }
 }
 
-.orders-status-tabs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: $font-family-base;
-
-  button {
-    border: 1px solid $color-border-subtle;
-    border-radius: $radius-full;
-    background: $color-bg-page;
-    color: $color-text-body;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 10px;
-    cursor: pointer;
-    font: 600 12px/16px $font-family-base;
-
-    i {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: $color-kanban-new-indicator;
-    }
-
-    span {
-      min-width: 16px;
-      color: $color-text-muted;
-      font-weight: 700;
-    }
-
-    &.status-preparing i {
-      background: $color-kanban-preparing-indicator;
-    }
-    &.status-ready i {
-      background: $color-kanban-ready-indicator;
-    }
-    &.status-served i {
-      background: $color-kanban-served-indicator;
-    }
-    &.active {
-      border-color: $color-primary;
-      background: $palette-purple;
-      color: $color-primary;
-    }
-  }
-}
-
 .orders-date-sort-filter {
   display: flex;
   align-items: center;
@@ -187,15 +371,16 @@
   font-family: $font-family-base;
 
   .orders-date-input {
-    width: 154px;
+    width: 160px;
   }
   .orders-sort-select {
-    width: 164px;
+    width: 168px;
   }
 
   .q-field__control {
-    height: 38px;
-    border-radius: 10px;
+    height: 40px;
+    border-radius: 12px;
+    background: #ffffff;
     color: $color-text-body;
     font-family: $font-family-base;
   }
@@ -207,269 +392,315 @@
   }
 }
 
-.kanban-column {
-  min-width: 260px;
-  border-radius: 20px;
-  padding: 14px;
-  background: $color-kanban-new-bg;
-  font-family: $font-family-base;
-
-  &.status-preparing {
-    background: $color-kanban-preparing-bg;
-  }
-  &.status-ready {
-    background: $color-kanban-ready-bg;
-  }
-  &.status-served {
-    background: $color-kanban-served-bg;
-  }
-
-  header,
-  header > div {
-    display: flex;
-    align-items: center;
-  }
-
-  header {
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 0 4px;
-  }
-
-  header > div {
-    gap: 8px;
-  }
-
-  .column-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: $color-kanban-new-indicator;
-  }
-
-  &.status-preparing .column-indicator {
-    background: $color-kanban-preparing-indicator;
-  }
-  &.status-ready .column-indicator {
-    background: $color-kanban-ready-indicator;
-  }
-  &.status-served .column-indicator {
-    background: $color-kanban-served-indicator;
-  }
-
-  h2 {
-    margin: 0;
-    color: $color-text-main;
-    font: 700 15px/22px $font-family-base;
-  }
-
-  .column-count {
-    min-width: 22px;
-    height: 22px;
-    border-radius: $radius-full;
-    background: rgba(28, 27, 30, 0.08);
-    color: $color-text-main;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font: 700 12px $font-family-base;
-  }
-
-  .tickets-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-}
-
+/* ==================== KDS ORDER MANAGEMENT BOARD (/orders/manage) ==================== */
 .order-management-column {
-  min-height: 400px;
-  border-radius: $radius-xl;
-  padding: 14px;
-  background: $color-kanban-new-bg;
+  min-height: 480px;
+  min-width: 0;
+  border-radius: 22px;
+  padding: 16px;
+  background: #f5f3f9;
+  border: 1px solid rgba(99, 88, 128, 0.12);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.2s ease;
+
+  &.status-new {
+    background: linear-gradient(180deg, #f5f0ff 0%, #f8f6fc 100%);
+    border-color: rgba(138, 112, 198, 0.2);
+  }
 
   &.status-preparing {
-    background: $color-kanban-preparing-bg;
-  }
-  &.status-ready {
-    background: $color-kanban-ready-bg;
+    background: linear-gradient(180deg, #fffbeb 0%, #fdfaf2 100%);
+    border-color: rgba(217, 119, 6, 0.2);
   }
 
-  &__header,
-  &__header > div {
-    display: flex;
-    align-items: center;
+  &.status-ready {
+    background: linear-gradient(180deg, #f0fdf4 0%, #f6fbf7 100%);
+    border-color: rgba(22, 163, 74, 0.2);
   }
 
   &__header {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    padding: 2px 4px 14px;
+    padding: 4px 6px 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 14px;
   }
 
-  &__header > div {
-    gap: 8px;
+  &__title-group {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    h2 {
+      margin: 0;
+      color: $color-text-main;
+      font: 800 16px/22px $font-family-base;
+      letter-spacing: -0.01em;
+    }
   }
-  &__header h2 {
-    margin: 0;
-    color: $color-text-main;
-    font: 700 16px/24px $font-family-base;
-  }
+
   &__indicator {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: $color-kanban-new-indicator;
-  }
-  &__count {
-    min-width: 24px;
-    height: 24px;
-    border-radius: $radius-full;
-    background: rgba(28, 27, 30, 0.08);
-    display: grid;
-    place-items: center;
-    font: 700 12px $font-family-base;
-  }
-  &__tickets {
-    display: grid;
-    gap: 12px;
-  }
-  &__empty {
-    margin: 36px 0;
-    color: $color-text-muted;
-    text-align: center;
-    font: 13px $font-family-base;
+    background: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
   }
 
   &.status-preparing &__indicator {
-    background: $color-kanban-preparing-indicator;
+    background: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
   }
+
   &.status-ready &__indicator {
-    background: $color-kanban-ready-indicator;
+    background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+  }
+
+  &__count {
+    min-width: 28px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    color: $color-text-main;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font:
+      800 12.5px 'Plus Jakarta Sans',
+      $font-family-base;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  }
+
+  &__tickets {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  &__empty-state {
+    flex: 1;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 32px 16px;
+    text-align: center;
+
+    .empty-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px dashed rgba(99, 88, 128, 0.25);
+      color: $color-text-muted;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    color: $color-text-muted;
+    font: 600 13.5px $font-family-base;
   }
 }
 
 .order-management-ticket {
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-lg;
-  background: $color-bg-page;
+  border: 1px solid rgba(99, 88, 128, 0.14);
+  border-radius: 18px;
+  background: #ffffff;
   padding: 16px;
-  box-shadow: $shadow-soft;
+  box-shadow: 0 4px 16px rgba(28, 27, 30, 0.04);
+  min-width: 0;
+  overflow: hidden;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease;
 
-  &__head,
-  &__head > div,
-  li {
-    display: flex;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(45, 36, 69, 0.09);
+    border-color: rgba(99, 88, 128, 0.26);
   }
+
   &__head {
+    display: flex;
     justify-content: space-between;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 10px;
   }
-  &__head > div {
+
+  &__table-meta {
+    display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
+    min-width: 0;
   }
-  &__head > div:last-child {
-    align-items: flex-end;
+
+  &__table-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    strong {
+      color: $color-text-main;
+      font: 800 17px/22px $font-family-base;
+    }
   }
-  &__head strong {
-    color: $color-text-main;
-    font: 700 16px/22px $font-family-base;
-  }
-  &__head small,
-  &__head time {
+
+  &__channel {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: $color-text-muted;
-    font: 12px/18px $font-family-base;
+    font-size: 11.5px;
+    font-weight: 500;
   }
-  &__head > div:last-child small {
-    color: $color-text-body;
-    font-weight: 700;
+
+  &__time-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+
+    time {
+      color: $color-text-muted;
+      font: 600 12px/16px $font-family-base;
+    }
+
+    small {
+      color: $color-primary-dark;
+      font:
+        800 12.5px/18px 'Plus Jakarta Sans',
+        $font-family-base;
+    }
   }
+
   &__line {
     height: 1px;
-    margin: 14px 0 10px;
-    background: $color-border-subtle;
+    margin: 12px 0;
+    background: linear-gradient(90deg, rgba(99, 88, 128, 0.14), rgba(99, 88, 128, 0.03));
   }
-  ul {
-    display: grid;
+
+  &__items {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    min-height: 44px;
     margin: 0;
     padding: 0;
     list-style: none;
+    min-width: 0;
   }
-  li {
+
+  &__footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(99, 88, 128, 0.18);
+  }
+
+  &__summary {
+    display: flex;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
-    color: $color-text-body;
-    font: 14px/20px $font-family-base;
+    margin-bottom: 12px;
+
+    span {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: $color-text-muted;
+    }
   }
-  li b {
-    white-space: nowrap;
-  }
+
   &__total {
-    display: block;
-    margin-top: 12px;
-    color: $color-primary;
-    text-align: right;
-    font: 700 16px/24px $font-family-base;
+    color: $color-primary-dark;
+    font:
+      800 18px/22px 'Plus Jakarta Sans',
+      $font-family-base;
   }
+
   &__action {
     width: 100%;
     height: 42px;
-    margin-top: 16px;
     border: 0;
-    border-radius: $radius-md;
+    border-radius: 12px;
     background: $color-primary;
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    box-shadow: $shadow-button;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(99, 88, 128, 0.22);
     cursor: pointer;
     font: 700 14px $font-family-base;
-  }
-  &__action:hover {
-    background: $color-primary-dark;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+
+    .action-arrow {
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    &:hover {
+      background: $color-primary-dark;
+      box-shadow: 0 6px 16px rgba(99, 88, 128, 0.32);
+
+      .action-arrow {
+        transform: translateX(3px);
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
   }
 }
 
-.order-ticket-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+.status-preparing .order-management-ticket__action {
+  background: #d97706;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.22);
 
-  &__main {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
-
-    span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+  &:hover {
+    background: #b45309;
+    box-shadow: 0 6px 16px rgba(217, 119, 6, 0.3);
   }
+}
 
-  &__thumb {
-    width: 40px;
-    height: 40px;
-    margin: 0;
-    border-radius: $radius-sm;
-    overflow: hidden;
-    background: $color-bg-card;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.status-ready .order-management-ticket__action {
+  background: #16a34a;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.22);
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  &:hover {
+    background: #15803d;
+    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
   }
+}
+
+/* Ticket TransitionGroup Animations */
+.ticket-spring-enter-active,
+.ticket-spring-leave-active {
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ticket-spring-enter-from {
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+}
+
+.ticket-spring-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+}
+
+.ticket-spring-move {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }

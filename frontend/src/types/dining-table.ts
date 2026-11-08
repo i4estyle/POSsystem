@@ -12,6 +12,7 @@ export interface DiningTableInterface {
   branchId: number;
   tableNumber: string;
   capacity: number;
+  seatCapacity?: number;
   status: TableStatus;
 }
 

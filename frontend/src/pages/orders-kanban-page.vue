@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
@@ -104,15 +104,23 @@ const displayedOrders = computed(() =>
     time: order.time,
     tableLabel: formatTableLabel(order),
     orderType: formatOrderType(order),
+    subtotal: order.subtotal,
+    discountAmount: order.discountAmount,
+    taxAmount: order.taxAmount,
+    promotionLabel: order.promotionLabel,
     total: order.total,
     items: order.items.map((item) => ({
       quantity: item.quantity,
-      name: t(`orders.items.${item.nameKey}`),
+      name: item.customName || t(`orders.items.${item.nameKey}`),
       price: item.price,
       imageUrl: item.imageUrl || getOrderItemImage(item.nameKey),
     })),
   })),
 );
+
+onMounted(() => {
+  void orderStore.fetchLiveOrders();
+});
 
 const printOrder = (orderNumber: string): void => {
   $q.notify({

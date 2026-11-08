@@ -28,6 +28,10 @@ export interface OrderKanbanTicket {
   time: string;
   tableLabel: string;
   orderType: string;
+  subtotal?: number | undefined;
+  discountAmount?: number | undefined;
+  taxAmount?: number | undefined;
+  promotionLabel?: string | undefined;
   total: number;
   items: OrderKanbanItem[];
 }
@@ -38,16 +42,22 @@ export interface OrderKanbanColumn {
 }
 export interface OrderKanbanMockItem {
   nameKey: OrderItemKey;
+  customName?: string;
   quantity: number;
   price: number;
   imageUrl?: string | null;
 }
 export interface OrderKanbanMockTicket {
+  backendOrderId?: number;
   createdAt: string;
   orderNumber: string;
   time: string;
   orderTypeKey: OrderTypeKey;
   tableNumber?: number;
+  subtotal?: number | undefined;
+  discountAmount?: number | undefined;
+  taxAmount?: number | undefined;
+  promotionLabel?: string | undefined;
   total: number;
   items: OrderKanbanMockItem[];
 }

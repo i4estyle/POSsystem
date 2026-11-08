@@ -1,11 +1,62 @@
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import type { TableManagementItem } from '@/types/dining-table';
 import { DINING_TABLE_MOCKS } from '@/mocks/dining-tables';
+import { orderService } from '@/services/order-service';
+import { OrderStatus } from '@/types/order';
 
 export function useTableManagement() {
   const tables = ref<TableManagementItem[]>([...DINING_TABLE_MOCKS]);
   const currentPage = ref(1);
   const pageSize = ref(7);
+  let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+  const syncTablesWithLiveOrders = async (): Promise<void> => {
+    try {
+      const liveOrders = await orderService.findAll(100);
+      const tableTotals = new Map<number, { total: number; latestDate: Date }>();
+
+      for (const bo of liveOrders) {
+        if (bo.tableId && bo.status !== OrderStatus.PAID && bo.status !== OrderStatus.CANCELLED) {
+          const prev = tableTotals.get(bo.tableId);
+          const orderDate = bo.orderDate ? new Date(bo.orderDate) : new Date();
+          const amt = Number(bo.netAmount || bo.totalAmount || 0);
+          if (prev) {
+            prev.total += amt;
+            if (orderDate < prev.latestDate) prev.latestDate = orderDate;
+          } else {
+            tableTotals.set(bo.tableId, { total: amt, latestDate: orderDate });
+          }
+        }
+      }
+
+      for (const table of tables.value) {
+        const activeInfo = tableTotals.get(table.tableId);
+        if (activeInfo) {
+          table.status = 'occupied';
+          table.totalAmount = Number(activeInfo.total.toFixed(2));
+          const diffMins = Math.max(
+            1,
+            Math.round((Date.now() - activeInfo.latestDate.getTime()) / 60000),
+          );
+          table.timeSeated =
+            diffMins < 60 ? `${diffMins}m ago` : `${Math.floor(diffMins / 60)}h ${diffMins % 60}m`;
+        }
+      }
+    } catch {
+      // Offline / fallback
+    }
+  };
+
+  onMounted(() => {
+    void syncTablesWithLiveOrders();
+    pollInterval = setInterval(() => {
+      void syncTablesWithLiveOrders();
+    }, 6000);
+  });
+
+  onUnmounted(() => {
+    if (pollInterval) clearInterval(pollInterval);
+  });
 
   const addTable = (tableData: Partial<TableManagementItem>): TableManagementItem => {
     const newId = tables.value.length ? Math.max(...tables.value.map((t) => t.tableId)) + 1 : 1;

@@ -5,10 +5,31 @@
       <main class="pos-main-wrapper orders-main">
         <PosHeaderBar />
         <section class="orders-content">
-          <header class="titlebar">
-            <div>
-              <h1>{{ t('orders.managementTitle') }}</h1>
+          <header class="titlebar kds-header">
+            <div class="kds-header__left">
+              <div class="kds-title-row">
+                <h1>{{ t('orders.managementTitle') }}</h1>
+                <span class="kds-live-pill">
+                  <span class="kds-live-dot" />
+                  ซิงค์ข้อมูลสด
+                </span>
+              </div>
               <small>{{ t('orders.managementSubtitle') }}</small>
+            </div>
+
+            <div class="kds-header__stats">
+              <div class="kds-stat-pill new">
+                <span class="stat-label">{{ t('orders.statuses.new') }}</span>
+                <strong>{{ ordersByStatus.new.length }}</strong>
+              </div>
+              <div class="kds-stat-pill preparing">
+                <span class="stat-label">{{ t('orders.statuses.preparing') }}</span>
+                <strong>{{ ordersByStatus.preparing.length }}</strong>
+              </div>
+              <div class="kds-stat-pill ready">
+                <span class="stat-label">{{ t('orders.statuses.ready') }}</span>
+                <strong>{{ ordersByStatus.ready.length }}</strong>
+              </div>
             </div>
           </header>
 
@@ -32,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
@@ -64,13 +85,30 @@ const toTicket = (order: OrderKanbanMockTicket & { status: KanbanStatus }): Orde
       ? t('orders.table', { table: order.tableNumber })
       : t('orders.orderTypes.takeaway'),
   orderType: t(`orders.orderTypes.${order.orderTypeKey}`),
+  subtotal: order.subtotal,
+  discountAmount: order.discountAmount,
+  taxAmount: order.taxAmount,
+  promotionLabel: order.promotionLabel,
   total: order.total,
   items: order.items.map((item) => ({
     quantity: item.quantity,
-    name: t(`orders.items.${item.nameKey}`),
+    name: item.customName || t(`orders.items.${item.nameKey}`),
     price: item.price,
     imageUrl: item.imageUrl || getOrderItemImage(item.nameKey),
   })),
+});
+
+let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+  void orderStore.fetchLiveOrders();
+  pollTimer = setInterval(() => {
+    void orderStore.fetchLiveOrders();
+  }, 3500);
+});
+
+onUnmounted(() => {
+  if (pollTimer) clearInterval(pollTimer);
 });
 
 const columns = computed(() => [

@@ -71,9 +71,11 @@ defineExpose({
 const tableOptions = computed(() => {
   const available = props.tables.filter((tbl) => tbl.status === 'available');
   const sourceList = available.length > 0 ? available : props.tables;
-  return sourceList.map((tbl) => ({
-    label: `${tbl.tableNumber} (รองรับ ${tbl.capacity} คน)`,
-    value: tbl.tableId,
-  }));
+  return [...sourceList]
+    .sort((a, b) => a.tableId - b.tableId)
+    .map((tbl) => ({
+      label: `${tbl.tableNumber} (รองรับ ${tbl.capacity ?? tbl.seatCapacity ?? 4} คน)`,
+      value: tbl.tableId,
+    }));
 });
 </script>
