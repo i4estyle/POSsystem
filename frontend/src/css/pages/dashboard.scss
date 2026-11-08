@@ -56,23 +56,35 @@
       }
 
       .time-presets-group {
-        background: #ffffff;
-        border: 1px solid rgba(208, 195, 241, 0.6);
-        border-radius: 12px;
-        padding: 2px 4px;
-        box-shadow: 0 2px 8px rgba(99, 88, 128, 0.06);
+        background-color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(99, 88, 128, 0.16);
+        border-radius: $radius-full;
+        padding: 3px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 6px rgba(99, 88, 128, 0.04);
 
         .preset-toggle {
           :deep(.q-btn) {
-            font-size: 13px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 8px;
+            font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: $radius-full;
+            border: none;
+            background: transparent;
             color: $color-text-body;
+            transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+            &:hover:not(.bg-primary) {
+              color: $color-primary;
+              background-color: rgba(99, 88, 128, 0.06);
+            }
 
             &.bg-primary {
+              background-color: $color-primary !important;
               color: #ffffff !important;
-              box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+              box-shadow: 0px 3px 8px rgba(99, 88, 128, 0.25);
+              transform: scale(1.02);
             }
           }
         }
@@ -80,18 +92,28 @@
 
       .custom-date-picker {
         .date-picker-btn {
-          background: #ffffff;
-          border: 1px solid rgba(208, 195, 241, 0.6);
-          border-radius: 12px;
-          padding: 6px 14px;
-          font-family: $font-family-base;
-          font-weight: 600;
-          font-size: 13px;
-          color: $color-primary-dark;
-          box-shadow: 0 2px 8px rgba(99, 88, 128, 0.06);
+          background-color: rgba(255, 255, 255, 0.7);
+          border: 1px solid rgba(99, 88, 128, 0.16);
+          border-radius: $radius-full;
+          padding: 5px 16px;
+          font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+          font-weight: 700;
+          font-size: 12px;
+          color: $color-text-body;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 2px 6px rgba(99, 88, 128, 0.04);
+          transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
 
           &:hover {
+            background: #ffffff;
             border-color: $color-primary;
+            color: $color-primary;
+            box-shadow: 0 4px 12px rgba(99, 88, 128, 0.12);
+            transform: translateY(-1px);
+          }
+
+          &:active {
+            transform: scale(0.98);
           }
         }
       }

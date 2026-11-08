@@ -487,36 +487,46 @@ const onSelectNotification = (notif: PosNotification): void => {
       flex-shrink: 0;
 
       .branch-dropdown-btn {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(208, 195, 241, 0.6);
-        border-radius: 12px;
-        color: $color-primary-dark;
-        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(99, 88, 128, 0.16);
+        border-radius: $radius-full;
+        color: $color-text-main;
+        padding: 5px 16px 5px 12px;
         font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
         font-weight: 700;
-        font-size: 13.5px;
-        box-shadow: 0 2px 8px rgba(99, 88, 128, 0.08);
-        transition: all 0.25s ease;
+        font-size: 13px;
+        box-shadow: 0 2px 6px rgba(99, 88, 128, 0.04);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
         .branch-name-text {
-          margin: 0 6px 0 4px;
+          margin: 0 6px 0 6px;
           max-width: 170px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          letter-spacing: 0.2px;
         }
 
         .dropdown-icon {
-          font-size: 18px;
+          font-size: 19px;
           color: $color-primary;
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         &:hover {
           background: #ffffff;
-          border-color: $color-primary;
-          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.18);
+          border-color: rgba(99, 88, 128, 0.35);
+          box-shadow: 0 4px 14px rgba(99, 88, 128, 0.12);
           transform: translateY(-1px);
+
+          .dropdown-icon {
+            transform: translateY(1.5px);
+          }
+        }
+
+        &:active {
+          transform: scale(0.98);
         }
       }
     }
@@ -1009,6 +1019,60 @@ const onSelectNotification = (notif: PosNotification): void => {
         600 13px 'Plus Jakarta Sans',
         'Sarabun',
         sans-serif;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+@use '../../css/variables' as *;
+
+.branch-menu-dropdown {
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 12px 32px rgba(99, 88, 128, 0.18) !important;
+  border: 1px solid rgba(208, 195, 241, 0.6) !important;
+  padding: 6px !important;
+  min-width: 230px !important;
+
+  .branch-menu-list {
+    .q-item {
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: $color-text-main;
+      font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+      margin-bottom: 2px;
+
+      .item-icon-sec {
+        min-width: 32px;
+        color: $color-primary;
+        transition: transform 0.25s ease;
+      }
+
+      &:hover {
+        background: rgba(208, 195, 241, 0.25);
+        color: $color-primary-dark;
+        transform: translateX(4px);
+
+        .item-icon-sec {
+          transform: scale(1.15);
+        }
+      }
+
+      &.branch-item-active {
+        background: linear-gradient(135deg, #4a3e68 0%, $color-primary 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(99, 88, 128, 0.28);
+
+        .item-icon-sec {
+          color: #ffffff !important;
+        }
+
+        .q-item__label--caption {
+          color: rgba(255, 255, 255, 0.8) !important;
+        }
+      }
     }
   }
 }
