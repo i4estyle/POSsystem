@@ -11,7 +11,7 @@ import { QrCodeEntity } from './qr-code.entity';
 import { DiningTableEntity } from '../../dining-tables/entities/dining-table.entity';
 import { CustomerEntity } from '../../customers/entities/customer.entity';
 
-@Entity('POS_TABLE_SESSIONS')
+@Entity('POS_TABLE_SESSION')
 export class TableSessionEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'TSS_ID', comment: 'รหัสเซสชันโต๊ะ' })
   sessionId: number;

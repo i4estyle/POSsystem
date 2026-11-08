@@ -17,6 +17,8 @@ import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { BranchEntity } from './entities/branch.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
 
 @ApiTags('Branches')
 @Controller('branches')
@@ -24,6 +26,7 @@ export class BranchesController {
   constructor(private readonly branchesService: BranchesService) {}
 
   @Post()
+  @Roles(RoleName.ADMIN)
   @ApiOperation({ summary: 'สร้างสาขาใหม่' })
   @ApiResponse({ status: 201, type: BranchEntity })
   async create(@Body() dto: CreateBranchDto): Promise<BranchEntity> {
@@ -48,6 +51,7 @@ export class BranchesController {
   }
 
   @Patch(':id')
+  @Roles(RoleName.ADMIN)
   @ApiOperation({ summary: 'แก้ไขข้อมูลสาขา' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -57,6 +61,7 @@ export class BranchesController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'ลบสาขา (Soft Delete)' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

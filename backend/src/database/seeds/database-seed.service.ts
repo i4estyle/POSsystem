@@ -35,7 +35,9 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
       await this.seedCustomers();
       await this.seedDiningTablesAndQrCodes();
     } catch (err) {
-      this.logger.warn(`Auto-seed skipped or encountered error: ${String(err)}`);
+      this.logger.warn(
+        `Auto-seed skipped or encountered error: ${String(err)}`,
+      );
     }
   }
 
@@ -62,10 +64,26 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
     if (count > 0) return;
 
     await repo.save([
-      repo.create({ roleId: 1, roleName: 'admin', description: 'ผู้ดูแลระบบ (Administrator)' }),
-      repo.create({ roleId: 2, roleName: 'cashier', description: 'พนักงานแคชเชียร์ (Cashier)' }),
-      repo.create({ roleId: 3, roleName: 'manager', description: 'ผู้จัดการสาขา (Branch Manager)' }),
-      repo.create({ roleId: 4, roleName: 'kitchen', description: 'พนักงานครัว (Kitchen Staff)' }),
+      repo.create({
+        roleId: 1,
+        roleName: 'admin',
+        description: 'ผู้ดูแลระบบ (Administrator)',
+      }),
+      repo.create({
+        roleId: 2,
+        roleName: 'cashier',
+        description: 'พนักงานแคชเชียร์ (Cashier)',
+      }),
+      repo.create({
+        roleId: 3,
+        roleName: 'manager',
+        description: 'ผู้จัดการสาขา (Branch Manager)',
+      }),
+      repo.create({
+        roleId: 4,
+        roleName: 'kitchen',
+        description: 'พนักงานครัว (Kitchen Staff)',
+      }),
     ]);
     this.logger.log('Seeded initial POS_ROLES');
   }
@@ -80,7 +98,9 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
       { categoryId: 5, categoryName: 'เซตสุดคุ้ม', description: 'Value Sets' },
     ];
     for (const cat of categories) {
-      const exists = await repo.findOne({ where: { categoryId: cat.categoryId } });
+      const exists = await repo.findOne({
+        where: { categoryId: cat.categoryId },
+      });
       if (!exists) {
         await repo.save(repo.create(cat));
       }
@@ -101,7 +121,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 189,
         unit: 'ชิ้น',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80',
       },
       {
         productId: 2,
@@ -112,7 +133,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 85,
         unit: 'แก้ว',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&q=80',
       },
       {
         productId: 3,
@@ -123,7 +145,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 120,
         unit: 'จาน',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&q=80',
       },
       {
         productId: 4,
@@ -134,7 +157,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 145,
         unit: 'ชิ้น',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=80',
       },
       {
         productId: 5,
@@ -145,7 +169,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 165,
         unit: 'ชุด',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400&q=80',
       },
       {
         productId: 6,
@@ -156,7 +181,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 60,
         unit: 'แก้ว',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&q=80',
       },
       {
         productId: 7,
@@ -167,7 +193,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 199,
         unit: 'ชิ้น',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80',
       },
       {
         productId: 8,
@@ -178,7 +205,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 159,
         unit: 'ชิ้น',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=400&q=80',
       },
       {
         productId: 9,
@@ -189,7 +217,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 75,
         unit: 'แก้ว',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=400&q=80',
       },
       {
         productId: 10,
@@ -200,7 +229,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 70,
         unit: 'แก้ว',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=400&q=80',
       },
       {
         productId: 11,
@@ -211,7 +241,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 135,
         unit: 'จาน',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80',
       },
       {
         productId: 12,
@@ -222,7 +253,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 150,
         unit: 'แก้ว',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&q=80',
       },
       {
         productId: 13,
@@ -233,7 +265,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 129,
         unit: 'ชุด',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=400&q=80',
       },
       {
         productId: 14,
@@ -244,7 +277,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 299,
         unit: 'เซต',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1610440042657-612c34d95e9f?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1610440042657-612c34d95e9f?w=400&q=80',
       },
       {
         productId: 15,
@@ -255,7 +289,8 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         sellingPrice: 319,
         unit: 'เซต',
         status: ProductStatus.ACTIVE,
-        imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80',
+        imageUrl:
+          'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80',
       },
     ];
 
@@ -306,7 +341,9 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
     ];
 
     for (const prm of initialPromotions) {
-      const exists = await repo.findOne({ where: { promotionId: prm.promotionId } });
+      const exists = await repo.findOne({
+        where: { promotionId: prm.promotionId },
+      });
       if (!exists) {
         await repo.save(repo.create(prm));
       }

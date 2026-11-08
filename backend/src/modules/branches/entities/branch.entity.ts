@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { BranchStatus } from '../../../common/enums';
 
-@Entity('POS_BRANCHES')
+@Entity('POS_BRANCH')
 export class BranchEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'BRN_ID', comment: 'รหัสสาขา' })
   branchId: number;
@@ -30,6 +30,15 @@ export class BranchEntity extends BaseEntity {
     comment: 'เบอร์โทรศัพท์สาขา',
   })
   phone: string;
+
+  @Column({
+    name: 'BRN_TAX_RATE',
+    type: 'decimal',
+    precision: 5,
+    scale: 4,
+    default: 0,
+  })
+  taxRate: number;
 
   @Column({
     name: 'BRN_STATUS',

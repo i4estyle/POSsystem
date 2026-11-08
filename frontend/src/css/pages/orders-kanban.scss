@@ -90,7 +90,7 @@
     background: #f9f6ff;
     padding: 4px;
 
-    :deep(.q-btn) {
+    .q-btn {
       min-width: 32px;
       height: 32px;
       border-radius: 8px;
@@ -100,7 +100,7 @@
         sans-serif;
     }
 
-    :deep(.q-btn.q-btn--active) {
+    .q-btn.q-btn--active {
       background: $color-primary;
       color: #fff;
       box-shadow: 0 4px 10px rgba(99, 88, 128, 0.24);

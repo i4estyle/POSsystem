@@ -1,11 +1,29 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
+import {
+  createExternalId,
+  uuidBinaryTransformer,
+} from '../../../common/utils/uuid-binary.util';
 import { MemberLevel } from '../../../common/enums';
 
-@Entity('POS_CUSTOMERS')
+@Entity('POS_CUSTOMER')
 export class CustomerEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'CUS_ID', comment: 'รหัสลูกค้า' })
   customerId: number;
+
+  @Column({
+    name: 'CUS_UUID',
+    type: 'binary',
+    length: 16,
+    unique: true,
+    transformer: uuidBinaryTransformer,
+  })
+  externalId: string;
+
+  @BeforeInsert()
+  assignExternalId(): void {
+    this.externalId ??= createExternalId();
+  }
 
   @Column({
     name: 'CUS_FIRST_NAME',

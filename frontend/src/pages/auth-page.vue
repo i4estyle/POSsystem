@@ -11,13 +11,8 @@
         <LocaleSwitcher />
       </header>
 
-      <div
-        class="center-content-wrapper"
-        :class="{ 'is-register-mode': authStore.activeTab === 'register' }"
-      >
-        <Transition name="banner-fade">
-          <AuthBrandBanner v-if="authStore.activeTab === 'login'" />
-        </Transition>
+      <div class="center-content-wrapper">
+        <AuthBrandBanner />
         <AuthCardContainer />
       </div>
 
@@ -27,11 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth-store';
 import LocaleSwitcher from '@/components/base/locale-switcher.vue';
 import AuthBrandBanner from '@/components/auth/auth-brand-banner.vue';
 import AuthCardContainer from '@/components/auth/auth-card-container.vue';
 import AuthFooter from '@/components/auth/auth-footer.vue';
-
-const authStore = useAuthStore();
 </script>

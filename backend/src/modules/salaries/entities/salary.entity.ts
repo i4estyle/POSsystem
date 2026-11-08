@@ -9,7 +9,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { SalaryStatus } from '../../../common/enums';
 import { EmployeeEntity } from '../../employees/entities/employee.entity';
 
-@Entity('POS_SALARIES')
+@Entity('POS_SALARY')
 export class SalaryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'SAL_ID', comment: 'รหัสรายการเงินเดือน' })
   salaryId: number;

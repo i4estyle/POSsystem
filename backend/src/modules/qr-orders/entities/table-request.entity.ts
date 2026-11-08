@@ -11,7 +11,7 @@ import { TableSessionEntity } from './table-session.entity';
 import { DiningTableEntity } from '../../dining-tables/entities/dining-table.entity';
 import { EmployeeEntity } from '../../employees/entities/employee.entity';
 
-@Entity('POS_TABLE_REQUESTS')
+@Entity('POS_TABLE_REQUEST')
 export class TableRequestEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'TRQ_ID', comment: 'รหัสรายการคำขอ' })
   requestId: number;

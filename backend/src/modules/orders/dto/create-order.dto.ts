@@ -6,7 +6,6 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   Min,
@@ -27,19 +26,6 @@ export class CreateOrderItemDto {
   @Min(1)
   quantity: number;
 
-  @ApiProperty({ example: 55.0 })
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  unitPrice: number;
-
-  @ApiPropertyOptional({ example: 0, default: 0 })
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  discount?: number;
-
   @ApiPropertyOptional({ example: 'หวานน้อย 50%' })
   @IsString()
   @IsOptional()
@@ -47,11 +33,11 @@ export class CreateOrderItemDto {
 }
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
   @Type(() => Number)
   @IsInt()
-  @IsNotEmpty()
-  branchId: number;
+  @IsOptional()
+  branchId?: number;
 
   @ApiPropertyOptional({ example: 1 })
   @Type(() => Number)
@@ -108,20 +94,6 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   guestPhone?: string;
-
-  @ApiPropertyOptional({ example: 0, default: 0 })
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  discountAmount?: number;
-
-  @ApiPropertyOptional({ example: 0, default: 0 })
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  taxAmount?: number;
 
   @ApiProperty({ type: [CreateOrderItemDto] })
   @IsArray()

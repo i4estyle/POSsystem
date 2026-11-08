@@ -976,9 +976,10 @@ const pendingServiceCount = computed(
 );
 
 const syncTableFromQuery = (): void => {
+  const token = typeof route.query.token === 'string' ? route.query.token : '';
   const qId = Number(route.query.tableId);
   const qNum = typeof route.query.tableNumber === 'string' ? route.query.tableNumber : undefined;
-  qrStore.initTableSession(qId || 1, qNum || `T-0${qId || 1}`);
+  qrStore.initTableSession(token, qId || 1, qNum || `T-0${qId || 1}`);
 };
 
 let statusPollTimer: ReturnType<typeof setInterval> | null = null;
@@ -995,7 +996,7 @@ onUnmounted(() => {
 });
 
 watch(
-  () => [route.query.tableId, route.query.tableNumber],
+  () => [route.query.token, route.query.tableId, route.query.tableNumber],
   () => {
     syncTableFromQuery();
   },

@@ -31,13 +31,11 @@ export enum PaymentMethod {
 export interface CreateOrderItemDto {
   productId: number;
   quantity: number;
-  unitPrice: number;
-  discount?: number | undefined;
   note?: string | undefined;
 }
 
 export interface CreateOrderDto {
-  branchId: number;
+  branchId?: number;
   customerId?: number | undefined;
   employeeId?: number | undefined;
   tableId?: number | undefined;
@@ -46,8 +44,6 @@ export interface CreateOrderDto {
   orderType?: OrderType | undefined;
   guestName?: string | undefined;
   guestPhone?: string | undefined;
-  discountAmount?: number | undefined;
-  taxAmount?: number | undefined;
   items: CreateOrderItemDto[];
 }
 

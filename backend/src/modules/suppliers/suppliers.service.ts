@@ -1,14 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { SupplierEntity } from './entities/supplier.entity';
-import { PurchaseOrderEntity } from './entities/purchase-order.entity';
-import { PurchaseOrderItemEntity } from './entities/purchase-order-item.entity';
+import { DataSource, Repository } from 'typeorm';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  MovementType,
+  PurchaseOrderStatus,
+  ReferenceType,
+  RoleName,
+} from '../../common/enums';
+import { AuthPrincipal } from '../../common/interfaces/auth-principal.interface';
+import {
+  assertBranchAccess,
+  resolveBranchId,
+} from '../../common/utils/access-scope.util';
+import { StockMovementEntity } from '../stocks/entities/stock-movement.entity';
+import { StockEntity } from '../stocks/entities/stock.entity';
+import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
-import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
-import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { PurchaseOrderItemEntity } from './entities/purchase-order-item.entity';
+import { PurchaseOrderEntity } from './entities/purchase-order.entity';
+import { SupplierEntity } from './entities/supplier.entity';
 
 @Injectable()
 export class SuppliersService {
@@ -17,13 +33,11 @@ export class SuppliersService {
     private readonly supplierRepository: Repository<SupplierEntity>,
     @InjectRepository(PurchaseOrderEntity)
     private readonly poRepository: Repository<PurchaseOrderEntity>,
-    @InjectRepository(PurchaseOrderItemEntity)
-    private readonly poItemRepository: Repository<PurchaseOrderItemEntity>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createSupplier(dto: CreateSupplierDto): Promise<SupplierEntity> {
-    const supplier = this.supplierRepository.create(dto);
-    return this.supplierRepository.save(supplier);
+    return this.supplierRepository.save(this.supplierRepository.create(dto));
   }
 
   async findAllSuppliers(pagination: PaginationQueryDto): Promise<{
@@ -43,12 +57,10 @@ export class SuppliersService {
   }
 
   async findOneSupplier(id: number): Promise<SupplierEntity> {
-    const supplier = await this.supplierRepository.findOne({
-      where: { supplierId: id },
+    const supplier = await this.supplierRepository.findOneBy({
+      supplierId: id,
     });
-    if (!supplier) {
-      throw new NotFoundException(`Supplier #${id} not found`);
-    }
+    if (!supplier) throw new NotFoundException(`Supplier #${id} not found`);
     return supplier;
   }
 
@@ -62,38 +74,45 @@ export class SuppliersService {
   }
 
   async removeSupplier(id: number): Promise<void> {
-    const supplier = await this.findOneSupplier(id);
-    await this.supplierRepository.softRemove(supplier);
+    await this.supplierRepository.softRemove(await this.findOneSupplier(id));
   }
 
   async createPurchaseOrder(
     dto: CreatePurchaseOrderDto,
+    principal: AuthPrincipal,
   ): Promise<PurchaseOrderEntity> {
+    const branchId = resolveBranchId(principal, dto.branchId);
     const totalAmount = dto.items.reduce(
-      (sum, item) => sum + Number(item.quantity) * Number(item.unitCost),
+      (sum, item) => sum + item.quantity * item.unitCost,
       0,
     );
-
-    const po = this.poRepository.create({
-      supplierId: dto.supplierId,
-      branchId: dto.branchId,
-      employeeId: dto.employeeId,
-      orderDate: new Date(dto.orderDate),
-      status: dto.status,
-      totalAmount,
-      items: dto.items.map((item) =>
-        this.poItemRepository.create({
-          productId: item.productId,
-          quantity: item.quantity,
-          unitCost: item.unitCost,
+    const poId = await this.dataSource.transaction(async (manager) => {
+      const repository = manager.getRepository(PurchaseOrderEntity);
+      const po = await repository.save(
+        repository.create({
+          supplierId: dto.supplierId,
+          branchId,
+          employeeId: principal.employeeId,
+          orderDate: new Date(dto.orderDate),
+          status: PurchaseOrderStatus.PENDING,
+          totalAmount,
         }),
-      ),
+      );
+      const itemRepository = manager.getRepository(PurchaseOrderItemEntity);
+      await itemRepository.save(
+        dto.items.map((item) =>
+          itemRepository.create({ ...item, poId: po.poId }),
+        ),
+      );
+      return po.poId;
     });
-
-    return this.poRepository.save(po);
+    return this.findOnePurchaseOrder(poId, principal);
   }
 
-  async findAllPurchaseOrders(pagination: PaginationQueryDto): Promise<{
+  async findAllPurchaseOrders(
+    pagination: PaginationQueryDto,
+    principal: AuthPrincipal,
+  ): Promise<{
     data: PurchaseOrderEntity[];
     total: number;
     page: number;
@@ -102,6 +121,10 @@ export class SuppliersService {
     const page = pagination.page ?? 1;
     const limit = pagination.limit ?? 10;
     const [data, total] = await this.poRepository.findAndCount({
+      where:
+        principal.roleName === RoleName.ADMIN
+          ? undefined
+          : { branchId: principal.branchId },
       relations: ['supplier', 'branch', 'employee', 'items', 'items.product'],
       skip: (page - 1) * limit,
       take: limit,
@@ -110,25 +133,80 @@ export class SuppliersService {
     return { data, total, page, limit };
   }
 
-  async findOnePurchaseOrder(id: number): Promise<PurchaseOrderEntity> {
+  async findOnePurchaseOrder(
+    id: number,
+    principal: AuthPrincipal,
+  ): Promise<PurchaseOrderEntity> {
     const po = await this.poRepository.findOne({
       where: { poId: id },
       relations: ['supplier', 'branch', 'employee', 'items', 'items.product'],
     });
-    if (!po) {
-      throw new NotFoundException(`Purchase Order #${id} not found`);
-    }
+    if (!po) throw new NotFoundException(`Purchase Order #${id} not found`);
+    assertBranchAccess(principal, po.branchId);
     return po;
   }
 
-  async updatePurchaseOrder(
+  async changePurchaseOrderStatus(
     id: number,
-    dto: UpdatePurchaseOrderDto,
+    status: PurchaseOrderStatus | undefined,
+    principal: AuthPrincipal,
   ): Promise<PurchaseOrderEntity> {
-    const po = await this.findOnePurchaseOrder(id);
-    if (dto.status) {
-      po.status = dto.status;
-    }
-    return this.poRepository.save(po);
+    await this.dataSource.transaction(async (manager) => {
+      const repository = manager.getRepository(PurchaseOrderEntity);
+      const po = await repository
+        .createQueryBuilder('po')
+        .leftJoinAndSelect('po.items', 'items')
+        .setLock('pessimistic_write')
+        .where('po.poId = :id', { id })
+        .getOne();
+      if (!po) throw new NotFoundException(`Purchase Order #${id} not found`);
+      assertBranchAccess(principal, po.branchId);
+      if (!status) {
+        throw new BadRequestException('Purchase order status is required');
+      }
+      if (po.status !== PurchaseOrderStatus.PENDING) {
+        throw new BadRequestException('Purchase order is already finalized');
+      }
+      if (status === PurchaseOrderStatus.RECEIVED) {
+        for (const item of po.items) {
+          const stockRepository = manager.getRepository(StockEntity);
+          let stock = await stockRepository
+            .createQueryBuilder('stock')
+            .setLock('pessimistic_write')
+            .where('stock.productId = :productId', {
+              productId: item.productId,
+            })
+            .andWhere('stock.branchId = :branchId', { branchId: po.branchId })
+            .getOne();
+          if (!stock) {
+            stock = stockRepository.create({
+              productId: item.productId,
+              branchId: po.branchId,
+              quantity: 0,
+              reorderLevel: 0,
+            });
+          }
+          stock.quantity += item.quantity;
+          await stockRepository.save(stock);
+          const movementRepository = manager.getRepository(StockMovementEntity);
+          await movementRepository.save(
+            movementRepository.create({
+              productId: item.productId,
+              branchId: po.branchId,
+              employeeId: principal.employeeId,
+              movementType: MovementType.IN,
+              quantity: item.quantity,
+              referenceType: ReferenceType.PURCHASE_ORDER,
+              referenceId: po.poId,
+            }),
+          );
+        }
+      } else if (status !== PurchaseOrderStatus.CANCELLED) {
+        throw new BadRequestException('Invalid purchase order transition');
+      }
+      po.status = status;
+      await repository.save(po);
+    });
+    return this.findOnePurchaseOrder(id, principal);
   }
 }

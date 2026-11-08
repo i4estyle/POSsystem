@@ -10,7 +10,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
 import { BranchEntity } from '../../branches/entities/branch.entity';
 
-@Entity('POS_STOCKS')
+@Entity('POS_STOCK')
 @Index(['productId', 'branchId'], { unique: true })
 export class StockEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'STK_ID', comment: 'รหัสรายการสต็อก' })

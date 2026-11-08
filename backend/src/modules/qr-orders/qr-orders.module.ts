@@ -6,9 +6,11 @@ import { TableRequestEntity } from './entities/table-request.entity';
 import { QrOrdersService } from './qr-orders.service';
 import { QrOrdersController } from './qr-orders.controller';
 import { TunnelService } from './tunnel.service';
+import { OrdersModule } from '../orders/orders.module';
 
 @Module({
   imports: [
+    OrdersModule,
     TypeOrmModule.forFeature([
       QrCodeEntity,
       TableSessionEntity,

@@ -1,15 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PaymentMethodEntity } from './entities/payment-method.entity';
-import { PaymentEntity } from './entities/payment.entity';
+import { DataSource, Repository } from 'typeorm';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  OrderStatus,
+  PaymentMethodStatus,
+  PaymentStatus,
+  RoleName,
+} from '../../common/enums';
+import { AuthPrincipal } from '../../common/interfaces/auth-principal.interface';
+import { assertBranchAccess } from '../../common/utils/access-scope.util';
 import { OrderEntity } from '../orders/entities/order.entity';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
-import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { OrderStatus, PaymentStatus } from '../../common/enums';
+import { RefundPaymentDto } from './dto/refund-payment.dto';
+import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
+import { PaymentMethodEntity } from './entities/payment-method.entity';
+import { PaymentEntity } from './entities/payment.entity';
+
+const MONEY_TOLERANCE = 0.001;
 
 @Injectable()
 export class PaymentsService {
@@ -18,15 +32,13 @@ export class PaymentsService {
     private readonly methodRepository: Repository<PaymentMethodEntity>,
     @InjectRepository(PaymentEntity)
     private readonly paymentRepository: Repository<PaymentEntity>,
-    @InjectRepository(OrderEntity)
-    private readonly orderRepository: Repository<OrderEntity>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createMethod(
     dto: CreatePaymentMethodDto,
   ): Promise<PaymentMethodEntity> {
-    const method = this.methodRepository.create(dto);
-    return this.methodRepository.save(method);
+    return this.methodRepository.save(this.methodRepository.create(dto));
   }
 
   async findAllMethods(pagination: PaginationQueryDto): Promise<{
@@ -46,12 +58,10 @@ export class PaymentsService {
   }
 
   async findOneMethod(id: number): Promise<PaymentMethodEntity> {
-    const method = await this.methodRepository.findOne({
-      where: { paymentMethodId: id },
+    const method = await this.methodRepository.findOneBy({
+      paymentMethodId: id,
     });
-    if (!method) {
-      throw new NotFoundException(`Payment method #${id} not found`);
-    }
+    if (!method) throw new NotFoundException(`Payment method #${id} not found`);
     return method;
   }
 
@@ -69,30 +79,117 @@ export class PaymentsService {
     await this.methodRepository.softRemove(method);
   }
 
-  async createPayment(dto: CreatePaymentDto): Promise<PaymentEntity> {
-    const payment = this.paymentRepository.create({
-      ...dto,
-      paymentDate: new Date(),
+  async createPayment(
+    dto: CreatePaymentDto,
+    principal: AuthPrincipal,
+  ): Promise<PaymentEntity> {
+    const existing = await this.paymentRepository.findOneBy({
+      idempotencyKey: dto.idempotencyKey,
     });
-    const savedPayment = await this.paymentRepository.save(payment);
-
-    if (savedPayment.status === PaymentStatus.SUCCESS) {
-      const order = await this.orderRepository.findOne({
-        where: { orderId: dto.orderId },
-      });
-      if (order) {
-        order.status = OrderStatus.PAID;
-        await this.orderRepository.save(order);
+    if (existing) return this.findOnePayment(existing.paymentId, principal);
+    const paymentId = await this.dataSource.transaction(async (manager) => {
+      const orderRepository = manager.getRepository(OrderEntity);
+      const order = await orderRepository
+        .createQueryBuilder('order')
+        .setLock('pessimistic_write')
+        .where('order.orderId = :orderId', { orderId: dto.orderId })
+        .getOne();
+      if (!order)
+        throw new NotFoundException(`Order #${dto.orderId} not found`);
+      assertBranchAccess(principal, order.branchId);
+      if ([OrderStatus.CANCELLED, OrderStatus.PAID].includes(order.status)) {
+        throw new BadRequestException('Order does not accept payments');
       }
-    }
-
-    return this.paymentRepository.findOne({
-      where: { paymentId: savedPayment.paymentId },
-      relations: ['order', 'paymentMethod'],
-    }) as Promise<PaymentEntity>;
+      const method = await manager
+        .getRepository(PaymentMethodEntity)
+        .findOneBy({
+          paymentMethodId: dto.paymentMethodId,
+        });
+      if (!method || method.status !== PaymentMethodStatus.ACTIVE) {
+        throw new BadRequestException('Payment method is not active');
+      }
+      const paidResult = await manager
+        .getRepository(PaymentEntity)
+        .createQueryBuilder('payment')
+        .select('COALESCE(SUM(payment.amount), 0)', 'paid')
+        .where('payment.orderId = :orderId', { orderId: dto.orderId })
+        .andWhere('payment.status = :status', { status: PaymentStatus.SUCCESS })
+        .getRawOne<{ paid: string }>();
+      const alreadyPaid = Number(paidResult?.paid ?? 0);
+      if (
+        alreadyPaid + dto.amount - Number(order.netAmount) >
+        MONEY_TOLERANCE
+      ) {
+        throw new BadRequestException('Payment exceeds outstanding balance');
+      }
+      const repository = manager.getRepository(PaymentEntity);
+      let saved: PaymentEntity;
+      try {
+        saved = await repository.save(
+          repository.create({
+            ...dto,
+            status: PaymentStatus.SUCCESS,
+            paymentDate: new Date(),
+            refundedAmount: 0,
+          }),
+        );
+      } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes('Duplicate')) {
+          throw new ConflictException('Duplicate payment request');
+        }
+        throw error;
+      }
+      if (
+        Math.abs(alreadyPaid + dto.amount - Number(order.netAmount)) <=
+        MONEY_TOLERANCE
+      ) {
+        order.status = OrderStatus.PAID;
+        await orderRepository.save(order);
+      }
+      return saved.paymentId;
+    });
+    return this.findOnePayment(paymentId, principal);
   }
 
-  async findAllPayments(pagination: PaginationQueryDto): Promise<{
+  async refundPayment(
+    id: number,
+    dto: RefundPaymentDto,
+    principal: AuthPrincipal,
+  ): Promise<PaymentEntity> {
+    await this.dataSource.transaction(async (manager) => {
+      const repository = manager.getRepository(PaymentEntity);
+      const payment = await repository
+        .createQueryBuilder('payment')
+        .leftJoinAndSelect('payment.order', 'order')
+        .setLock('pessimistic_write')
+        .where('payment.paymentId = :id', { id })
+        .getOne();
+      if (!payment) throw new NotFoundException(`Payment #${id} not found`);
+      assertBranchAccess(principal, payment.order.branchId);
+      if (payment.status !== PaymentStatus.SUCCESS) {
+        throw new BadRequestException('Payment cannot be refunded');
+      }
+      const nextRefunded = Number(payment.refundedAmount) + dto.amount;
+      if (nextRefunded - Number(payment.amount) > MONEY_TOLERANCE) {
+        throw new BadRequestException('Refund exceeds payment amount');
+      }
+      payment.refundedAmount = nextRefunded;
+      if (Math.abs(nextRefunded - Number(payment.amount)) <= MONEY_TOLERANCE) {
+        payment.status = PaymentStatus.REFUNDED;
+      }
+      await repository.save(payment);
+      if (payment.order.status === OrderStatus.PAID) {
+        payment.order.status = OrderStatus.SERVED;
+        await manager.getRepository(OrderEntity).save(payment.order);
+      }
+    });
+    return this.findOnePayment(id, principal);
+  }
+
+  async findAllPayments(
+    pagination: PaginationQueryDto,
+    principal: AuthPrincipal,
+  ): Promise<{
     data: PaymentEntity[];
     total: number;
     page: number;
@@ -100,32 +197,32 @@ export class PaymentsService {
   }> {
     const page = pagination.page ?? 1;
     const limit = pagination.limit ?? 10;
-    const [data, total] = await this.paymentRepository.findAndCount({
-      relations: ['order', 'paymentMethod'],
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { paymentId: 'DESC' },
-    });
+    const builder = this.paymentRepository
+      .createQueryBuilder('payment')
+      .leftJoinAndSelect('payment.order', 'order')
+      .leftJoinAndSelect('payment.paymentMethod', 'paymentMethod')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('payment.paymentId', 'DESC');
+    if (principal.roleName !== RoleName.ADMIN) {
+      builder.andWhere('order.branchId = :branchId', {
+        branchId: principal.branchId,
+      });
+    }
+    const [data, total] = await builder.getManyAndCount();
     return { data, total, page, limit };
   }
 
-  async findOnePayment(id: number): Promise<PaymentEntity> {
+  async findOnePayment(
+    id: number,
+    principal: AuthPrincipal,
+  ): Promise<PaymentEntity> {
     const payment = await this.paymentRepository.findOne({
       where: { paymentId: id },
       relations: ['order', 'paymentMethod'],
     });
-    if (!payment) {
-      throw new NotFoundException(`Payment #${id} not found`);
-    }
+    if (!payment) throw new NotFoundException(`Payment #${id} not found`);
+    assertBranchAccess(principal, payment.order.branchId);
     return payment;
-  }
-
-  async updatePayment(
-    id: number,
-    dto: UpdatePaymentDto,
-  ): Promise<PaymentEntity> {
-    const payment = await this.findOnePayment(id);
-    Object.assign(payment, dto);
-    return this.paymentRepository.save(payment);
   }
 }

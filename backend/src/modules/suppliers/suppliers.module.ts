@@ -5,6 +5,8 @@ import { PurchaseOrderEntity } from './entities/purchase-order.entity';
 import { PurchaseOrderItemEntity } from './entities/purchase-order-item.entity';
 import { SuppliersService } from './suppliers.service';
 import { SuppliersController } from './suppliers.controller';
+import { StockEntity } from '../stocks/entities/stock.entity';
+import { StockMovementEntity } from '../stocks/entities/stock-movement.entity';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { SuppliersController } from './suppliers.controller';
       SupplierEntity,
       PurchaseOrderEntity,
       PurchaseOrderItemEntity,
+      StockEntity,
+      StockMovementEntity,
     ]),
   ],
   controllers: [SuppliersController],

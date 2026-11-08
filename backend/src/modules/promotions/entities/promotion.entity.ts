@@ -9,7 +9,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { PromotionStatus, PromotionType } from '../../../common/enums';
 import { ProductEntity } from '../../products/entities/product.entity';
 
-@Entity('POS_PROMOTIONS')
+@Entity('POS_PROMOTION')
 export class PromotionEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'PRM_ID', comment: 'รหัสโปรโมชั่น' })
   promotionId: number;
@@ -74,7 +74,7 @@ export class PromotionEntity extends BaseEntity {
 
   @ManyToMany(() => ProductEntity)
   @JoinTable({
-    name: 'POS_PROMOTION_PRODUCTS',
+    name: 'POS_PROMOTION_PRODUCT',
     joinColumn: {
       name: 'PRP_PROMOTION_ID',
       referencedColumnName: 'promotionId',

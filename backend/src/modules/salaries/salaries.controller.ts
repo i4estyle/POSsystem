@@ -17,9 +17,12 @@ import { CreateSalaryDto } from './dto/create-salary.dto';
 import { UpdateSalaryDto } from './dto/update-salary.dto';
 import { SalaryEntity } from './entities/salary.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
 
 @ApiTags('Salaries')
 @Controller('salaries')
+@Roles(RoleName.ADMIN, RoleName.MANAGER)
 export class SalariesController {
   constructor(private readonly salariesService: SalariesService) {}
 

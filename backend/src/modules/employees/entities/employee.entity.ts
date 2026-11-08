@@ -1,19 +1,39 @@
 import {
   Column,
+  BeforeInsert,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { EmployeeStatus } from '../../../common/enums';
 import { BranchEntity } from '../../branches/entities/branch.entity';
 import { RoleEntity } from '../../roles/entities/role.entity';
+import {
+  createExternalId,
+  uuidBinaryTransformer,
+} from '../../../common/utils/uuid-binary.util';
 
-@Entity('POS_EMPLOYEES')
+@Entity('POS_EMPLOYEE')
 export class EmployeeEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'EMP_ID', comment: 'รหัสพนักงาน' })
   employeeId: number;
+
+  @Column({
+    name: 'EMP_UUID',
+    type: 'binary',
+    length: 16,
+    unique: true,
+    transformer: uuidBinaryTransformer,
+  })
+  externalId: string;
+
+  @BeforeInsert()
+  assignExternalId(): void {
+    this.externalId ??= createExternalId();
+  }
 
   @Column({ name: 'EMP_BRANCH_ID', comment: 'รหัสสาขาที่สังกัด' })
   branchId: number;
@@ -94,6 +114,7 @@ export class EmployeeEntity extends BaseEntity {
     length: 255,
     comment: 'รหัสผ่านที่เข้ารหัสแล้ว',
   })
+  @Exclude()
   passwordHash: string;
 
   @Column({

@@ -1,16 +1,18 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-
-import { json, urlencoded } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.use(json({ limit: '10mb' }));
-  app.use(urlencoded({ limit: '10mb', extended: true }));
+  app.useBodyParser('json', { limit: '10mb' });
+  app.useBodyParser('urlencoded', { limit: '10mb', extended: true });
   app.enableCors();
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -23,32 +25,19 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('POS & QR Order System API')
-    .setDescription('Enterprise Point of Sale & QR Order API documentation')
-    .setVersion('1.0')
-    .addTag('Branches')
-    .addTag('Roles')
-    .addTag('Employees')
-    .addTag('Attendance')
-    .addTag('Salaries')
-    .addTag('Customers')
-    .addTag('Categories')
-    .addTag('Products')
-    .addTag('Stocks')
-    .addTag('Suppliers')
-    .addTag('Promotions')
-    .addTag('Dining Tables')
-    .addTag('Orders')
-    .addTag('Payments')
-    .addTag('Feedback')
-    .addTag('QR Orders')
-    .build();
+  if (process.env.NODE_ENV === 'development') {
+    const config = new DocumentBuilder()
+      .setTitle('POS & QR Order System API')
+      .setDescription('Enterprise Point of Sale & QR Order API documentation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
-
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port, '0.0.0.0');
 }
 

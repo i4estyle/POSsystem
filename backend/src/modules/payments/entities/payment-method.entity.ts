@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { PaymentMethodStatus } from '../../../common/enums';
 
-@Entity('POS_PAYMENT_METHODS')
+@Entity('POS_PAYMENT_METHOD')
 export class PaymentMethodEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     name: 'PMT_ID',

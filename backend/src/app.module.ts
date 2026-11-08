@@ -20,6 +20,9 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { QrOrdersModule } from './modules/qr-orders/qr-orders.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseSeedService } from './database/seeds/database-seed.service';
+import { APP_GUARD } from '@nestjs/core';
+import { AccessTokenGuard } from './common/guards/access-token.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [
@@ -37,8 +40,9 @@ import { DatabaseSeedService } from './database/seeds/database-seed.service';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
-        migrationsRun: false,
+        synchronize: false,
+        migrationsRun:
+          configService.get<string>('DB_MIGRATIONS_RUN') === 'true',
         migrations: ['dist/database/migrations/*.js'],
       }),
     }),
@@ -60,6 +64,10 @@ import { DatabaseSeedService } from './database/seeds/database-seed.service';
     FeedbackModule,
     QrOrdersModule,
   ],
-  providers: [DatabaseSeedService],
+  providers: [
+    DatabaseSeedService,
+    { provide: APP_GUARD, useClass: AccessTokenGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {}

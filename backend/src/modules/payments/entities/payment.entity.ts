@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -9,11 +10,29 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { PaymentStatus } from '../../../common/enums';
 import { OrderEntity } from '../../orders/entities/order.entity';
 import { PaymentMethodEntity } from './payment-method.entity';
+import {
+  createExternalId,
+  uuidBinaryTransformer,
+} from '../../../common/utils/uuid-binary.util';
 
-@Entity('POS_PAYMENTS')
+@Entity('POS_PAYMENT')
 export class PaymentEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'PAY_ID', comment: 'รหัสรายการชำระเงิน' })
   paymentId: number;
+
+  @Column({
+    name: 'PAY_UUID',
+    type: 'binary',
+    length: 16,
+    unique: true,
+    transformer: uuidBinaryTransformer,
+  })
+  externalId: string;
+
+  @BeforeInsert()
+  assignExternalId(): void {
+    this.externalId ??= createExternalId();
+  }
 
   @Column({ name: 'PAY_ORDER_ID', comment: 'รหัสคำสั่งซื้อ' })
   orderId: number;
@@ -37,6 +56,23 @@ export class PaymentEntity extends BaseEntity {
     comment: 'จำนวนเงินที่ชำระ',
   })
   amount: number;
+
+  @Column({
+    name: 'PAY_REFUNDED_AMOUNT',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
+  refundedAmount: number;
+
+  @Column({
+    name: 'PAY_IDEMPOTENCY_KEY',
+    type: 'char',
+    length: 36,
+    unique: true,
+  })
+  idempotencyKey: string;
 
   @Column({
     name: 'PAY_REFERENCE_NO',

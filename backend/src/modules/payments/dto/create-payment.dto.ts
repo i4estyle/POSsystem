@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -9,7 +8,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { PaymentStatus } from '../../../common/enums';
+import { IsUUID } from 'class-validator';
 
 export class CreatePaymentDto {
   @ApiProperty({ example: 1 })
@@ -30,16 +29,12 @@ export class CreatePaymentDto {
   @Min(0)
   amount: number;
 
+  @ApiProperty({ example: '2c7fecc6-a9c4-46f7-bd0e-c9c748253ee8' })
+  @IsUUID()
+  idempotencyKey: string;
+
   @ApiPropertyOptional({ example: 'TXN-20250115-9988' })
   @IsString()
   @IsOptional()
   referenceNo?: string;
-
-  @ApiPropertyOptional({
-    enum: PaymentStatus,
-    default: PaymentStatus.SUCCESS,
-  })
-  @IsEnum(PaymentStatus)
-  @IsOptional()
-  status?: PaymentStatus;
 }

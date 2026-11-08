@@ -29,9 +29,6 @@ export class AuthUserDto {
   roleId: number;
 
   @ApiProperty()
-  nationalId?: string;
-
-  @ApiProperty()
   address?: string;
 
   @ApiProperty()

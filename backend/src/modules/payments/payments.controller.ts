@@ -16,10 +16,12 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { RefundPaymentDto } from './dto/refund-payment.dto';
 import { PaymentMethodEntity } from './entities/payment-method.entity';
 import { PaymentEntity } from './entities/payment.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { AuthUser } from '../../common/decorators/auth-user.decorator';
+import type { AuthPrincipal } from '../../common/interfaces/auth-principal.interface';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -73,35 +75,43 @@ export class PaymentsController {
   @Post()
   @ApiOperation({ summary: 'บันทึกการชำระเงิน' })
   @ApiResponse({ status: 201, type: PaymentEntity })
-  async createPayment(@Body() dto: CreatePaymentDto): Promise<PaymentEntity> {
-    return this.paymentsService.createPayment(dto);
+  async createPayment(
+    @Body() dto: CreatePaymentDto,
+    @AuthUser() principal: AuthPrincipal,
+  ): Promise<PaymentEntity> {
+    return this.paymentsService.createPayment(dto, principal);
   }
 
   @Get()
   @ApiOperation({ summary: 'ดึงรายการประวัติการชำระเงินแบบแบ่งหน้า' })
-  async findAllPayments(@Query() pagination: PaginationQueryDto): Promise<{
+  async findAllPayments(
+    @Query() pagination: PaginationQueryDto,
+    @AuthUser() principal: AuthPrincipal,
+  ): Promise<{
     data: PaymentEntity[];
     total: number;
     page: number;
     limit: number;
   }> {
-    return this.paymentsService.findAllPayments(pagination);
+    return this.paymentsService.findAllPayments(pagination, principal);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'ดึงข้อมูลประวัติการชำระเงินตาม ID' })
   async findOnePayment(
     @Param('id', ParseIntPipe) id: number,
+    @AuthUser() principal: AuthPrincipal,
   ): Promise<PaymentEntity> {
-    return this.paymentsService.findOnePayment(id);
+    return this.paymentsService.findOnePayment(id, principal);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'แก้ไขข้อมูลการชำระเงิน' })
-  async updatePayment(
+  @Post(':id/refund')
+  @ApiOperation({ summary: 'คืนเงินรายการชำระ' })
+  async refundPayment(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdatePaymentDto,
+    @Body() dto: RefundPaymentDto,
+    @AuthUser() principal: AuthPrincipal,
   ): Promise<PaymentEntity> {
-    return this.paymentsService.updatePayment(id, dto);
+    return this.paymentsService.refundPayment(id, dto, principal);
   }
 }

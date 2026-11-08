@@ -15,7 +15,6 @@ export interface RegisterPayload {
   titlePrefix?: string | undefined;
   profileImage?: string | undefined;
   branchId?: number | undefined;
-  roleId?: number | undefined;
 }
 
 export interface AuthUser {

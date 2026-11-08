@@ -17,13 +17,17 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleEntity } from './entities/role.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
 
 @ApiTags('Roles')
 @Controller('roles')
+@Roles(RoleName.ADMIN, RoleName.MANAGER)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
+  @Roles(RoleName.ADMIN)
   @ApiOperation({ summary: 'สร้างตำแหน่งใหม่' })
   @ApiResponse({ status: 201, type: RoleEntity })
   async create(@Body() dto: CreateRoleDto): Promise<RoleEntity> {
@@ -48,6 +52,7 @@ export class RolesController {
   }
 
   @Patch(':id')
+  @Roles(RoleName.ADMIN)
   @ApiOperation({ summary: 'แก้ไขข้อมูลตำแหน่ง' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -57,6 +62,7 @@ export class RolesController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'ลบตำแหน่ง (Soft Delete)' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

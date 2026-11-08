@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { BranchStatus } from '../../../common/enums';
 
 export class CreateBranchDto {
@@ -17,6 +26,14 @@ export class CreateBranchDto {
   @IsString()
   @IsNotEmpty()
   phone: string;
+
+  @ApiPropertyOptional({ example: 0.07, default: 0 })
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  @IsOptional()
+  taxRate?: number;
 
   @ApiPropertyOptional({ enum: BranchStatus, default: BranchStatus.ACTIVE })
   @IsEnum(BranchStatus)

@@ -17,6 +17,8 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
 
 @ApiTags('Products')
 @Controller('products')
@@ -24,6 +26,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @ApiOperation({ summary: 'สร้างสินค้าใหม่' })
   @ApiResponse({ status: 201, type: ProductEntity })
   async create(@Body() dto: CreateProductDto): Promise<ProductEntity> {
@@ -48,6 +51,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @ApiOperation({ summary: 'แก้ไขข้อมูลสินค้า' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -57,6 +61,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'ลบสินค้า (Soft Delete)' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

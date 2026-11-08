@@ -11,7 +11,7 @@ import { ProductEntity } from '../../products/entities/product.entity';
 import { BranchEntity } from '../../branches/entities/branch.entity';
 import { EmployeeEntity } from '../../employees/entities/employee.entity';
 
-@Entity('POS_STOCK_MOVEMENTS')
+@Entity('POS_STOCK_MOVEMENT')
 export class StockMovementEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     name: 'STM_ID',

@@ -74,6 +74,7 @@ import QRCode from 'qrcode';
 import type { TableManagementItem } from '@/types/dining-table';
 import AppDialogHeader from '@/components/base/app-dialog-header.vue';
 import GradientButton from '@/components/base/gradient-button.vue';
+import { qrOrderService } from '@/services/qr-order-service';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -90,6 +91,7 @@ const emit = defineEmits<{
 const qrCanvasRef = ref<HTMLCanvasElement | null>(null);
 const customOrigin = ref<string>('http://localhost:9000');
 const backendTunnelUrl = ref<string>('');
+const qrToken = ref<string>('');
 
 const isCloudflareActive = computed(() => customOrigin.value.includes('.trycloudflare.com'));
 
@@ -139,10 +141,16 @@ onMounted(() => {
 });
 
 const qrTargetUrl = computed(() => {
-  if (!props.table) return '';
+  if (!props.table || !qrToken.value) return '';
   const cleanOrigin = (customOrigin.value || 'http://localhost:9000').replace(/\/+$/, '');
-  return `${cleanOrigin}/order?tableId=${props.table.tableId}&tableNumber=${encodeURIComponent(props.table.tableNumber)}`;
+  return `${cleanOrigin}/order?token=${encodeURIComponent(qrToken.value)}&tableId=${props.table.tableId}&tableNumber=${encodeURIComponent(props.table.tableNumber)}`;
 });
+
+const loadQrToken = async (): Promise<void> => {
+  if (!props.table) return;
+  const qr = await qrOrderService.getOrCreateForTable(props.table.branchId, props.table.tableId);
+  qrToken.value = qr.codeToken;
+};
 
 const generateQr = async (): Promise<void> => {
   await nextTick();
@@ -167,6 +175,7 @@ watch(
   async ([isOpen]) => {
     if (isOpen) {
       await fetchAutoTunnelUrl();
+      await loadQrToken();
       await generateQr();
     }
   },
@@ -188,6 +197,7 @@ const onOpenMobileOrder = (): void => {
     query: {
       tableId: String(props.table.tableId),
       tableNumber: props.table.tableNumber,
+      token: qrToken.value,
     },
   });
 };

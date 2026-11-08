@@ -55,6 +55,7 @@ export const useQrOrderStore = defineStore('qr-order', () => {
   const tableId = ref<number>(1);
   const tableNumber = ref<string>('T-01');
   const activeSessionId = ref<number>(1);
+  const activeQrToken = ref<string>('');
   const guestCount = ref<number>(2);
   const diningMode = ref<'dine_in' | 'takeaway'>('dine_in');
   const sessionStartedAt = ref<string>(formatTimeNow());
@@ -191,7 +192,8 @@ export const useQrOrderStore = defineStore('qr-order', () => {
     }
   };
 
-  const initTableSession = (id?: number, numberStr?: string): void => {
+  const initTableSession = (token: string, id?: number, numberStr?: string): void => {
+    activeQrToken.value = token;
     const nextId = id && !Number.isNaN(id) ? id : 1;
     const isTableChanged = tableId.value !== nextId;
     tableId.value = nextId;
@@ -211,11 +213,7 @@ export const useQrOrderStore = defineStore('qr-order', () => {
     void syncRoundsStatusFromBackend();
 
     void qrOrderService
-      .createSession({
-        qrCodeId: tableId.value,
-        tableId: tableId.value,
-        guestCount: guestCount.value,
-      })
+      .createSession(activeQrToken.value, guestCount.value)
       .then((res) => {
         if (res?.sessionId) {
           activeSessionId.value = res.sessionId;
@@ -341,11 +339,8 @@ export const useQrOrderStore = defineStore('qr-order', () => {
         : undefined;
 
     const dto: CreateOrderDto = {
-      branchId: 1,
       tableId: tableId.value,
       promotionId: promo && roundDiscount > 0 ? promo.id : undefined,
-      discountAmount: roundDiscount,
-      taxAmount: roundTax,
       orderChannel: OrderChannel.QR_ORDER,
       orderType: diningMode.value === 'dine_in' ? OrderType.DINE_IN : OrderType.TAKEAWAY,
       items: cartItems.value.map((item) => {
@@ -365,12 +360,10 @@ export const useQrOrderStore = defineStore('qr-order', () => {
         const resultItem: {
           productId: number;
           quantity: number;
-          unitPrice: number;
           note?: string;
         } = {
           productId: item.product.productId,
           quantity: item.quantity,
-          unitPrice: item.unitTotal,
         };
         if (details.length > 0) {
           resultItem.note = details.join(' | ');
@@ -380,7 +373,11 @@ export const useQrOrderStore = defineStore('qr-order', () => {
     };
 
     try {
-      const created = await orderService.create(dto);
+      const created = await qrOrderService.createOrder(
+        activeQrToken.value,
+        activeSessionId.value,
+        dto,
+      );
       if (created?.orderId) {
         newRound.backendOrderId = created.orderId;
         newRound.orderNumber = created.orderNumber;
@@ -448,9 +445,8 @@ export const useQrOrderStore = defineStore('qr-order', () => {
 
     const requestType = payload.icon === 'local_drink' ? 'request_water' : 'other';
     void qrOrderService
-      .createTableRequest({
+      .createTableRequest(activeQrToken.value, {
         sessionId: activeSessionId.value,
-        tableId: tableId.value,
         requestType,
       })
       .catch(() => {

@@ -1,5 +1,6 @@
 import {
   Column,
+  BeforeInsert,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -16,11 +17,29 @@ import { PromotionEntity } from '../../promotions/entities/promotion.entity';
 import { OrderItemEntity } from './order-item.entity';
 import { OrderStatusHistoryEntity } from './order-status-history.entity';
 import { OrderNotificationEntity } from './order-notification.entity';
+import {
+  createExternalId,
+  uuidBinaryTransformer,
+} from '../../../common/utils/uuid-binary.util';
 
-@Entity('POS_ORDERS')
+@Entity('POS_ORDER')
 export class OrderEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'ORD_ID', comment: 'รหัสคำสั่งซื้อ' })
   orderId: number;
+
+  @Column({
+    name: 'ORD_UUID',
+    type: 'binary',
+    length: 16,
+    unique: true,
+    transformer: uuidBinaryTransformer,
+  })
+  externalId: string;
+
+  @BeforeInsert()
+  assignExternalId(): void {
+    this.externalId ??= createExternalId();
+  }
 
   @Column({
     name: 'ORD_NUMBER',

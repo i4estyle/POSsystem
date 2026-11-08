@@ -13,7 +13,7 @@ import { BranchEntity } from '../../branches/entities/branch.entity';
 import { EmployeeEntity } from '../../employees/entities/employee.entity';
 import { PurchaseOrderItemEntity } from './purchase-order-item.entity';
 
-@Entity('POS_PURCHASE_ORDERS')
+@Entity('POS_PURCHASE_ORDER')
 export class PurchaseOrderEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'POR_ID', comment: 'รหัสใบสั่งซื้อ' })
   poId: number;

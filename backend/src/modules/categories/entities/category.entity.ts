@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 
-@Entity('POS_CATEGORIES')
+@Entity('POS_CATEGORY')
 export class CategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     name: 'CAT_ID',

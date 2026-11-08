@@ -1,5 +1,6 @@
 import {
   Column,
+  BeforeInsert,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -9,11 +10,29 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { QrCodeStatus, QrType } from '../../../common/enums';
 import { BranchEntity } from '../../branches/entities/branch.entity';
 import { DiningTableEntity } from '../../dining-tables/entities/dining-table.entity';
+import {
+  createExternalId,
+  uuidBinaryTransformer,
+} from '../../../common/utils/uuid-binary.util';
 
-@Entity('POS_QR_CODES')
+@Entity('POS_QR_CODE')
 export class QrCodeEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'QRC_ID', comment: 'รหัส QR Code' })
   qrCodeId: number;
+
+  @Column({
+    name: 'QRC_UUID',
+    type: 'binary',
+    length: 16,
+    unique: true,
+    transformer: uuidBinaryTransformer,
+  })
+  externalId: string;
+
+  @BeforeInsert()
+  assignExternalId(): void {
+    this.externalId ??= createExternalId();
+  }
 
   @Column({ name: 'QRC_BRANCH_ID', comment: 'รหัสสาขา' })
   branchId: number;

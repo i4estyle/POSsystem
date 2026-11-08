@@ -9,7 +9,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { PurchaseOrderEntity } from './purchase-order.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
 
-@Entity('POS_PURCHASE_ORDER_ITEMS')
+@Entity('POS_PURCHASE_ORDER_ITEM')
 export class PurchaseOrderItemEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     name: 'POI_ID',

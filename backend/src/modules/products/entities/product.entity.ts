@@ -9,7 +9,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { ProductStatus } from '../../../common/enums';
 import { CategoryEntity } from '../../categories/entities/category.entity';
 
-@Entity('POS_PRODUCTS')
+@Entity('POS_PRODUCT')
 export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'PRD_ID', comment: 'รหัสสินค้า' })
   productId: number;

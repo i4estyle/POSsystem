@@ -9,7 +9,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { DiningTableStatus } from '../../../common/enums';
 import { BranchEntity } from '../../branches/entities/branch.entity';
 
-@Entity('POS_DINING_TABLES')
+@Entity('POS_DINING_TABLE')
 export class DiningTableEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'DTB_ID', comment: 'รหัสโต๊ะอาหาร' })
   tableId: number;

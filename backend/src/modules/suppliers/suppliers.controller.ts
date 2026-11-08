@@ -20,9 +20,14 @@ import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { SupplierEntity } from './entities/supplier.entity';
 import { PurchaseOrderEntity } from './entities/purchase-order.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { AuthUser } from '../../common/decorators/auth-user.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
+import type { AuthPrincipal } from '../../common/interfaces/auth-principal.interface';
 
 @ApiTags('Suppliers')
 @Controller('suppliers')
+@Roles(RoleName.ADMIN, RoleName.MANAGER)
 export class SuppliersController {
   constructor(private readonly suppliersService: SuppliersService) {}
 
@@ -50,13 +55,14 @@ export class SuppliersController {
   @ApiOperation({ summary: 'ดึงรายการใบสั่งซื้อแบบแบ่งหน้า' })
   async findAllPurchaseOrders(
     @Query() pagination: PaginationQueryDto,
+    @AuthUser() principal: AuthPrincipal,
   ): Promise<{
     data: PurchaseOrderEntity[];
     total: number;
     page: number;
     limit: number;
   }> {
-    return this.suppliersService.findAllPurchaseOrders(pagination);
+    return this.suppliersService.findAllPurchaseOrders(pagination, principal);
   }
 
   @Post('purchase-orders')
@@ -64,16 +70,18 @@ export class SuppliersController {
   @ApiResponse({ status: 201, type: PurchaseOrderEntity })
   async createPurchaseOrder(
     @Body() dto: CreatePurchaseOrderDto,
+    @AuthUser() principal: AuthPrincipal,
   ): Promise<PurchaseOrderEntity> {
-    return this.suppliersService.createPurchaseOrder(dto);
+    return this.suppliersService.createPurchaseOrder(dto, principal);
   }
 
   @Get('purchase-orders/:id')
   @ApiOperation({ summary: 'ดึงข้อมูลใบสั่งซื้อตาม ID' })
   async findOnePurchaseOrder(
     @Param('id', ParseIntPipe) id: number,
+    @AuthUser() principal: AuthPrincipal,
   ): Promise<PurchaseOrderEntity> {
-    return this.suppliersService.findOnePurchaseOrder(id);
+    return this.suppliersService.findOnePurchaseOrder(id, principal);
   }
 
   @Patch('purchase-orders/:id')
@@ -81,8 +89,13 @@ export class SuppliersController {
   async updatePurchaseOrder(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdatePurchaseOrderDto,
+    @AuthUser() principal: AuthPrincipal,
   ): Promise<PurchaseOrderEntity> {
-    return this.suppliersService.updatePurchaseOrder(id, dto);
+    return this.suppliersService.changePurchaseOrderStatus(
+      id,
+      dto.status,
+      principal,
+    );
   }
 
   @Get(':id')

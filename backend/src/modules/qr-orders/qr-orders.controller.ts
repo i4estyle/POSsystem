@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { QrOrdersService } from './qr-orders.service';
@@ -24,6 +25,13 @@ import { QrCodeEntity } from './entities/qr-code.entity';
 import { TableSessionEntity } from './entities/table-session.entity';
 import { TableRequestEntity } from './entities/table-request.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Public } from '../../common/decorators/public.decorator';
+import {
+  CreatePublicRequestDto,
+  CreatePublicSessionDto,
+} from './dto/public-qr-order.dto';
+import { CreateOrderDto } from '../orders/dto/create-order.dto';
+import { OrderEntity } from '../orders/entities/order.entity';
 
 @ApiTags('QR Orders')
 @Controller('qr-orders')
@@ -34,7 +42,10 @@ export class QrOrdersController {
   ) {}
 
   @Get('tunnel-info')
-  @ApiOperation({ summary: 'ดึง URL ออนไลน์สาธารณะสำหรับสแกน QR ผ่าน 4G/5G หรือ Wi-Fi' })
+  @Public()
+  @ApiOperation({
+    summary: 'ดึง URL ออนไลน์สาธารณะสำหรับสแกน QR ผ่าน 4G/5G หรือ Wi-Fi',
+  })
   getTunnelInfo(): TunnelInfo {
     return this.tunnelService.getTunnelInfo();
   }
@@ -61,6 +72,48 @@ export class QrOrdersController {
   @ApiOperation({ summary: 'ดึงข้อมูล QR Code จาก Token สแกน' })
   async findByToken(@Param('token') token: string): Promise<QrCodeEntity> {
     return this.qrOrdersService.findByToken(token);
+  }
+
+  @Get('public/:externalId')
+  @Public()
+  @ApiOperation({ summary: 'ดึงข้อมูล QR Code สาธารณะด้วย UUID' })
+  async findPublicQrCode(
+    @Param('externalId', ParseUUIDPipe) externalId: string,
+  ): Promise<QrCodeEntity> {
+    return this.qrOrdersService.findByExternalId(externalId);
+  }
+
+  @Post('public/:token/sessions')
+  @Public()
+  async createPublicSession(
+    @Param('token') token: string,
+    @Body() dto: CreatePublicSessionDto,
+  ): Promise<TableSessionEntity> {
+    return this.qrOrdersService.createPublicSession(token, dto.guestCount ?? 1);
+  }
+
+  @Post('public/:token/sessions/:sessionId/requests')
+  @Public()
+  async createPublicRequest(
+    @Param('token') token: string,
+    @Param('sessionId', ParseIntPipe) sessionId: number,
+    @Body() dto: CreatePublicRequestDto,
+  ): Promise<TableRequestEntity> {
+    return this.qrOrdersService.createPublicRequest(
+      token,
+      sessionId,
+      dto.requestType,
+    );
+  }
+
+  @Post('public/:token/sessions/:sessionId/orders')
+  @Public()
+  async createPublicOrder(
+    @Param('token') token: string,
+    @Param('sessionId', ParseIntPipe) sessionId: number,
+    @Body() dto: CreateOrderDto,
+  ): Promise<OrderEntity> {
+    return this.qrOrdersService.createPublicOrder(token, sessionId, dto);
   }
 
   @Get('qr-codes/:id')

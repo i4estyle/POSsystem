@@ -10,7 +10,7 @@ import { OrderItemStatus } from '../../../common/enums';
 import { OrderEntity } from './order.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
 
-@Entity('POS_ORDER_ITEMS')
+@Entity('POS_ORDER_ITEM')
 export class OrderItemEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     name: 'ORI_ID',

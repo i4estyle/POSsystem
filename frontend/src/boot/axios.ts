@@ -34,12 +34,8 @@ api.interceptors.response.use(
     if (errObj.response && errObj.response.status === 401) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
-      if (
-        window.location.hash !== '#/login' &&
-        window.location.pathname !== '/login' &&
-        !window.location.pathname.startsWith('/order')
-      ) {
-        window.location.href = '/#/login';
+      if (window.location.pathname !== '/login' && !window.location.pathname.startsWith('/order')) {
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error instanceof Error ? error : new Error(String(error)));

@@ -17,6 +17,8 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryEntity } from './entities/category.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -24,6 +26,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @ApiOperation({ summary: 'สร้างหมวดหมู่สินค้าใหม่' })
   @ApiResponse({ status: 201, type: CategoryEntity })
   async create(@Body() dto: CreateCategoryDto): Promise<CategoryEntity> {
@@ -50,6 +53,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @ApiOperation({ summary: 'แก้ไขข้อมูลหมวดหมู่สินค้า' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -59,6 +63,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'ลบหมวดหมู่สินค้า (Soft Delete)' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

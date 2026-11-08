@@ -82,6 +82,9 @@ const handleLogin = async (): Promise<void> => {
       message: t('auth.loginSuccess'),
       position: 'top',
     });
+    if (window.location.hash) {
+      window.location.hash = '';
+    }
     void router.push('/pos');
   } catch {
     $q.notify({

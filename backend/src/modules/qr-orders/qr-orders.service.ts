@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QrCodeEntity } from './entities/qr-code.entity';
@@ -11,8 +15,16 @@ import { UpdateTableSessionDto } from './dto/update-table-session.dto';
 import { CreateTableRequestDto } from './dto/create-table-request.dto';
 import { UpdateTableRequestDto } from './dto/update-table-request.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { RequestStatus, SessionStatus } from '../../common/enums';
+import {
+  OrderChannel,
+  QrCodeStatus,
+  RequestStatus,
+  SessionStatus,
+} from '../../common/enums';
 import * as crypto from 'crypto';
+import { OrdersService } from '../orders/orders.service';
+import { CreateOrderDto } from '../orders/dto/create-order.dto';
+import { OrderEntity } from '../orders/entities/order.entity';
 
 @Injectable()
 export class QrOrdersService {
@@ -23,6 +35,7 @@ export class QrOrdersService {
     private readonly sessionRepository: Repository<TableSessionEntity>,
     @InjectRepository(TableRequestEntity)
     private readonly requestRepository: Repository<TableRequestEntity>,
+    private readonly ordersService: OrdersService,
   ) {}
 
   private generateToken(): string {
@@ -70,6 +83,91 @@ export class QrOrdersService {
     });
     if (!qr) {
       throw new NotFoundException(`QR Code with token '${token}' not found`);
+    }
+    return qr;
+  }
+
+  async createPublicSession(
+    token: string,
+    guestCount: number,
+  ): Promise<TableSessionEntity> {
+    const qr = await this.getActiveQrCode(token);
+    return this.sessionRepository.save(
+      this.sessionRepository.create({
+        qrCodeId: qr.qrCodeId,
+        tableId: qr.tableId ?? null,
+        guestCount,
+        sessionStatus: SessionStatus.ACTIVE,
+        startedAt: new Date(),
+      }),
+    );
+  }
+
+  async createPublicRequest(
+    token: string,
+    sessionId: number,
+    requestType: CreateTableRequestDto['requestType'],
+  ): Promise<TableRequestEntity> {
+    const qr = await this.getActiveQrCode(token);
+    const session = await this.sessionRepository.findOne({
+      where: { sessionId, qrCodeId: qr.qrCodeId },
+    });
+    if (!session || session.sessionStatus !== SessionStatus.ACTIVE) {
+      throw new ForbiddenException('Invalid or closed table session');
+    }
+    if (!session.tableId) {
+      throw new ForbiddenException('Table request requires a dining table');
+    }
+    return this.requestRepository.save(
+      this.requestRepository.create({
+        sessionId,
+        tableId: session.tableId,
+        requestType,
+        status: RequestStatus.PENDING,
+      }),
+    );
+  }
+
+  async createPublicOrder(
+    token: string,
+    sessionId: number,
+    dto: CreateOrderDto,
+  ): Promise<OrderEntity> {
+    const qr = await this.getActiveQrCode(token);
+    const session = await this.sessionRepository.findOne({
+      where: { sessionId, qrCodeId: qr.qrCodeId },
+    });
+    if (!session || session.sessionStatus !== SessionStatus.ACTIVE) {
+      throw new ForbiddenException('Invalid or closed table session');
+    }
+    return this.ordersService.create({
+      ...dto,
+      branchId: qr.branchId,
+      tableId: session.tableId ?? undefined,
+      sessionId: session.sessionId,
+      qrCodeId: qr.qrCodeId,
+      employeeId: undefined,
+      customerId: undefined,
+      promotionId: undefined,
+      orderChannel: OrderChannel.QR_ORDER,
+    });
+  }
+
+  private async getActiveQrCode(token: string): Promise<QrCodeEntity> {
+    const qr = await this.findByToken(token);
+    if (qr.status !== QrCodeStatus.ACTIVE) {
+      throw new ForbiddenException('QR Code is inactive');
+    }
+    return qr;
+  }
+
+  async findByExternalId(externalId: string): Promise<QrCodeEntity> {
+    const qr = await this.qrRepository.findOne({
+      where: { externalId },
+      relations: ['branch', 'table'],
+    });
+    if (!qr) {
+      throw new NotFoundException('QR Code not found');
     }
     return qr;
   }

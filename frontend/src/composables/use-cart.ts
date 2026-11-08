@@ -160,24 +160,19 @@ export function useCart() {
     error.value = null;
 
     const dto: CreateOrderDto = {
-      branchId: 1,
       orderChannel: OrderChannel.POS,
       orderType: orderType.value,
       tableId: selectedTableId.value ?? undefined,
       promotionId: selectedPromotion.value?.id ?? undefined,
       customerId: selectedMember.value?.id ?? undefined,
-      taxAmount: tax.value,
-      discountAmount: discountAmount.value,
       items: cartItems.value.map((item) => {
         const itemDto: {
           productId: number;
           quantity: number;
-          unitPrice: number;
           note?: string;
         } = {
           productId: item.product.productId,
           quantity: item.quantity,
-          unitPrice: item.product.sellingPrice,
         };
         if (item.note) {
           itemDto.note = item.note;

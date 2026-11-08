@@ -62,13 +62,7 @@ export class RegisterDto {
   @IsOptional()
   address?: string;
 
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
+  @ApiProperty({ example: 1 })
   @IsInt()
-  branchId?: number;
-
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
-  @IsInt()
-  roleId?: number;
+  branchId: number;
 }

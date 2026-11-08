@@ -17,6 +17,8 @@ import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { PromotionEntity } from './entities/promotion.entity';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleName } from '../../common/enums';
 
 @ApiTags('Promotions')
 @Controller('promotions')
@@ -24,6 +26,7 @@ export class PromotionsController {
   constructor(private readonly promotionsService: PromotionsService) {}
 
   @Post()
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @ApiOperation({ summary: 'สร้างโปรโมชั่นใหม่' })
   @ApiResponse({ status: 201, type: PromotionEntity })
   async create(@Body() dto: CreatePromotionDto): Promise<PromotionEntity> {
@@ -50,6 +53,7 @@ export class PromotionsController {
   }
 
   @Patch(':id')
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @ApiOperation({ summary: 'แก้ไขข้อมูลโปรโมชั่น' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -59,6 +63,7 @@ export class PromotionsController {
   }
 
   @Delete(':id')
+  @Roles(RoleName.ADMIN, RoleName.MANAGER)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'ลบโปรโมชั่น (Soft Delete)' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

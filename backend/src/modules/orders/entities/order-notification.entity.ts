@@ -9,7 +9,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { OrderEntity } from './order.entity';
 import { BranchEntity } from '../../branches/entities/branch.entity';
 
-@Entity('POS_ORDER_NOTIFICATIONS')
+@Entity('POS_ORDER_NOTIFICATION')
 export class OrderNotificationEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     name: 'ONT_ID',

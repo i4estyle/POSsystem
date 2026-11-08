@@ -138,7 +138,9 @@ export class TunnelService implements OnApplicationBootstrap, OnModuleDestroy {
           const foundUrl = match[0];
           if (target === 'frontend' && this.frontendUrl !== foundUrl) {
             this.frontendUrl = foundUrl;
-            this.logger.log(`Public Mobile QR URL Ready (4G/5G & Wi-Fi): ${foundUrl}`);
+            this.logger.log(
+              `Public Mobile QR URL Ready (4G/5G & Wi-Fi): ${foundUrl}`,
+            );
             this.saveTunnelJson();
           } else if (target === 'backend' && this.backendUrl !== foundUrl) {
             this.backendUrl = foundUrl;

@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 
-@Entity('POS_SUPPLIERS')
+@Entity('POS_SUPPLIER')
 export class SupplierEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'SUP_ID', comment: 'รหัสซัพพลายเออร์' })
   supplierId: number;
