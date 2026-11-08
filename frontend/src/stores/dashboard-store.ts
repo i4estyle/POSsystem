@@ -33,7 +33,7 @@ export interface SummaryStat {
 export const useDashboardStore = defineStore('dashboard', () => {
   const branchStore = useBranchStore();
 
-  const timeFilter = ref<'today' | 'month' | 'year' | 'custom'>('today');
+  const timeFilter = ref<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
   const customDateRange = ref<{ from: string; to: string } | string>({
     from: new Date().toISOString().split('T')[0] ?? '',
     to: new Date().toISOString().split('T')[0] ?? '',
@@ -51,10 +51,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   const timeMultiplier = computed(() => {
     switch (timeFilter.value) {
+      case 'week':
+        return 7;
       case 'month':
-        return 28;
+        return 30;
       case 'year':
-        return 340;
+        return 365;
       case 'custom':
         return 7;
       case 'today':
@@ -88,27 +90,121 @@ export const useDashboardStore = defineStore('dashboard', () => {
     };
   });
 
-  // Hourly / Periodic Chart series
-  const hourlyCategories = computed(() => {
-    if (timeFilter.value === 'month') {
-      return ['สัปดาห์ 1', 'สัปดาห์ 2', 'สัปดาห์ 3', 'สัปดาห์ 4'];
+  // Smart Dynamic Chart Categories & Data (Approach A)
+  const chartTitle = computed(() => {
+    switch (timeFilter.value) {
+      case 'week':
+        return 'สถิติยอดขายรายวัน (สัปดาห์นี้)';
+      case 'month':
+        return 'สถิติยอดขายรายสัปดาห์ (เดือนนี้)';
+      case 'year':
+        return 'สถิติยอดขายรายไตรมาส (ปีนี้)';
+      case 'custom':
+        return 'สถิติยอดขายตามช่วงวันที่เลือก';
+      case 'today':
+      default:
+        return 'สถิติยอดขายรายชั่วโมง (วันนี้)';
     }
-    if (timeFilter.value === 'year') {
-      return ['Q1', 'Q2', 'Q3', 'Q4'];
-    }
-    return ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
   });
 
-  const hourlyData = computed(() => {
+  const chartSubtitle = computed(() => {
+    switch (timeFilter.value) {
+      case 'week':
+        return 'เปรียบเทียบยอดขาย 7 วันล่าสุด กับสัปดาห์ก่อนหน้า';
+      case 'month':
+        return 'เปรียบเทียบ 4 สัปดาห์ในเดือนนี้ กับเดือนที่แล้ว';
+      case 'year':
+        return 'เปรียบเทียบ 4 ไตรมาสในปีนี้ กับปีก่อนหน้า';
+      case 'custom':
+        return 'เปรียบเทียบช่วงเวลาที่เลือก กับช่วงเวลาก่อนหน้า';
+      case 'today':
+      default:
+        return 'เปรียบเทียบยอดขายรายชั่วโมงวันนี้ กับเมื่อวานนี้';
+    }
+  });
+
+  const chartCategories = computed(() => {
+    switch (timeFilter.value) {
+      case 'week':
+        return ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสฯ', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+      case 'month':
+        return ['สัปดาห์ 1', 'สัปดาห์ 2', 'สัปดาห์ 3', 'สัปดาห์ 4'];
+      case 'year':
+        return ['Q1 (ม.ค.-มี.ค.)', 'Q2 (เม.ย.-มิ.ย.)', 'Q3 (ก.ค.-ก.ย.)', 'Q4 (ต.ค.-ธ.ค.)'];
+      case 'custom':
+        return ['วันที่ 1', 'วันที่ 2', 'วันที่ 3', 'วันที่ 4', 'วันที่ 5', 'วันที่ 6', 'วันที่ 7'];
+      case 'today':
+      default:
+        return ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
+    }
+  });
+
+  // Current period sales data
+  const currentSalesData = computed(() => {
     const bm = branchMultiplier.value;
-    const tm = timeMultiplier.value;
-    if (timeFilter.value === 'month') {
-      return [115000, 142000, 138000, 169000].map((v) => Math.round(v * bm));
+    switch (timeFilter.value) {
+      case 'week':
+        return [14200, 16800, 15400, 18900, 26500, 34200, 31800].map((v) => Math.round(v * bm));
+      case 'month':
+        return [115000, 142000, 138000, 169000].map((v) => Math.round(v * bm));
+      case 'year':
+        return [1250000, 1480000, 1620000, 1890000].map((v) => Math.round(v * bm));
+      case 'custom':
+        return [16500, 18200, 17900, 21400, 29800, 32100, 28700].map((v) => Math.round(v * bm));
+      case 'today':
+      default:
+        return [1500, 3200, 6800, 4200, 3900, 2700, 1800].map((v) => Math.round(v * bm));
     }
-    if (timeFilter.value === 'year') {
-      return [1250000, 1480000, 1620000, 1890000].map((v) => Math.round(v * bm));
+  });
+
+  // Previous period comparison sales data (2nd line in chart)
+  const previousSalesData = computed(() => {
+    const bm = branchMultiplier.value;
+    switch (timeFilter.value) {
+      case 'week':
+        return [12500, 14900, 14800, 17200, 23800, 30500, 28900].map((v) => Math.round(v * bm));
+      case 'month':
+        return [102000, 128000, 125000, 151000].map((v) => Math.round(v * bm));
+      case 'year':
+        return [1080000, 1320000, 1450000, 1680000].map((v) => Math.round(v * bm));
+      case 'custom':
+        return [15000, 16800, 16200, 19500, 27100, 29800, 26500].map((v) => Math.round(v * bm));
+      case 'today':
+      default:
+        return [1200, 2800, 5900, 3600, 3200, 2300, 1400].map((v) => Math.round(v * bm));
     }
-    return [1500, 3200, 6800, 4200, 3900, 2700, 1800].map((v) => Math.round(v * bm * (tm > 1 ? tm / 10 : 1)));
+  });
+
+  const previousPeriodLabel = computed(() => {
+    switch (timeFilter.value) {
+      case 'week':
+        return 'สัปดาห์ก่อนหน้า';
+      case 'month':
+        return 'เดือนก่อนหน้า';
+      case 'year':
+        return 'ปีก่อนหน้า';
+      case 'custom':
+        return 'ช่วงก่อนหน้า';
+      case 'today':
+      default:
+        return 'เมื่อวานนี้';
+    }
+  });
+
+  const currentPeriodLabel = computed(() => {
+    switch (timeFilter.value) {
+      case 'week':
+        return 'สัปดาห์นี้';
+      case 'month':
+        return 'เดือนนี้';
+      case 'year':
+        return 'ปีนี้';
+      case 'custom':
+        return 'ช่วงที่เลือก';
+      case 'today':
+      default:
+        return 'วันนี้';
+    }
   });
 
   // Donut Category Breakdown
@@ -195,8 +291,13 @@ export const useDashboardStore = defineStore('dashboard', () => {
     timeFilter,
     customDateRange,
     summary,
-    hourlyCategories,
-    hourlyData,
+    chartTitle,
+    chartSubtitle,
+    chartCategories,
+    currentSalesData,
+    previousSalesData,
+    currentPeriodLabel,
+    previousPeriodLabel,
     categorySeries,
     topSelling,
   };

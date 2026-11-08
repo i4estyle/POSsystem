@@ -212,35 +212,57 @@
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
 
       h3 {
         margin: 0 0 4px;
         color: $color-text-main;
-        font: 600 20px/28px $font-family-base;
+        font: 700 20px/28px $font-family-base;
       }
 
-      small {
-        color: $color-text-body;
+      .chart-sub-text {
+        color: $color-text-muted;
         font: 600 13px/18px $font-family-base;
       }
 
-      .period-toggle {
+      .chart-legends-indicator {
         display: flex;
-        gap: 6px;
+        align-items: center;
+        gap: 16px;
+        background: #fafafc;
+        padding: 5px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(208, 195, 241, 0.4);
 
-        button {
-          height: 32px;
-          padding: 0 14px;
-          border: 0;
-          border-radius: $radius-full;
-          background: transparent;
-          color: $color-text-body;
-          font: 700 12px $font-family-base;
-          cursor: pointer;
+        .legend-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 700;
+          font-family: $font-family-base;
 
-          &.active {
-            background: $palette-purple;
+          .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+          }
+
+          &.current {
             color: $color-primary-dark;
+
+            .legend-dot {
+              background: #635880;
+            }
+          }
+
+          &.previous {
+            color: #8c859c;
+
+            .legend-dot {
+              background: #c8c2db;
+            }
           }
         }
       }

@@ -2,31 +2,25 @@
   <div class="chart-card">
     <div class="chart-header">
       <div>
-        <h3>{{ t('dashboard.hourlyChart.title') }}</h3>
-        <small>{{ t('dashboard.hourlyChart.todayDate') }}</small>
+        <h3>{{ dashboardStore.chartTitle }}</h3>
+        <small class="chart-sub-text">{{ dashboardStore.chartSubtitle }}</small>
       </div>
-      <div class="period-toggle">
-        <button
-          type="button"
-          :class="{ active: activePeriod === 'day' }"
-          @click="activePeriod = 'day'"
-        >
-          {{ t('dashboard.hourlyChart.day') }}
-        </button>
-        <button
-          type="button"
-          :class="{ active: activePeriod === 'week' }"
-          @click="activePeriod = 'week'"
-        >
-          {{ t('dashboard.hourlyChart.week') }}
-        </button>
+      <div class="chart-legends-indicator">
+        <span class="legend-item current">
+          <span class="legend-dot"></span>
+          {{ dashboardStore.currentPeriodLabel }}
+        </span>
+        <span class="legend-item previous">
+          <span class="legend-dot"></span>
+          {{ dashboardStore.previousPeriodLabel }}
+        </span>
       </div>
     </div>
 
     <div class="area-chart-sim">
       <apexchart
         type="area"
-        height="220"
+        height="230"
         width="100%"
         :options="chartOptions"
         :series="chartSeries"
@@ -36,21 +30,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 import { useDashboardStore } from '@/stores/dashboard-store';
 
 const apexchart = VueApexCharts;
-const { t } = useI18n();
 const dashboardStore = useDashboardStore();
-const activePeriod = ref<'day' | 'week'>('day');
 
 const chartSeries = computed(() => [
   {
-    name: t('dashboard.topSelling.columns.sales'),
-    data: dashboardStore.hourlyData,
+    name: dashboardStore.currentPeriodLabel,
+    data: dashboardStore.currentSalesData,
+  },
+  {
+    name: dashboardStore.previousPeriodLabel,
+    data: dashboardStore.previousSalesData,
   },
 ]);
 
@@ -67,17 +62,18 @@ const chartOptions = computed<ApexOptions>(() => ({
       speed: 600,
     },
   },
-  colors: ['#635880'],
+  colors: ['#635880', '#c8c2db'],
   stroke: {
     curve: 'smooth',
-    width: 3,
+    width: [3, 2],
+    dashArray: [0, 4],
   },
   fill: {
     type: 'gradient',
     gradient: {
       shadeIntensity: 1,
-      opacityFrom: 0.55,
-      opacityTo: 0.05,
+      opacityFrom: [0.45, 0.15],
+      opacityTo: [0.03, 0.0],
       stops: [0, 90, 100],
     },
   },
@@ -88,7 +84,7 @@ const chartOptions = computed<ApexOptions>(() => ({
     padding: { top: 0, right: 10, bottom: 0, left: 10 },
   },
   xaxis: {
-    categories: dashboardStore.hourlyCategories,
+    categories: dashboardStore.chartCategories,
     axisBorder: { show: false },
     axisTicks: { show: false },
     labels: {
@@ -107,6 +103,9 @@ const chartOptions = computed<ApexOptions>(() => ({
         fontSize: '11px',
       },
     },
+  },
+  legend: {
+    show: false, // We use sleek custom header legend
   },
   tooltip: {
     theme: 'light',

@@ -12,29 +12,8 @@
               <small>{{ t('dashboard.subtitle', { branch: currentBranchName }) }}</small>
             </div>
 
-            <!-- Filter Toolbar: Branch & Date Range -->
+            <!-- Filter Toolbar: Date Range -->
             <div class="dashboard-filter-toolbar">
-              <!-- Branch Filter (Only for Admin) -->
-              <div v-if="authStore.isAdmin" class="filter-item branch-filter">
-                <q-select
-                  v-model="selectedBranch"
-                  :options="branchOptions"
-                  option-value="value"
-                  option-label="label"
-                  emit-value
-                  map-options
-                  dense
-                  outlined
-                  rounded
-                  bg-color="white"
-                  class="filter-select"
-                >
-                  <template #prepend>
-                    <q-icon name="store" size="18px" color="primary" />
-                  </template>
-                </q-select>
-              </div>
-
               <!-- Time Preset Buttons -->
               <div class="time-presets-group">
                 <q-btn-toggle
@@ -46,6 +25,7 @@
                   class="preset-toggle"
                   :options="[
                     { label: 'วันนี้', value: 'today' },
+                    { label: 'สัปดาห์นี้', value: 'week' },
                     { label: 'เดือนนี้', value: 'month' },
                     { label: 'ปีนี้', value: 'year' },
                     { label: 'กำหนดเอง', value: 'custom' },
@@ -127,19 +107,6 @@ const customDateRange = computed({
   set: (val) => {
     dashboardStore.customDateRange = val;
   },
-});
-
-const branchOptions = computed(() => {
-  const options = [{ label: 'ทุกสาขา (All Branches)', value: null as number | null }];
-  branchStore.activeBranches.forEach((b) => {
-    options.push({ label: b.branchName, value: b.branchId });
-  });
-  return options;
-});
-
-const selectedBranch = computed({
-  get: () => branchStore.selectedBranchId,
-  set: (val: number | null) => branchStore.setSelectedBranchId(val),
 });
 
 const currentBranchName = computed(() => {
