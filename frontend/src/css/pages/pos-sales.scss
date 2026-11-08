@@ -144,6 +144,27 @@
       gap: 6px;
       margin-top: 10px;
       flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 4px;
+
+      /* Elegant Slim Scrollbar */
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(208, 195, 241, 0.4);
+        border-radius: 4px;
+
+        &:hover {
+          background: $color-primary;
+        }
+      }
 
       .nav-item {
         display: flex;

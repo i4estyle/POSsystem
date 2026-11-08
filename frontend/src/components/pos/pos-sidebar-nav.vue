@@ -140,29 +140,38 @@ const currentBranchName = computed((): string => {
   );
 });
 
-const navItems = computed(() => [
-  { label: t('pos.nav.dashboard'), icon: 'dashboard', to: '/dashboard' },
-  { label: t('pos.nav.pos'), icon: 'shopping_basket', to: '/pos' },
-  {
-    label: t('pos.nav.orders'),
-    icon: 'receipt_long',
-    to: '/orders',
-    children: [
-      { label: t('pos.nav.orderManagement'), icon: 'dashboard_customize', to: '/orders/manage' },
-      { label: t('pos.nav.orderHistory'), icon: 'history', to: '/orders' },
-    ],
-  },
-  { label: t('pos.nav.menu'), icon: 'restaurant_menu', to: '/menu' },
-  { label: t('pos.nav.stock'), icon: 'inventory_2', to: '/stock' },
-  { label: t('pos.nav.staff'), icon: 'badge', to: '/staff' },
-  { label: t('pos.nav.attendance'), icon: 'schedule', to: '/attendance' },
-  { label: t('pos.nav.payroll'), icon: 'payments', to: '/payroll' },
-  { label: t('pos.nav.feedback'), icon: 'rate_review', to: '/feedback' },
-  { label: t('pos.nav.promotions'), icon: 'local_offer', to: '/promotions' },
-  { label: t('pos.nav.members'), icon: 'card_membership', to: '/members' },
-  { label: t('pos.nav.tables'), icon: 'table_restaurant', to: '/tables' },
-  { label: t('pos.nav.settings'), icon: 'settings', to: '/settings' },
-]);
+const navItems = computed(() => {
+  const items = [];
+
+  if (authStore.canAccessDashboard) {
+    items.push({ label: t('pos.nav.dashboard'), icon: 'dashboard', to: '/dashboard' });
+  }
+
+  items.push(
+    { label: t('pos.nav.pos'), icon: 'shopping_basket', to: '/pos' },
+    {
+      label: t('pos.nav.orders'),
+      icon: 'receipt_long',
+      to: '/orders',
+      children: [
+        { label: t('pos.nav.orderManagement'), icon: 'dashboard_customize', to: '/orders/manage' },
+        { label: t('pos.nav.orderHistory'), icon: 'history', to: '/orders' },
+      ],
+    },
+    { label: t('pos.nav.menu'), icon: 'restaurant_menu', to: '/menu' },
+    { label: t('pos.nav.stock'), icon: 'inventory_2', to: '/stock' },
+    { label: t('pos.nav.staff'), icon: 'badge', to: '/staff' },
+    { label: t('pos.nav.attendance'), icon: 'schedule', to: '/attendance' },
+    { label: t('pos.nav.payroll'), icon: 'payments', to: '/payroll' },
+    { label: t('pos.nav.feedback'), icon: 'rate_review', to: '/feedback' },
+    { label: t('pos.nav.promotions'), icon: 'local_offer', to: '/promotions' },
+    { label: t('pos.nav.members'), icon: 'card_membership', to: '/members' },
+    { label: t('pos.nav.tables'), icon: 'table_restaurant', to: '/tables' },
+    { label: t('pos.nav.settings'), icon: 'settings', to: '/settings' },
+  );
+
+  return items;
+});
 </script>
 
 <style lang="scss">

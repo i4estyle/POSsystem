@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: 'dashboard',
         component: () => import('@/pages/dashboard-page.vue'),
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'manager', 1, 3] },
       },
     ],
   },

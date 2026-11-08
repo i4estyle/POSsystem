@@ -28,6 +28,7 @@ export interface AuthUser {
   branchName?: string | undefined;
   branch?: { branchId: number; branchName: string } | undefined;
   roleId: number;
+  roleName?: string | undefined;
   nationalId?: string | undefined;
   address?: string | undefined;
   titlePrefix?: string | undefined;

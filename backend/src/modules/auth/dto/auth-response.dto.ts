@@ -28,6 +28,9 @@ export class AuthUserDto {
   @ApiProperty()
   roleId: number;
 
+  @ApiProperty({ required: false })
+  roleName?: string;
+
   @ApiProperty()
   address?: string;
 

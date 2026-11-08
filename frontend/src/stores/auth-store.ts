@@ -21,6 +21,9 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref<string | null>(null);
 
   const isAuthenticated = computed((): boolean => !!currentUser.value || !!token.value);
+  const isAdmin = computed((): boolean => currentUser.value?.roleId === 1 || currentUser.value?.roleName === 'admin');
+  const isManager = computed((): boolean => currentUser.value?.roleId === 3 || currentUser.value?.roleName === 'manager');
+  const canAccessDashboard = computed((): boolean => isAdmin.value || isManager.value);
 
   const login = async (payload: LoginPayload): Promise<AuthUser> => {
     isLoading.value = true;
@@ -85,6 +88,9 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     error,
     isAuthenticated,
+    isAdmin,
+    isManager,
+    canAccessDashboard,
     login,
     fetchProfile,
     updateProfile,

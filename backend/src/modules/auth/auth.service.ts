@@ -166,6 +166,7 @@ export class AuthService {
       branchId: employee.branchId,
       branchName: employee.branch?.branchName,
       roleId: employee.roleId,
+      roleName: employee.role?.roleName,
       address: employee.address,
       titlePrefix: employee.titlePrefix,
       profileImage: employee.profileImage,

@@ -27,9 +27,36 @@ export default defineRouter(() => {
     if (to.matched.some((record) => record.meta.requiresAuth)) {
       if (!isAuthenticated) {
         next({ name: 'login' });
-      } else {
-        next();
+        return;
       }
+
+      // Check role permissions if specified
+      const recordWithRoles = to.matched.find((record) => record.meta.allowedRoles);
+      if (recordWithRoles) {
+        const allowedRoles = recordWithRoles.meta.allowedRoles as Array<string | number>;
+        const rawUser = localStorage.getItem('auth_user');
+        let roleId: number | undefined;
+        let roleName: string | undefined;
+        if (rawUser) {
+          try {
+            const parsed = JSON.parse(rawUser);
+            roleId = parsed.roleId;
+            roleName = parsed.roleName;
+          } catch {
+            // ignore parse error
+          }
+        }
+        const hasAccess =
+          (roleId !== undefined && allowedRoles.includes(roleId)) ||
+          (roleName !== undefined && allowedRoles.includes(roleName));
+
+        if (!hasAccess) {
+          next({ name: 'pos-sales' });
+          return;
+        }
+      }
+
+      next();
     } else if (to.matched.some((record) => record.meta.guestOnly)) {
       if (isAuthenticated) {
         next({ name: 'pos-sales' });
