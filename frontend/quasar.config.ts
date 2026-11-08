@@ -50,7 +50,17 @@ export default defineConfig((ctx) => {
     },
 
     devServer: {
+      host: '0.0.0.0',
+      port: 9000,
       open: true,
+      allowedHosts: true,
+      proxy: {
+        '/api-proxy': {
+          target: 'http://127.0.0.1:3000',
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/api-proxy/, ''),
+        },
+      },
     },
 
     framework: {

@@ -198,6 +198,17 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/order',
+    component: () => import('@/layouts/blank-layout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'mobile-qr-order',
+        component: () => import('@/pages/mobile-qr-order-page.vue'),
+      },
+    ],
+  },
+  {
     path: '/:catchAll(.*)*',
     component: () => import('@/pages/ErrorNotFound.vue'),
   },

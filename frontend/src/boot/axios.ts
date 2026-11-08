@@ -12,10 +12,7 @@ const getBaseUrl = (): string => {
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL as string;
   }
-  if (typeof process !== 'undefined' && process.env && process.env.VITE_API_BASE_URL) {
-    return process.env.VITE_API_BASE_URL;
-  }
-  return 'http://localhost:3000';
+  return '/api-proxy';
 };
 
 const api = axios.create({
@@ -37,7 +34,11 @@ api.interceptors.response.use(
     if (errObj.response && errObj.response.status === 401) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
-      if (window.location.hash !== '#/login' && window.location.pathname !== '/login') {
+      if (
+        window.location.hash !== '#/login' &&
+        window.location.pathname !== '/login' &&
+        !window.location.pathname.startsWith('/order')
+      ) {
         window.location.href = '/#/login';
       }
     }
