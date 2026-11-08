@@ -41,8 +41,7 @@ import { RolesGuard } from './common/guards/roles.guard';
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: false,
-        migrationsRun:
-          configService.get<string>('DB_MIGRATIONS_RUN') === 'true',
+        migrationsRun: false,
         migrations: ['dist/database/migrations/*.js'],
       }),
     }),
