@@ -43,15 +43,6 @@
         :title="t('tables.card.changeStatus')"
         @click.stop
       >
-        <GuidedTooltip
-          v-if="showStatusGuide"
-          class="status-guide-tooltip"
-          :title="t('tables.guides.statusTitle')"
-          :message="t('tables.guides.statusMessage')"
-          :close-label="t('tables.guides.close')"
-          session-key="tables.statusGuide.dismissed"
-          placement="bottom-left"
-        />
         <span :class="['status-dot', table.status]"></span>
         <span class="status-label">{{ t(`tables.status.${table.status}`) }}</span>
 
@@ -130,14 +121,12 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { tableStatusFlow, type TableManagementItem, type TableStatus } from '@/types/dining-table';
-import GuidedTooltip from '@/components/base/guided-tooltip.vue';
 
 const { t } = useI18n();
 
 const props = defineProps<{
   table: TableManagementItem;
   isFocused?: boolean;
-  showStatusGuide?: boolean;
 }>();
 
 const emit = defineEmits<{

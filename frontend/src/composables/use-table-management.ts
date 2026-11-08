@@ -40,6 +40,12 @@ export function useTableManagement() {
           );
           table.timeSeated =
             diffMins < 60 ? `${diffMins}m ago` : `${Math.floor(diffMins / 60)}h ${diffMins % 60}m`;
+        } else if (table.status === 'occupied') {
+          // If no active orders remain for this table, return to available
+          table.status = 'available';
+          table.totalAmount = undefined;
+          table.timeSeated = undefined;
+          table.descriptionKey = 'tables.card.readyForGuest';
         }
       }
     } catch {
@@ -81,6 +87,41 @@ export function useTableManagement() {
     if (!target) return null;
 
     Object.assign(target, tableData);
+
+    // If staff changes status to available or cleaning, reset active order info on this table
+    if (tableData.status && tableData.status !== 'occupied') {
+      target.totalAmount = 0;
+      target.timeSeated = undefined;
+
+      // Automatically complete active orders for this table in the background
+      void orderService
+        .findAll(100)
+        .then(async (liveOrders) => {
+          const tableOrders = liveOrders.filter(
+            (bo) =>
+              Number(bo.tableId) === Number(tableId) &&
+              bo.status !== OrderStatus.PAID &&
+              bo.status !== OrderStatus.CANCELLED,
+          );
+          for (const order of tableOrders) {
+            try {
+              if (order.status === OrderStatus.PENDING) {
+                await orderService.updateStatus(order.orderId, OrderStatus.CANCELLED);
+              } else if (order.status === OrderStatus.READY || order.status === OrderStatus.SERVED) {
+                await orderService.updateStatus(order.orderId, OrderStatus.PAID);
+              } else {
+                await orderService.updateStatus(order.orderId, OrderStatus.CANCELLED);
+              }
+            } catch {
+              // Ignore single update failures
+            }
+          }
+        })
+        .catch(() => {
+          // Ignore offline errors
+        });
+    }
+
     return target;
   };
 

@@ -2,11 +2,10 @@
   <section class="tables-cards-container">
     <section class="tables-cards-grid">
       <TableCard
-        v-for="(table, index) in paginatedTables"
+        v-for="table in paginatedTables"
         :key="table.tableId"
         :table="table"
         :is-focused="table.tableId === focusedTableId"
-        :show-status-guide="index === 0"
         @focus-table="(id) => emit('focus-table', id)"
         @edit-table="(t) => emit('edit-table', t)"
         @show-qr="(t) => emit('show-qr', t)"
