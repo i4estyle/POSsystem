@@ -576,15 +576,14 @@
     flex-shrink: 0;
 
     time {
-      color: $color-text-muted;
-      font: 600 12px/16px $font-family-base;
-    }
-
-    small {
       color: $color-primary-dark;
-      font:
-        800 12.5px/18px 'Plus Jakarta Sans',
-        $font-family-base;
+      font: 700 13px/18px 'Plus Jakarta Sans', $font-family-base;
+      background: rgba(208, 195, 241, 0.22);
+      padding: 3px 8px;
+      border-radius: $radius-full;
+      display: inline-flex;
+      align-items: center;
+      letter-spacing: 0.3px;
     }
   }
 

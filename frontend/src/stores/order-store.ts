@@ -56,9 +56,10 @@ const mapKanbanToBackendStatus = (status: KanbanStatus): OrderStatus => {
 
 const mapBackendOrderToManaged = (bo: BackendOrderDetail): ManagedOrder => {
   const dateObj = bo.orderDate ? new Date(bo.orderDate) : new Date();
-  const timeStr = dateObj.toLocaleTimeString('en-US', {
+  const timeStr = dateObj.toLocaleTimeString('th-TH', {
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false,
   });
 
   const items: OrderKanbanMockItem[] = (bo.items ?? []).map((it) => {
@@ -170,7 +171,7 @@ export const useOrderStore = defineStore('orders', () => {
       status: 'new',
       createdAt: now.toISOString(),
       orderNumber: formattedNo,
-      time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      time: now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
       orderTypeKey: payload.isTakeaway ? 'takeaway' : 'dineIn',
       ...(payload.isTakeaway ? {} : { tableNumber: payload.tableId ?? 1 }),
       subtotal: calcSubtotal,

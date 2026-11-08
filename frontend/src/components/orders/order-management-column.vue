@@ -28,7 +28,6 @@
           </div>
           <div class="order-management-ticket__time-meta">
             <time>{{ order.time }}</time>
-            <small>{{ order.orderNumber }}</small>
           </div>
         </div>
 

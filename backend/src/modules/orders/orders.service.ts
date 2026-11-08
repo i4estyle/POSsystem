@@ -37,7 +37,11 @@ const MONEY_SCALE = 100;
 const STATUS_TRANSITIONS: Readonly<
   Record<OrderStatus, readonly OrderStatus[]>
 > = {
-  [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+  [OrderStatus.PENDING]: [
+    OrderStatus.CONFIRMED,
+    OrderStatus.PREPARING,
+    OrderStatus.CANCELLED,
+  ],
   [OrderStatus.CONFIRMED]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
   [OrderStatus.PREPARING]: [OrderStatus.READY, OrderStatus.CANCELLED],
   [OrderStatus.READY]: [OrderStatus.SERVED, OrderStatus.CANCELLED],
