@@ -54,6 +54,20 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
         phone: '021234567',
         status: BranchStatus.ACTIVE,
       }),
+      repo.create({
+        branchId: 2,
+        branchName: 'สาขาบางแสน',
+        address: '123/45 ถนนลงหาดบางแสน ตำบลแสนสุข อำเภอเมือง ชลบุรี 20130',
+        phone: '038123456',
+        status: BranchStatus.ACTIVE,
+      }),
+      repo.create({
+        branchId: 3,
+        branchName: 'สาขาจันทบุรี',
+        address: '456/78 ถนนท่าแฉลบ ตำบลวัดใหม่ อำเภอเมือง จันทบุรี 22000',
+        phone: '039987654',
+        status: BranchStatus.ACTIVE,
+      }),
     ]);
     this.logger.log('Seeded initial POS_BRANCHES');
   }
