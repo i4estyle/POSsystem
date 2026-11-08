@@ -429,11 +429,10 @@
   }
 }
 
-/* Sticky Search & Categories */
+/* Search & Categories (Static at top of menu, scrolls naturally) */
 .sticky-menu-controls {
-  position: sticky;
-  top: 0;
-  z-index: 15;
+  position: relative;
+  z-index: 5;
   background: #faf7fc;
   padding: 6px 0 10px;
 
