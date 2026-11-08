@@ -11,23 +11,23 @@
     <TransitionGroup tag="div" name="ticket-spring" class="order-management-column__tickets">
       <article v-for="order in orders" :key="order.orderNumber" class="order-management-ticket">
         <div class="order-management-ticket__head">
-          <div class="order-management-ticket__table-meta">
-            <div class="order-management-ticket__table-row">
-              <strong>{{ order.tableLabel }}</strong>
-              <span class="order-type-pill" :class="{ qr: order.orderNumber.includes('QR') }">
-                {{ order.orderType }}
-              </span>
+          <div class="order-management-ticket__top-row">
+            <strong>{{ order.tableLabel }}</strong>
+            <div class="order-management-ticket__time-meta">
+              <time>{{ order.time }}</time>
             </div>
-            <small class="order-management-ticket__channel">
+          </div>
+          <div class="order-management-ticket__badges-row">
+            <span class="order-type-pill" :class="{ qr: isQrOrder(order) }">
+              {{ order.orderType }}
+            </span>
+            <span class="ticket-channel-badge" :class="{ 'is-table-order': isQrOrder(order) }">
               <q-icon
-                :name="order.orderNumber.includes('QR') ? 'qr_code_2' : 'point_of_sale'"
+                :name="isQrOrder(order) ? 'qr_code_2' : 'point_of_sale'"
                 size="13px"
               />
-              {{ order.orderNumber.includes('QR') ? 'สแกนสั่งที่โต๊ะ' : 'สั่งที่เคาน์เตอร์' }}
-            </small>
-          </div>
-          <div class="order-management-ticket__time-meta">
-            <time>{{ order.time }}</time>
+              <span>{{ isQrOrder(order) ? 'สั่งที่โต๊ะ (Mobile Scan)' : 'สั่งที่เคาน์เตอร์ (POS)' }}</span>
+            </span>
           </div>
         </div>
 
@@ -120,6 +120,11 @@ defineProps<{
 }>();
 
 defineEmits<{ advance: [orderNumber: string] }>();
+
+const isQrOrder = (order: OrderKanbanTicket): boolean =>
+  order.orderChannel === 'qr_order' ||
+  order.orderNumber.toUpperCase().includes('QR') ||
+  order.orderNumber.toUpperCase().includes('-QR-');
 
 const getTotalItemsCount = (order: OrderKanbanTicket): number =>
   order.items.reduce((sum, item) => sum + item.quantity, 0);

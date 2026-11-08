@@ -28,6 +28,7 @@ export interface OrderKanbanTicket {
   time: string;
   tableLabel: string;
   orderType: string;
+  orderChannel?: string | undefined;
   subtotal?: number | undefined;
   discountAmount?: number | undefined;
   taxAmount?: number | undefined;
@@ -53,6 +54,7 @@ export interface OrderKanbanMockTicket {
   orderNumber: string;
   time: string;
   orderTypeKey: OrderTypeKey;
+  orderChannel?: string | undefined;
   tableNumber?: number;
   subtotal?: number | undefined;
   discountAmount?: number | undefined;

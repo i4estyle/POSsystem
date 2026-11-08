@@ -104,6 +104,7 @@ const displayedOrders = computed(() =>
     time: order.time,
     tableLabel: formatTableLabel(order),
     orderType: formatOrderType(order),
+    orderChannel: order.orderChannel,
     subtotal: order.subtotal,
     discountAmount: order.discountAmount,
     taxAmount: order.taxAmount,

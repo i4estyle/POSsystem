@@ -85,6 +85,7 @@ const toTicket = (order: OrderKanbanMockTicket & { status: KanbanStatus }): Orde
       ? t('orders.table', { table: order.tableNumber })
       : t('orders.orderTypes.takeaway'),
   orderType: t(`orders.orderTypes.${order.orderTypeKey}`),
+  orderChannel: order.orderChannel,
   subtotal: order.subtotal,
   discountAmount: order.discountAmount,
   taxAmount: order.taxAmount,

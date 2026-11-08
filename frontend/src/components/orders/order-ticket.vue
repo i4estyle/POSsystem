@@ -1,24 +1,24 @@
 <template>
   <article class="order-ticket">
     <div class="ticket-head">
-      <div class="ticket-table-meta">
-        <div class="ticket-table-row">
-          <strong>{{ order.tableLabel }}</strong>
-          <span class="order-type-pill" :class="{ qr: order.orderNumber.includes('QR') }">
-            {{ order.orderType }}
-          </span>
+      <div class="ticket-head-top">
+        <strong>{{ order.tableLabel }}</strong>
+        <div class="ticket-time">
+          <time>{{ order.time }}</time>
+          <small>{{ order.orderNumber }}</small>
         </div>
-        <small class="ticket-channel">
+      </div>
+      <div class="ticket-badges-row">
+        <span class="order-type-pill" :class="{ qr: isQrOrder }">
+          {{ order.orderType }}
+        </span>
+        <span class="ticket-channel-badge" :class="{ 'is-table-order': isQrOrder }">
           <q-icon
-            :name="order.orderNumber.includes('QR') ? 'qr_code_2' : 'point_of_sale'"
+            :name="isQrOrder ? 'qr_code_2' : 'point_of_sale'"
             size="13px"
           />
-          {{ order.orderNumber.includes('QR') ? 'สแกนสั่งที่โต๊ะ' : 'สั่งที่เคาน์เตอร์' }}
-        </small>
-      </div>
-      <div class="ticket-time">
-        <time>{{ order.time }}</time>
-        <small>{{ order.orderNumber }}</small>
+          <span>{{ isQrOrder ? 'สั่งที่โต๊ะ (Mobile Scan)' : 'สั่งที่เคาน์เตอร์ (POS)' }}</span>
+        </span>
       </div>
     </div>
 
@@ -94,6 +94,13 @@ defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+const isQrOrder = computed(
+  () =>
+    order.orderChannel === 'qr_order' ||
+    order.orderNumber.toUpperCase().includes('QR') ||
+    order.orderNumber.toUpperCase().includes('-QR-'),
+);
 
 const totalItemsCount = computed(() => order.items.reduce((sum, item) => sum + item.quantity, 0));
 

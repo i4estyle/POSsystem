@@ -107,6 +107,7 @@ const mapBackendOrderToManaged = (bo: BackendOrderDetail): ManagedOrder => {
     orderNumber: bo.orderNumber.startsWith('#') ? bo.orderNumber : `#${bo.orderNumber}`,
     time: timeStr,
     orderTypeKey: isTakeaway ? 'takeaway' : 'dineIn',
+    orderChannel: bo.orderChannel,
     ...(isTakeaway ? {} : { tableNumber: tableNum }),
     subtotal,
     discountAmount,
@@ -149,6 +150,7 @@ export const useOrderStore = defineStore('orders', () => {
     orderNumber: string;
     tableId?: number | null;
     isTakeaway?: boolean;
+    orderChannel?: string;
     subtotal?: number;
     discountAmount?: number;
     taxAmount?: number;
@@ -173,6 +175,7 @@ export const useOrderStore = defineStore('orders', () => {
       orderNumber: formattedNo,
       time: now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
       orderTypeKey: payload.isTakeaway ? 'takeaway' : 'dineIn',
+      orderChannel: payload.orderChannel ?? (payload.orderNumber.includes('QR') ? 'qr_order' : 'pos'),
       ...(payload.isTakeaway ? {} : { tableNumber: payload.tableId ?? 1 }),
       subtotal: calcSubtotal,
       discountAmount: payload.discountAmount ?? 0,
