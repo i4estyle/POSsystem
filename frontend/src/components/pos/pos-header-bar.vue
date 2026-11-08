@@ -360,7 +360,7 @@ const toggleFullscreen = async (): Promise<void> => {
 };
 
 onMounted(() => {
-  branchStore.fetchBranches();
+  void branchStore.fetchBranches();
   clockTimer = setInterval(() => {
     now.value = new Date();
   }, 1000);
