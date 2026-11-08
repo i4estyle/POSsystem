@@ -168,10 +168,20 @@ export const useQrOrderStore = defineStore('qr-order', () => {
 
   const syncRoundsStatusFromBackend = async (): Promise<void> => {
     try {
-      const liveOrders = await orderService.findAll(50);
-      const tableOrders = liveOrders
-        .filter((bo) => Number(bo.tableId) === Number(tableId.value))
-        .sort((a, b) => a.orderId - b.orderId);
+      let tableOrders: BackendOrderDetail[] = [];
+
+      if (activeQrToken.value) {
+        tableOrders = await qrOrderService.getPublicOrders(
+          activeQrToken.value,
+          activeSessionId.value || undefined,
+          tableId.value || undefined,
+        );
+      } else {
+        const liveOrders = await orderService.findAll(50);
+        tableOrders = liveOrders.filter((bo) => Number(bo.tableId) === Number(tableId.value));
+      }
+
+      tableOrders.sort((a, b) => a.orderId - b.orderId);
 
       const syncedRounds: TableOrderRound[] = tableOrders.map((bo, idx) => {
         const existing = orderRounds.value.find(
@@ -180,6 +190,9 @@ export const useQrOrderStore = defineStore('qr-order', () => {
         if (existing) {
           existing.status = mapBackendStatusToRoundStatus(bo.status);
           existing.roundNumber = idx + 1;
+          if (existing.items.length === 0 && bo.items && bo.items.length > 0) {
+            existing.items = mapBackendOrderToRound(bo, idx + 1).items;
+          }
           return existing;
         }
         return mapBackendOrderToRound(bo, idx + 1);
@@ -391,6 +404,7 @@ export const useQrOrderStore = defineStore('qr-order', () => {
       orderNumber: newRound.orderNumber,
       tableId: tableId.value,
       isTakeaway: diningMode.value === 'takeaway',
+      orderChannel: 'qr_order',
       subtotal: roundSubtotal,
       discountAmount: roundDiscount,
       taxAmount: roundTax,

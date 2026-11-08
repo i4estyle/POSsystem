@@ -116,6 +116,23 @@ export class QrOrdersController {
     return this.qrOrdersService.createPublicOrder(token, sessionId, dto);
   }
 
+  @Get('public/:token/orders')
+  @Public()
+  @ApiOperation({ summary: 'ดึงรายการออเดอร์ของโต๊ะ/เซสชันสำหรับ Mobile QR โดยไม่ต้องล็อกอิน' })
+  async getPublicOrders(
+    @Param('token') token: string,
+    @Query('sessionId') sessionId?: string,
+    @Query('tableId') tableId?: string,
+  ): Promise<OrderEntity[]> {
+    const parsedSessionId = sessionId ? parseInt(sessionId, 10) : undefined;
+    const parsedTableId = tableId ? parseInt(tableId, 10) : undefined;
+    return this.qrOrdersService.getPublicOrders(
+      token,
+      Number.isNaN(parsedSessionId) ? undefined : parsedSessionId,
+      Number.isNaN(parsedTableId) ? undefined : parsedTableId,
+    );
+  }
+
   @Get('qr-codes/:id')
   @ApiOperation({ summary: 'ดึงข้อมูล QR Code ตาม ID' })
   async findOneQrCode(

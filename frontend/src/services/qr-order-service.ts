@@ -81,4 +81,19 @@ export const qrOrderService = {
     );
     return response.data;
   },
+
+  async getPublicOrders(
+    token: string,
+    sessionId?: number,
+    tableId?: number,
+  ): Promise<BackendOrderDetail[]> {
+    const params: Record<string, number> = {};
+    if (sessionId) params.sessionId = sessionId;
+    if (tableId) params.tableId = tableId;
+    const response = await api.get<BackendOrderDetail[]>(
+      `/qr-orders/public/${encodeURIComponent(token)}/orders`,
+      { params },
+    );
+    return response.data;
+  },
 };

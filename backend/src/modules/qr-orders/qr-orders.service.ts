@@ -153,6 +153,19 @@ export class QrOrdersService {
     });
   }
 
+  async getPublicOrders(
+    token: string,
+    sessionId?: number,
+    tableId?: number,
+  ): Promise<OrderEntity[]> {
+    const qr = await this.getActiveQrCode(token);
+    return this.ordersService.findPublicOrdersByQr(
+      qr.qrCodeId,
+      sessionId,
+      tableId ?? qr.tableId ?? undefined,
+    );
+  }
+
   private async getActiveQrCode(token: string): Promise<QrCodeEntity> {
     const qr = await this.findByToken(token);
     if (qr.status !== QrCodeStatus.ACTIVE) {

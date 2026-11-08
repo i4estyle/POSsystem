@@ -227,6 +227,36 @@ export class OrdersService {
     return order;
   }
 
+  async findPublicOrdersByQr(
+    qrCodeId: number,
+    sessionId?: number,
+    tableId?: number,
+  ): Promise<OrderEntity[]> {
+    const qb = this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.items', 'item')
+      .leftJoinAndSelect('item.product', 'product')
+      .leftJoinAndSelect('order.table', 'table')
+      .leftJoinAndSelect('order.promotion', 'promotion')
+      .orderBy('order.orderId', 'ASC');
+
+    if (sessionId) {
+      qb.where(
+        '(order.sessionId = :sessionId OR (order.qrCodeId = :qrCodeId AND order.sessionId IS NULL))',
+        { sessionId, qrCodeId },
+      );
+    } else if (tableId) {
+      qb.where(
+        '(order.qrCodeId = :qrCodeId OR order.tableId = :tableId)',
+        { qrCodeId, tableId },
+      );
+    } else {
+      qb.where('order.qrCodeId = :qrCodeId', { qrCodeId });
+    }
+
+    return qb.getMany();
+  }
+
   async findOneByExternalId(
     externalId: string,
     principal: AuthPrincipal,
