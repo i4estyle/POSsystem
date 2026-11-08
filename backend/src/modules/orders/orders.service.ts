@@ -1,15 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { OrderEntity } from './entities/order.entity';
 import { OrderItemEntity } from './entities/order-item.entity';
 import { OrderStatusHistoryEntity } from './entities/order-status-history.entity';
 import { OrderNotificationEntity } from './entities/order-notification.entity';
+import { PromotionEntity } from '../promotions/entities/promotion.entity';
+import { CustomerEntity } from '../customers/entities/customer.entity';
+import { EmployeeEntity } from '../employees/entities/employee.entity';
+import { DiningTableEntity } from '../dining-tables/entities/dining-table.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { OrderStatus } from '../../common/enums';
+import { OrderChannel, OrderStatus, OrderType } from '../../common/enums';
 
 @Injectable()
 export class OrdersService {
@@ -22,62 +26,108 @@ export class OrdersService {
     private readonly historyRepository: Repository<OrderStatusHistoryEntity>,
     @InjectRepository(OrderNotificationEntity)
     private readonly notificationRepository: Repository<OrderNotificationEntity>,
+    private readonly dataSource: DataSource,
   ) {}
 
   private generateOrderNumber(): string {
-    const timestamp = Date.now().toString().slice(-8);
-    const random = Math.floor(100 + Math.random() * 900);
-    return `ORD-${timestamp}-${random}`;
+    const timestamp = Date.now().toString().slice(-4);
+    const random = Math.floor(10 + Math.random() * 90);
+    return `QR-${timestamp}${random}`;
   }
 
   async create(dto: CreateOrderDto): Promise<OrderEntity> {
     const orderNumber = this.generateOrderNumber();
-    const discountAmount = dto.discountAmount ?? 0;
-    const taxAmount = dto.taxAmount ?? 0;
+    const discountAmount = Number(dto.discountAmount ?? 0);
+    const taxAmount = Number(dto.taxAmount ?? 0);
 
-    const items = dto.items.map((item) => {
-      const discount = item.discount ?? 0;
-      const subtotal =
-        Number(item.unitPrice) * Number(item.quantity) - Number(discount);
-      return this.orderItemRepository.create({
+    const calculatedItems = dto.items.map((item) => {
+      const discount = Number(item.discount ?? 0);
+      const unitPrice = Number(item.unitPrice);
+      const quantity = Number(item.quantity);
+      const subtotal = unitPrice * quantity - discount;
+      return {
         productId: item.productId,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
+        quantity,
+        unitPrice,
         discount,
         subtotal,
-        note: item.note,
-      });
+        note: item.note ?? null,
+      };
     });
 
-    const totalAmount = items.reduce(
+    const totalAmount = calculatedItems.reduce(
       (sum, item) => sum + Number(item.subtotal),
       0,
     );
-    const netAmount = totalAmount - Number(discountAmount) + Number(taxAmount);
+    const netAmount = totalAmount - discountAmount + taxAmount;
+
+    let validPromotionId: number | null = dto.promotionId ?? null;
+    if (validPromotionId) {
+      const promoExists = await this.dataSource
+        .getRepository(PromotionEntity)
+        .findOne({ where: { promotionId: validPromotionId } });
+      if (!promoExists) validPromotionId = null;
+    }
+
+    let validCustomerId: number | null = dto.customerId ?? null;
+    if (validCustomerId) {
+      const cusExists = await this.dataSource
+        .getRepository(CustomerEntity)
+        .findOne({ where: { customerId: validCustomerId } });
+      if (!cusExists) validCustomerId = null;
+    }
+
+    let validEmployeeId: number | null = dto.employeeId ?? null;
+    if (validEmployeeId) {
+      const empExists = await this.dataSource
+        .getRepository(EmployeeEntity)
+        .findOne({ where: { employeeId: validEmployeeId } });
+      if (!empExists) validEmployeeId = null;
+    }
+
+    let validTableId: number | null = dto.tableId ?? null;
+    if (validTableId) {
+      const tblExists = await this.dataSource
+        .getRepository(DiningTableEntity)
+        .findOne({ where: { tableId: validTableId } });
+      if (!tblExists) validTableId = null;
+    }
 
     const order = this.orderRepository.create({
       orderNumber,
-      branchId: dto.branchId,
-      customerId: dto.customerId,
-      employeeId: dto.employeeId,
-      tableId: dto.tableId,
-      promotionId: dto.promotionId,
-      sessionId: dto.sessionId,
-      qrCodeId: dto.qrCodeId,
-      orderChannel: dto.orderChannel,
-      orderType: dto.orderType,
-      guestName: dto.guestName,
-      guestPhone: dto.guestPhone,
+      branchId: dto.branchId || 1,
+      customerId: validCustomerId,
+      employeeId: validEmployeeId,
+      tableId: validTableId,
+      promotionId: validPromotionId,
+      sessionId: dto.sessionId ?? null,
+      qrCodeId: dto.qrCodeId ?? null,
+      orderChannel: dto.orderChannel ?? OrderChannel.QR_ORDER,
+      orderType: dto.orderType ?? OrderType.DINE_IN,
+      guestName: dto.guestName ?? null,
+      guestPhone: dto.guestPhone ?? null,
       totalAmount,
       discountAmount,
       taxAmount,
       netAmount,
       orderDate: new Date(),
       status: OrderStatus.PENDING,
-      items,
     });
 
     const savedOrder = await this.orderRepository.save(order);
+
+    const itemEntities = calculatedItems.map((item) =>
+      this.orderItemRepository.create({
+        orderId: savedOrder.orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        discount: item.discount,
+        subtotal: item.subtotal,
+        note: item.note,
+      }),
+    );
+    await this.orderItemRepository.save(itemEntities);
 
     const history = this.historyRepository.create({
       orderId: savedOrder.orderId,

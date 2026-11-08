@@ -5,6 +5,7 @@ import { TableSessionEntity } from './entities/table-session.entity';
 import { TableRequestEntity } from './entities/table-request.entity';
 import { QrOrdersService } from './qr-orders.service';
 import { QrOrdersController } from './qr-orders.controller';
+import { TunnelService } from './tunnel.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { QrOrdersController } from './qr-orders.controller';
     ]),
   ],
   controllers: [QrOrdersController],
-  providers: [QrOrdersService],
-  exports: [QrOrdersService, TypeOrmModule],
+  providers: [QrOrdersService, TunnelService],
+  exports: [QrOrdersService, TunnelService, TypeOrmModule],
 })
 export class QrOrdersModule {}

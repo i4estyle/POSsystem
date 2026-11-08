@@ -19,6 +19,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { QrOrdersModule } from './modules/qr-orders/qr-orders.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DatabaseSeedService } from './database/seeds/database-seed.service';
 
 @Module({
   imports: [
@@ -59,5 +60,6 @@ import { AuthModule } from './modules/auth/auth.module';
     FeedbackModule,
     QrOrdersModule,
   ],
+  providers: [DatabaseSeedService],
 })
 export class AppModule {}

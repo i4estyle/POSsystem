@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { QrOrdersService } from './qr-orders.service';
+import { TunnelService, type TunnelInfo } from './tunnel.service';
 import { CreateQrCodeDto } from './dto/create-qr-code.dto';
 import { UpdateQrCodeDto } from './dto/update-qr-code.dto';
 import { CreateTableSessionDto } from './dto/create-table-session.dto';
@@ -27,7 +28,16 @@ import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 @ApiTags('QR Orders')
 @Controller('qr-orders')
 export class QrOrdersController {
-  constructor(private readonly qrOrdersService: QrOrdersService) {}
+  constructor(
+    private readonly qrOrdersService: QrOrdersService,
+    private readonly tunnelService: TunnelService,
+  ) {}
+
+  @Get('tunnel-info')
+  @ApiOperation({ summary: 'ดึง URL ออนไลน์สาธารณะสำหรับสแกน QR ผ่าน 4G/5G หรือ Wi-Fi' })
+  getTunnelInfo(): TunnelInfo {
+    return this.tunnelService.getTunnelInfo();
+  }
 
   @Post('qr-codes')
   @ApiOperation({ summary: 'สร้าง QR Code ใหม่สำหรับโต๊ะ/Takeaway' })

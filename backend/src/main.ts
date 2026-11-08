@@ -49,7 +49,7 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 }
 
 bootstrap().catch((err: unknown) => {
